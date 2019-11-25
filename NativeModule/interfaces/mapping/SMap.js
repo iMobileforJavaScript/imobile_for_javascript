@@ -54,19 +54,19 @@ export default (function () {
   }
 
   /**
-   * 地图室内/室外切换事件
+   * 楼层显隐监听
    * @param handler
    */
-  function addIndoorChangeListener(handler) {
+  function addFloorHiddenListener(handler) {
     try {
       if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_INDOOR_MAP,result=>{
+        nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
         })
       }else {
-        DeviceEventEmitter.addListener(EventConst.IS_INDOOR_MAP,result=>{
+        DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
@@ -76,6 +76,7 @@ export default (function () {
       console.error(e)
     }
   }
+
   /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
@@ -2364,12 +2365,36 @@ export default (function () {
   }
 
   /**
+   * 设置当前楼层ID
+   * @param floorID
+   * @returns {*}
+   */
+  function setCurrentFloorID(floorID) {
+    try {
+      return SMap.setCurrentFloorID(floorID)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 获取当前楼层ID
    * @returns {*}
    */
   function getCurrentFloorID() {
     try {
       return SMap.getCurrentFloorID()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
+   * 获取当前楼层信息表中的楼层信息 并且初始化了楼层控件
+   * @returns {*}
+   */
+  function getFloorData() {
+    try {
+      return SMap.getFloorData()
     } catch (e) {
       console.error(e)
     }
@@ -2566,13 +2591,11 @@ export default (function () {
 
   /**
    * 添加GPS轨迹
-   * @param datasourceName
-   * @param datasetName
    * @returns {undefined}
    */
-  function addGPSRecordset(datasourceName,datasetName) {
+  function addGPSRecordset() {
     try {
-      return SMap.addGPSRecordset(datasourceName,datasetName)
+      return SMap.addGPSRecordset()
     } catch (e) {
       console.error(e)
     }
@@ -3034,7 +3057,7 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
     addLegendListener,
-    addIndoorChangeListener,
+    addFloorHiddenListener,
     removeLegendListener,
     addScaleChangeDelegate,
 
@@ -3047,6 +3070,8 @@ export default (function () {
     outdoorNavigation,
     indoorNavigation,
     getCurrentFloorID,
+    setCurrentFloorID,
+    getFloorData,
     getStartPoint,
     getEndPoint,
     clearPoint,

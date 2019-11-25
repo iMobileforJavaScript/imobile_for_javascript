@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -202,6 +203,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         if (scaleViewHelper.mapParameterChangedListener == null) {
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
+                    FloorListView floorListView = SMap.getInstance().smMapWC.getFloorListView();
+                    double pointScale = 1.0/2500;
+                    if(floorListView != null){
+                        if(newScale < pointScale && floorListView.getVisibility() == View.VISIBLE){
+                            floorListView.setVisibility(View.INVISIBLE);
+                        }else if(newScale > pointScale && floorListView.getVisibility() == View.INVISIBLE){
+                            floorListView.setVisibility(View.VISIBLE);
+                        }
+                    }
                     if (scaleViewHelper == null)
                         return;
                     scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
@@ -216,14 +226,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                 public void boundsChanged(Point2D newMapCenter) {
                     sMap = SMap.getInstance();
-                    String floorId = null;
-                    if (sMap.smMapWC.getFloorListView() != null) {
-                        floorId = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+                    FloorListView floorListView = sMap.smMapWC.getFloorListView();
+                    String currentFloorID = "";
+                    if (floorListView != null && floorListView.getVisibility() == View.VISIBLE) {
+                        currentFloorID = floorListView.getCurrentFloorId();
                     }
                     WritableMap map = Arguments.createMap();
-                    map.putBoolean("isIndoor", (floorId != null));
+                    map.putString("currentFloorID",currentFloorID);
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.IS_INDOOR_MAP, map);
+                            .emit(EventConst.IS_FLOOR_HIDDEN, map);
                 }
 
                 public void angleChanged(double newAngle) {
@@ -2025,9 +2036,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     mapPoint.putDouble("x", point2D.getX());
                     mapPoint.putDouble("y", point2D.getY());
 
+                    Point2D LLPoint2D = getPoint(point2D.getX(),point2D.getY());
+                    WritableMap LLPoint = Arguments.createMap();
+                    LLPoint.putDouble("x",LLPoint2D.getX());
+                    LLPoint.putDouble("y",LLPoint2D.getY());
+
                     WritableMap map = Arguments.createMap();
                     map.putMap("screenPoint", screenPoint);
                     map.putMap("mapPoint", mapPoint);
+                    map.putMap("LLPoint",LLPoint);
 
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.MAP_LONG_PRESS, map);
@@ -5798,11 +5815,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void beginNavigation(double x, double y, double x2, double y2, Promise promise) {
         try {
-            Point2D pointstart = getPoint(x, y);
-            Point2D pointend = getPoint(x2, y2);
             sMap = SMap.getInstance();
-            sMap.getSmMapWC().getMapControl().getNavigation2().setStartPoint(pointstart.getX(), pointstart.getY());        // 设置起点
-            sMap.getSmMapWC().getMapControl().getNavigation2().setDestinationPoint(pointend.getX(), pointend.getY());     // 设置终点
+            sMap.getSmMapWC().getMapControl().getNavigation2().setStartPoint(x, y);        // 设置起点
+            sMap.getSmMapWC().getMapControl().getNavigation2().setDestinationPoint(x2, y2);     // 设置终点
             sMap.getSmMapWC().getMapControl().getNavigation2().setPathVisible(true);                                       // 设置路径可见
             boolean isfind = sMap.getSmMapWC().getMapControl().getNavigation2().routeAnalyst();
             sMap.smMapWC.getMapControl().getMap().refresh();
@@ -5984,6 +5999,22 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 设置当前楼层ID
+     * @param floorID
+     * @param promise
+     */
+    @ReactMethod
+    public void setCurrentFloorID(String floorID, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            sMap.smMapWC.getFloorListView().setCurrentFloorId(floorID);
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取当前楼层ID
      *
      * @param promise
@@ -6078,12 +6109,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
                         do{
                             Object FL_ID = recordset.getFieldValue("FL_ID");
-                            if(FL_ID.toString().equals(floorID)){
+                            if(FL_ID != null && FL_ID.toString().equals(floorID)){
                                 incrementLineDatasetName = recordset.getFieldValue("LineDatasetName").toString();
                                 incrementNetworkDatasetName = recordset.getFieldValue("NetworkName").toString();
                                 break;
                             }
                         } while (recordset.moveNext());
+                        recordset.close();
+                        recordset.dispose();
                     }
                     if(incrementLineDatasetName != null && incrementDatasource != null){
                         Dataset dataset = incrementDatasource.getDatasets().get(incrementLineDatasetName);
@@ -6244,12 +6277,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void addGPSRecordset(String datasourceName, String linedatasetName, Promise promise) {
+    public void addGPSRecordset(Promise promise) {
         try {
             if (GpsPoint2Ds.getCount() > 0) {
                 sMap = SMap.getInstance();
-                Datasource datasource = sMap.smMapWC.getWorkspace().getDatasources().get(datasourceName);
-                DatasetVector dataset = (DatasetVector) datasource.getDatasets().get(linedatasetName);
+                DatasetVector dataset = (DatasetVector) incrementDatasource.getDatasets().get(incrementLineDatasetName);
                 if (dataset != null) {
                     dataset.setReadOnly(false);
                 }
@@ -6307,6 +6339,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (naviDatasource != null) {
                Datasets datasets = naviDatasource.getDatasets();
                Point2D mapCenter = sMap.smMapWC.getMapControl().getMap().getCenter();
+               mapCenter = getPoint(mapCenter.getX(),mapCenter.getY());
                for(int i = 0; i < datasets.getCount(); i++){
                    Dataset dataset = datasets.get(i);
                    if(dataset.getBounds().contains(mapCenter) && dataset.getBounds().contains(x,y)){
@@ -6338,7 +6371,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isindoor) {
                 sMap.getSmMapWC().getMapControl().getNavigation3().setStartPoint(x, y, floorID);
             } else {
-                showPointByCallout(x, y, "startpoint");
+                Point2D point2d = getMapPoint(x,y);
+                showPointByCallout(point2d.getX(), point2d.getY(), "startpoint");
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -6362,7 +6396,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isindoor) {
                 sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(x, y, floorID);
             } else {
-                showPointByCallout(x, y, "endpoint");
+                Point2D point2d = getMapPoint(x,y);
+                showPointByCallout(point2d.getX(), point2d.getY(), "endpoint");
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -6426,7 +6461,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getPointName(double x, double y, boolean start, Promise promise) {
         try {
-            Point2D point2D = getPoint(x, y);
+            Point2D point2D = new Point2D(x,y);
             ReverseGeocoding(point2D, start);
             promise.resolve(true);
         } catch (Exception e) {
@@ -6510,6 +6545,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             // 转换投影坐标
             CoordSysTranslator.convert(point2Ds, srcPrjCoordSys,
                     desPrjCoordSys, new CoordSysTransParameter(),
+                    CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            point2D = point2Ds.getItem(0);
+        } else {
+            point2D = new Point2D(x, y);
+        }
+        return point2D;
+    }
+
+    /**
+     * 经纬坐标点转地理坐标点
+     * @param x
+     * @param y
+     * @return
+     */
+    private Point2D getMapPoint(double x, double y){
+        Point2D point2D;
+        if (x >= -180 && x <= 180 && y >= -90 && y <= 90) {
+            PrjCoordSys srcPrjCoordSys = SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys();
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(new Point2D(x, y));
+            PrjCoordSys desPrjCoordSys = new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+            // 转换投影坐标
+            CoordSysTranslator.convert(
+                    point2Ds,
+                    desPrjCoordSys,
+                    srcPrjCoordSys,
+                    new CoordSysTransParameter(),
                     CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
             point2D = point2Ds.getItem(0);
         } else {
@@ -6724,6 +6786,68 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
             }
             promise.resolve(inBounds);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取楼层相关数据，并初始化楼层控件 额外返回一个数据源名称，用于判断是否需要重新获取楼层信息
+     * @param promise
+     */
+    @ReactMethod
+    public void getFloorData(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Datasource curDatasource = null;
+            Dataset floorRelationTable = null;
+            for(int i = 0; i < datasources.getCount(); i++){
+                Datasource datasource = datasources.get(i);
+                Datasets datasets = datasource.getDatasets();
+                if(datasets.contains("FloorRelationTable")){
+                    curDatasource = datasource;
+                    floorRelationTable = datasets.get("FloorRelationTable");
+                    break;
+                }
+            }
+
+            WritableMap map = Arguments.createMap();
+            WritableArray array = Arguments.createArray();
+
+            if(floorRelationTable != null){
+                FloorListView floorListView = new FloorListView(context.getCurrentActivity());
+                floorListView.setLayoutParams(new LinearLayout.LayoutParams(1,1));
+                floorListView.linkMapControl(sMap.smMapWC.getMapControl());
+                sMap.smMapWC.setFloorListView(floorListView);
+
+                DatasetVector datasetVector = (DatasetVector)floorRelationTable;
+                Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+
+                do{
+                    Object FL_ID = recordset.getFieldValue("FL_ID");
+                    Object FL_NAME = recordset.getFieldValue("FloorName");
+                    if(FL_ID != null && FL_NAME != null){
+                        String floorID = FL_ID.toString();
+                        String floorName = FL_NAME.toString();
+                        WritableMap writableMap = Arguments.createMap();
+                        writableMap.putString("name",floorName);
+                        writableMap.putString("id",floorID);
+                        array.pushMap(writableMap);
+                    }
+                }while(recordset.moveNext());
+
+                recordset.close();
+                recordset.dispose();
+                String currentFloorID = floorListView.getCurrentFloorId() == null ? "" : floorListView.getCurrentFloorId();
+                map.putString("datasource",curDatasource.getAlias());
+                map.putString("currentFloorID",currentFloorID);
+                map.putArray("data",array);
+            }else {
+                map.putString("datasource","");
+            }
+
+            promise.resolve(map);
         }catch (Exception e){
             promise.reject(e);
         }

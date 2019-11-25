@@ -66,12 +66,11 @@ dependencies {
     implementation files('libs/httpmime-4.1.1.jar')
     implementation files('libs/jsoup-1.10.1.jar')
     implementation files('libs/Msc.jar')
-    implementation files('libs/OpenGLTileExtent.jar')
     implementation files('libs/pinyin4j-2.5.1.jar')
     implementation files('libs/TencentMapLBSApi_v3.0.jar')
     //arcore
     implementation 'com.android.support:design:28.0.0'
-    implementation 'com.google.ar:core:1.13.0'
+    implementation 'com.google.ar:core:1.11.0'
     implementation "com.google.ar.sceneform:core:1.4.0"
     implementation "com.google.ar.sceneform.ux:sceneform-ux:1.4.0"
     implementation 'de.javagl:obj:0.2.1'

@@ -42,7 +42,6 @@ export default {
   MAP_GEOMETRY_SELECTED: "com.supermap.RN.Mapcontrol.geometry_selected",
   MAP_SCALE_CHANGED: "Supermap.MapControl.MapParamChanged.ScaleChanged",
   MAP_BOUNDS_CHANGED: "Supermap.MapControl.MapParamChanged.BoundsChanged",
-
  /** 三维模块 */
   ANALYST_MEASURELINE: "com.supermap.RN.SMSceneControl.Analyst_measureLine",
   ANALYST_MEASURESQUARE: "com.supermap.RN.SMSceneControl.Analyst_measureSquare",
@@ -64,8 +63,8 @@ export default {
   MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
   MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",
   ILLEGALLYPARK:"com.supermap.RN.Navigation.illegallypark",
-  /*室内地图 bounds改变，且floorlist的id*/
-  IS_INDOOR_MAP : "com.supermap.RN.FloorListView.isIndoorChanged",
+  /** 室内地图 楼层控件是否隐藏 **/
+  IS_FLOOR_HIDDEN:'com.supermap.RN.FloorListView.isFloorHidden',
   
   /** 智能监听 **/
   MATCH_IMAGE_RESULT: "com.supermap.RN.match_image_result",

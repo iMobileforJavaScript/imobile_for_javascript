@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.MotionEvent;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.ar.core.Pose;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.Point3D;
@@ -142,10 +143,26 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
         update(curPosition, quaternion);
 
+        Quaternion rotate90degrees = axisAngle(new Vector3(0,-1,0),70);
+        rotate90degrees.multiply(quaternion);
+
+
     }
 
 
-    public void updateCameraPoseFromVecotr(float [] translation, float [] rotation){
+    public static Quaternion axisAngle(Vector3 var0, float var1) {
+        Quaternion var2 = new Quaternion();
+        double var3;
+        double var5 = Math.sin((var3 = Math.toRadians((double)var1)) / 2.0D);
+        var2.x = (float)((double)var0.x * var5);
+        var2.y = (float)((double)var0.y * var5);
+        var2.z = (float)((double)var0.z * var5);
+        var2.w = (float)Math.cos(var3 / 2.0D);
+        var2.normalize();
+        return var2;
+    }
+
+    public void updateCameraPoseFromVecotr(float [] translation, float [] rotation,ReactApplicationContext mReactContext){
         if(!initFlag){
             initFlag    = true;
             System.arraycopy(translation,0,preTranslation,0,3);
@@ -161,8 +178,6 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
                 totalLength += tempValue;
                 System.arraycopy(translation,0,preTranslation,0,3);
             }
-
-
         }
 
 
@@ -179,11 +194,9 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
                 rotation[1],
                 rotation[2]
         );
-//                pose.getRotationQuaternion();
 
         update(curPosition, quaternion);
-
-
+//                pose.getRotationQuaternion();
     }
 
 
@@ -232,8 +245,10 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
 
     public void loadPoseData(ArrayList<Point3D>  src){
-        mTrajectory.loadPoseData(src);
-
+//        mTrajectory.loadPoseData(src);
+//        if(mRouteTrajectorys.containsKey(mRouteIndex)){
+            mRouteTrajectorys.get(mRouteIndex).loadPoseData(src);
+//        }
         totalLength = (float)_getTotalLengthFromPointList(src);
     }
 
@@ -287,6 +302,5 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
             mRouteTrajectorys.get(mRouteIndex).resetTrajectory();
         }
     }
-
 
 }

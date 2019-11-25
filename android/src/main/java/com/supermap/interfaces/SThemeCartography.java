@@ -1280,7 +1280,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void geometrySelected(ReadableMap readableMap, Promise promise) {
+    public void setUniformLabelFontName(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
@@ -3542,6 +3542,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     themeDotDensity.getStyle().setMarkerSize(new Size2D(dotSize, dotSize));
                 }
                 if (lineColor != null) {
+                    themeDotDensity.getStyle().setMarkerSymbolID(0);
                     themeDotDensity.getStyle().setLineColor(lineColor);
                 }
                 if (symbolID != -1) {
@@ -3799,6 +3800,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     themeGraduatedSymbol.getPositiveStyle().setMarkerSize(new Size2D(symbolSize, symbolSize));
                 }
                 if (lineColor != null) {
+                    themeGraduatedSymbol.getPositiveStyle().setMarkerSymbolID(0);
                     themeGraduatedSymbol.getPositiveStyle().setLineColor(lineColor);
                 }
                 if (symbolID != -1) {
