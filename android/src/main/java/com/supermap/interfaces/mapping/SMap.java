@@ -2291,13 +2291,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void importWorkspace(ReadableMap wInfo, String strFilePath, boolean breplaceDatasource, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            boolean result = sMap.smMapWC.importWorkspaceInfo(wInfo.toHashMap(), strFilePath, breplaceDatasource, true);
-            promise.resolve(result);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sMap = SMap.getInstance();
+                    boolean result = sMap.smMapWC.importWorkspaceInfo(wInfo.toHashMap(), strFilePath, breplaceDatasource, true);
+                    promise.resolve(result);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -2743,23 +2748,28 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void importWorkspaceInfo(ReadableMap infoMap, String nModule, boolean bPrivate, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
-            WritableArray mapsInfo = Arguments.createArray();
-            if (list == null) {
-                promise.resolve(mapsInfo);
-            } else {
-                if (list.size() > 0) {
-                    for (int i = 0; i < list.size(); i++) {
-                        mapsInfo.pushString(list.get(i));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sMap = SMap.getInstance();
+                    List<String> list = sMap.smMapWC.importWorkspaceInfo(infoMap.toHashMap(), nModule, bPrivate);
+                    WritableArray mapsInfo = Arguments.createArray();
+                    if (list == null) {
+                        promise.resolve(mapsInfo);
+                    } else {
+                        if (list.size() > 0) {
+                            for (int i = 0; i < list.size(); i++) {
+                                mapsInfo.pushString(list.get(i));
+                            }
+                        }
+                        promise.resolve(mapsInfo);
                     }
+                } catch (Exception e) {
+                    promise.reject(e);
                 }
-                promise.resolve(mapsInfo);
             }
-        } catch (Exception e) {
-            promise.reject(e);
-        }
+        }).start();
     }
 
     /**
@@ -6654,13 +6664,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      */
     @ReactMethod
     public void copyNaviSnmFile(String path, Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            sMap.getSmMapWC().copyNaviSnmFile(path);
-            promise.resolve(true);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sMap = SMap.getInstance();
+                    sMap.getSmMapWC().copyNaviSnmFile(path);
+                    promise.resolve(true);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        }).start();
     }
 
     /**
