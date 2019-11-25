@@ -1145,7 +1145,7 @@ RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPro
 }
 
 #pragma mark 获取当前工作空间含有网络数据集
-RCT_REMAP_METHOD(getNetworkDataset, methodgetNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         Datasources *datasouces = sMap.smMapWC.workspace.datasources;
@@ -1532,11 +1532,13 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
             image = [UIImage imageNamed:@"resources.bundle/icon_scene_tool_end.png"];
         }
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-                [imageView setFrame:CGRectMake(0, 0, 40, 40)];
-                infoCallout.width = 40;
-                infoCallout.height = 40;
-                [infoCallout addSubview:imageView];
-                [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
+        [imageView setFrame:CGRectMake(0, 0, 60, 60)];
+        infoCallout.width = 60;
+        infoCallout.height = 60;
+        
+        [infoCallout addSubview:imageView];
+        infoCallout.backgroundColor = [UIColor redColor];
+        [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
     });
 }
 
@@ -1652,10 +1654,13 @@ RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName re
 
 
 #pragma mark 拷贝室外地图网络模型snm文件
-RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithPath:(NSString *)path resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithArray:(NSArray *)files resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        [sMap.smMapWC copyNaviSnmFileFrom:path];
+        for(int i = 0; i < files.count; i++){
+            NSDictionary *file = [files objectAtIndex:i];
+            [sMap.smMapWC copyNaviSnmFileFrom:file];
+        }
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"copyNaviSnmFile",exception.reason,nil);

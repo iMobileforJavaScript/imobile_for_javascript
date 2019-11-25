@@ -6510,8 +6510,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             Point2D point = point2Ds.getItem(0);
             WritableMap map = Arguments.createMap();
-            map.putDouble("x",point2D.getX());
-            map.putDouble("y",point2D.getY());
+            map.putDouble("x",point.getX());
+            map.putDouble("y",point.getY());
             promise.resolve(map);
         }catch (Exception e){
             promise.reject(e);
@@ -6715,10 +6715,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void copyNaviSnmFile(String path, Promise promise) {
+    public void copyNaviSnmFile(ReadableArray files, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.getSmMapWC().copyNaviSnmFile(path);
+            for(int i = 0; i < files.size(); i++){
+                ReadableMap map = files.getMap(i);
+                sMap.getSmMapWC().copyNaviSnmFile(map);
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
