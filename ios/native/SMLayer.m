@@ -190,7 +190,7 @@
         
         if ([params objectForKey:@"groupBy"]) {
             NSArray* group = [[params objectForKey:@"groupBy"] componentsSeparatedByString:@","];
-            [parameter setOrderBy:group];
+            [parameter setGroupBy:group];
         }
         
         recordSet = [dv query:parameter];
