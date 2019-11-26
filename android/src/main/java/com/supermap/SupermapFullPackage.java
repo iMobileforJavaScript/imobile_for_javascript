@@ -49,7 +49,7 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
+                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView()
                 ,new AIDetectViewManager(), new MeasureViewManager(), new AIClassifyViewManager()
                 ,new CollectSceneFormViewManager(), new IllegallyParkViewManager()
                 , new CastModelOperateViewManager()

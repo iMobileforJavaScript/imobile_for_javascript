@@ -1145,7 +1145,7 @@ RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPro
 }
 
 #pragma mark 获取当前工作空间含有网络数据集
-RCT_REMAP_METHOD(getNetworkDataset, methodgetNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         Datasources *datasouces = sMap.smMapWC.workspace.datasources;
@@ -1532,11 +1532,13 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
             image = [UIImage imageNamed:@"resources.bundle/icon_scene_tool_end.png"];
         }
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-                [imageView setFrame:CGRectMake(0, 0, 40, 40)];
-                infoCallout.width = 40;
-                infoCallout.height = 40;
-                [infoCallout addSubview:imageView];
-                [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
+        [imageView setFrame:CGRectMake(0, 0, 60, 60)];
+        infoCallout.width = 60;
+        infoCallout.height = 60;
+        
+        [infoCallout addSubview:imageView];
+        infoCallout.backgroundColor = [UIColor redColor];
+        [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
     });
 }
 
@@ -1652,10 +1654,13 @@ RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName re
 
 
 #pragma mark 拷贝室外地图网络模型snm文件
-RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithPath:(NSString *)path resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithArray:(NSArray *)files resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        [sMap.smMapWC copyNaviSnmFileFrom:path];
+        for(int i = 0; i < files.count; i++){
+            NSDictionary *file = [files objectAtIndex:i];
+            [sMap.smMapWC copyNaviSnmFileFrom:file];
+        }
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"copyNaviSnmFile",exception.reason,nil);
@@ -6001,35 +6006,37 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
-    double x = newMapCenter.x;
-    NSNumber* nsX = [NSNumber numberWithDouble:x];
-    double y = newMapCenter.y;
-    NSNumber* nsY = [NSNumber numberWithDouble:y];
-    [self sendEventWithName:MAP_BOUNDS_CHANGED
-                       body:@{@"x":nsX,
-                              @"y":nsY
-                              }];
-    FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
-    NSString *floorID = floorListView.currentFloorId;
-    NSString *currentFloorID = floorID == nil ? @"" : floorID;
-    [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // Do the work in background
+        double x = newMapCenter.x;
+        NSNumber* nsX = [NSNumber numberWithDouble:x];
+        double y = newMapCenter.y;
+        NSNumber* nsY = [NSNumber numberWithDouble:y];
+        [self sendEventWithName:MAP_BOUNDS_CHANGED
+                           body:@{@"x":nsX,
+                                  @"y":nsY
+                                  }];
+        FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+        NSString *floorID = floorListView.currentFloorId;
+        NSString *currentFloorID = floorID == nil ? @"" : floorID;
+        [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
+    });
+    
+    
 }
 
 -(void) scaleChanged:(double)newscale{
-    sMap = [SMap singletonInstance];
-    sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
-    sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
-    sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
-    double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
-   // width = width * 100 / 70;
-//    if(sMap.scaleViewHelper.mScaleText){
-//
-//    }
-    [self sendEventWithName:MAP_SCALEVIEW_CHANGED
-                        body:@{@"width":[NSNumber numberWithDouble:width],
-                                @"title":sMap.scaleViewHelper.mScaleText
-                                }];
-    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        sMap = [SMap singletonInstance];
+        sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
+        sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
+        sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
+        double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
+        [self sendEventWithName:MAP_SCALEVIEW_CHANGED
+                           body:@{@"width":[NSNumber numberWithDouble:width],
+                                  @"title":sMap.scaleViewHelper.mScaleText
+                                  }];
+    });
 }
 
 - (void)longpress:(CGPoint)pressedPos{
@@ -6144,24 +6151,26 @@ static BOOL bDouble = false;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    UITouch *touch1 = [touches anyObject];
-    CGPoint startPoint = [touch1 locationInView:[touch1 view]];
-    CGFloat x = startPoint.x;
-    CGFloat y = startPoint.y;
-    NSNumber* nsX = [NSNumber numberWithFloat:x];
-    NSNumber* nsY = [NSNumber numberWithFloat:y];
-    
-    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
-    [self sendEventWithName:MAP_SCROLL
-                       body:@{@"mapPoint": @{
-                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
-                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
-                                      },
-                              @"screenPoint": @{
-                                      @"x":nsX,
-                                      @"y":nsY
-                                      },
-                              }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UITouch *touch1 = [touches anyObject];
+        CGPoint startPoint = [touch1 locationInView:[touch1 view]];
+        CGFloat x = startPoint.x;
+        CGFloat y = startPoint.y;
+        NSNumber* nsX = [NSNumber numberWithFloat:x];
+        NSNumber* nsY = [NSNumber numberWithFloat:y];
+        
+        Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
+        [self sendEventWithName:MAP_SCROLL
+                           body:@{@"mapPoint": @{
+                                          @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                          @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                          },
+                                  @"screenPoint": @{
+                                          @"x":nsX,
+                                          @"y":nsY
+                                          },
+                                  }];
+    });
 }
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{

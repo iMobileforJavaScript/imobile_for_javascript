@@ -2755,8 +2755,10 @@ export default (function () {
     }
   }
 
+
   /**
-   * 获取当前工作空间含有网络数据集的数据源
+   * 获取数据源中含有的所有网络数据集
+   * @param udb
    * @returns {*}
    */
   function getNetworkDataset() {
