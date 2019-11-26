@@ -321,6 +321,7 @@
     for (int i=0; i<count; i++) {
         [m_RouteStops removeRouteStopAtIndex:0];
     }
+    m_RouteStops = nil;
 }
 /**
  * 站点暂停飞行
