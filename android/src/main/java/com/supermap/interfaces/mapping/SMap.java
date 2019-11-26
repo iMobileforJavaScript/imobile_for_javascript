@@ -5833,15 +5833,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void outdoorNavigation(final boolean firstP, Promise promise) {
+    public void outdoorNavigation(final int naviType, Promise promise) {
         try {
             sMap = SMap.getInstance();
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(1);
-                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
-                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(firstP);          // 设置车头向上
+                    sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(naviType);
+                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
+                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(true);          // 设置车头向上
                 }
             });
             promise.resolve(true);
@@ -5952,15 +5952,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void indoorNavigation(final boolean firstP, Promise promise) {
+    public void indoorNavigation(final int naviType, Promise promise) {
         try {
             sMap = SMap.getInstance();
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(1);
-                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
-                    sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(firstP);          // 设置车头向上
+                    sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(naviType);
+                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
+                    sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(true);          // 设置车头向上
 
                 }
             });
