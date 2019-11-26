@@ -180,6 +180,7 @@
 		0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5421A6C8F700C35E4B /* SMSymbol.m */; };
 		0AB00D5A21A6C93A00C35E4B /* SMLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB00D5821A6C90F00C35E4B /* SMLayer.m */; };
 		0AD551A122389E9E00D24453 /* SMessageService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AD551A022389E9E00D24453 /* SMessageService.m */; };
+		0AE28DE9238CF4EE001C58C0 /* SMStatisticMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AE28DE8238CF4EE001C58C0 /* SMStatisticMode.m */; };
 		0AEFC1EA2316867B006FEDD8 /* _imaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BEF230FE37E00ADCCCA /* _imaging.a */; };
 		0AEFC1EB2316867B006FEDD8 /* _imagingft.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BF0230FE37F00ADCCCA /* _imagingft.a */; };
 		0AEFC1EC2316867B006FEDD8 /* _imagingmath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 617D9BEE230FE37E00ADCCCA /* _imagingmath.a */; };
@@ -585,6 +586,8 @@
 		0AD1B26421A6AA55006E1B27 /* LableHelper3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LableHelper3D.h; sourceTree = "<group>"; };
 		0AD5519F22389E9E00D24453 /* SMessageService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMessageService.h; sourceTree = "<group>"; };
 		0AD551A022389E9E00D24453 /* SMessageService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMessageService.m; sourceTree = "<group>"; };
+		0AE28DE7238CF4EE001C58C0 /* SMStatisticMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMStatisticMode.h; sourceTree = "<group>"; };
+		0AE28DE8238CF4EE001C58C0 /* SMStatisticMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMStatisticMode.m; sourceTree = "<group>"; };
 		0AF348662270018F004D6D09 /* SAnalyst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAnalyst.m; sourceTree = "<group>"; };
 		0AF348672270018F004D6D09 /* SAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAnalyst.h; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1291,6 +1294,8 @@
 				D854DA542187FD970075B5F8 /* Constants.m */,
 				0A6F014C231E0AAC004D5290 /* FixColorMode.h */,
 				0A6F014D231E0AAC004D5290 /* FixColorMode.m */,
+				0AE28DE7238CF4EE001C58C0 /* SMStatisticMode.h */,
+				0AE28DE8238CF4EE001C58C0 /* SMStatisticMode.m */,
 			);
 			path = constants;
 			sourceTree = "<group>";
@@ -1513,6 +1518,7 @@
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
+				0AE28DE9238CF4EE001C58C0 /* SMStatisticMode.m in Sources */,
 				0A51674F21AD42B0003C77BE /* TouchUtil3D.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,
 				0A27E0552281249700227B8C /* SMediaCollector.m in Sources */,

@@ -157,14 +157,15 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
     /**
      * 获取图层属性
-     *
      * @param layerPath
-     * @param promise
+     * @param page
+     * @param size
+     * @param params 过滤条件
      */
     @ReactMethod
-    public void getLayerAttribute(String layerPath, int page, int size, Promise promise) {
+    public void getLayerAttribute(String layerPath, int page, int size, ReadableMap params, Promise promise) {
         try {
-            WritableMap data = SMLayer.getLayerAttribute(layerPath, page, size);
+            WritableMap data = SMLayer.getLayerAttribute(layerPath, page, size, params);
             promise.resolve(data);
         } catch (Exception e) {
             promise.reject(e);
@@ -227,6 +228,24 @@ public class SLayerManager extends ReactContextBaseJavaModule {
         try {
             WritableMap recordArray = SMLayer.searchSelectionAttribute(layerPath, searchKey, page, size);
             promise.resolve(recordArray);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 统计
+     * @param layerPath
+     * @param isSelect
+     * @param fieldName
+     * @param statisticMode
+     * @param promise
+     */
+    @ReactMethod
+    public void statistic(String layerPath, boolean isSelect, String fieldName, int statisticMode, Promise promise) {
+        try {
+            Double result = SMLayer.statistic(layerPath, isSelect, fieldName, statisticMode);
+            promise.resolve(result);
         } catch (Exception e) {
             promise.reject(e);
         }
