@@ -6062,13 +6062,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             for (int i = 0, count = datasources.getCount(); i < count; i++) {
                 Datasource datasource = datasources.get(i);
                 Datasets datasets = datasource.getDatasets();
-                for (int j = 0, length = datasets.getCount(); j < length; j++) {
-                    Dataset dataset = datasets.get(j);
-                    if (dataset.getType() == DatasetType.NETWORK) {
-                        WritableMap tempMap = Arguments.createMap();
-                        tempMap.putString("name", dataset.getName());
-                        tempMap.putString("datasourceName", datasource.getAlias());
-                        array.pushMap(tempMap);
+                if(!datasets.contains("FloorRelationTable")){
+                    for (int j = 0, length = datasets.getCount(); j < length; j++) {
+                        Dataset dataset = datasets.get(j);
+                        if (dataset.getType() == DatasetType.NETWORK) {
+                            WritableMap tempMap = Arguments.createMap();
+                            tempMap.putString("name", dataset.getName());
+                            tempMap.putString("datasourceName", datasource.getAlias());
+                            array.pushMap(tempMap);
+                        }
                     }
                 }
             }

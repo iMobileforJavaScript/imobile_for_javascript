@@ -1153,14 +1153,16 @@ RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromis
         for(int i = 0; i < datasouces.count; i++){
             Datasource *datasource = [datasouces get:i];
             Datasets *datasets = datasource.datasets;
-            for(int j = 0; j < datasets.count; j++){
-                Dataset *dataset = [datasets get:j];
-                if(dataset.datasetType == Network){
-                    NSDictionary *dic = @{
-                                            @"name":dataset.name,
-                                            @"datasourceName":datasource.alias,
-                                        };
-                    [array addObject:dic];
+            if(![datasets contain:@"FloorRelationTable"]){
+                for(int j = 0; j < datasets.count; j++){
+                    Dataset *dataset = [datasets get:j];
+                    if(dataset.datasetType == Network){
+                        NSDictionary *dic = @{
+                                              @"name":dataset.name,
+                                              @"datasourceName":datasource.alias,
+                                              };
+                        [array addObject:dic];
+                    }
                 }
             }
         }
@@ -1537,7 +1539,6 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
         infoCallout.height = 60;
         
         [infoCallout addSubview:imageView];
-        infoCallout.backgroundColor = [UIColor redColor];
         [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
     });
 }
