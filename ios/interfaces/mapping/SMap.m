@@ -6006,35 +6006,37 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
-    double x = newMapCenter.x;
-    NSNumber* nsX = [NSNumber numberWithDouble:x];
-    double y = newMapCenter.y;
-    NSNumber* nsY = [NSNumber numberWithDouble:y];
-    [self sendEventWithName:MAP_BOUNDS_CHANGED
-                       body:@{@"x":nsX,
-                              @"y":nsY
-                              }];
-    FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
-    NSString *floorID = floorListView.currentFloorId;
-    NSString *currentFloorID = floorID == nil ? @"" : floorID;
-    [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // Do the work in background
+        double x = newMapCenter.x;
+        NSNumber* nsX = [NSNumber numberWithDouble:x];
+        double y = newMapCenter.y;
+        NSNumber* nsY = [NSNumber numberWithDouble:y];
+        [self sendEventWithName:MAP_BOUNDS_CHANGED
+                           body:@{@"x":nsX,
+                                  @"y":nsY
+                                  }];
+        FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+        NSString *floorID = floorListView.currentFloorId;
+        NSString *currentFloorID = floorID == nil ? @"" : floorID;
+        [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
+    });
+    
+    
 }
 
 -(void) scaleChanged:(double)newscale{
-    sMap = [SMap singletonInstance];
-    sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
-    sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
-    sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
-    double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
-   // width = width * 100 / 70;
-//    if(sMap.scaleViewHelper.mScaleText){
-//
-//    }
-    [self sendEventWithName:MAP_SCALEVIEW_CHANGED
-                        body:@{@"width":[NSNumber numberWithDouble:width],
-                                @"title":sMap.scaleViewHelper.mScaleText
-                                }];
-    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        sMap = [SMap singletonInstance];
+        sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
+        sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
+        sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
+        double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
+        [self sendEventWithName:MAP_SCALEVIEW_CHANGED
+                           body:@{@"width":[NSNumber numberWithDouble:width],
+                                  @"title":sMap.scaleViewHelper.mScaleText
+                                  }];
+    });
 }
 
 - (void)longpress:(CGPoint)pressedPos{
@@ -6149,24 +6151,26 @@ static BOOL bDouble = false;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    UITouch *touch1 = [touches anyObject];
-    CGPoint startPoint = [touch1 locationInView:[touch1 view]];
-    CGFloat x = startPoint.x;
-    CGFloat y = startPoint.y;
-    NSNumber* nsX = [NSNumber numberWithFloat:x];
-    NSNumber* nsY = [NSNumber numberWithFloat:y];
-    
-    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
-    [self sendEventWithName:MAP_SCROLL
-                       body:@{@"mapPoint": @{
-                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
-                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
-                                      },
-                              @"screenPoint": @{
-                                      @"x":nsX,
-                                      @"y":nsY
-                                      },
-                              }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UITouch *touch1 = [touches anyObject];
+        CGPoint startPoint = [touch1 locationInView:[touch1 view]];
+        CGFloat x = startPoint.x;
+        CGFloat y = startPoint.y;
+        NSNumber* nsX = [NSNumber numberWithFloat:x];
+        NSNumber* nsY = [NSNumber numberWithFloat:y];
+        
+        Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
+        [self sendEventWithName:MAP_SCROLL
+                           body:@{@"mapPoint": @{
+                                          @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                          @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                          },
+                                  @"screenPoint": @{
+                                          @"x":nsX,
+                                          @"y":nsY
+                                          },
+                                  }];
+    });
 }
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{
