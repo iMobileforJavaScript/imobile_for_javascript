@@ -35,6 +35,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.QueryParameter;
 import com.supermap.data.Recordset;
+import com.supermap.data.StatisticMode;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
@@ -245,11 +246,31 @@ public class SMLayer {
         return index;
     }
 
-    public static WritableMap getLayerAttribute(String path, int page, int size) {
+    public static WritableMap getLayerAttribute(String path, int page, int size, ReadableMap params) {
         Layer layer = findLayerByPath(path);
         DatasetVector dv = (DatasetVector) layer.getDataset();
 
-        Recordset recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+        Recordset recordset;
+        QueryParameter queryParameter;
+        if (params != null) {
+            queryParameter = new QueryParameter();
+            queryParameter.setCursorType(CursorType.STATIC);
+
+            if (params.hasKey("filter")) {
+                String[] order = params.getString("filter").split(",");
+                queryParameter.setOrderBy(order);
+            }
+
+            if (params.hasKey("groupBy")) {
+                String[] group = params.getString("groupBy").split(",");
+                queryParameter.setGroupBy(group);
+            }
+
+            recordset = dv.query(queryParameter);
+        } else {
+            recordset = dv.getRecordset(false, CursorType.DYNAMIC);
+        }
+
         int nCount = recordset.getRecordCount() > size ? size : recordset.getRecordCount();
         WritableMap data = JsonUtil.recordsetToMap(recordset, page, nCount);
         recordset.dispose();
@@ -680,7 +701,7 @@ public class SMLayer {
 
     public static boolean removeRecordsetFieldInfo(String path,boolean isSelect,String attributeName) {
         try{
-            Layer layer=findLayerByPath(path);
+            Layer layer = findLayerByPath(path);
             DatasetVector datasetVector;
             if(isSelect){
                 Selection selection=layer.getSelection();
@@ -692,6 +713,27 @@ public class SMLayer {
             return result;
         }catch (Exception e){
             return false;
+        }
+    }
+
+    public static Double statistic(String path, boolean isSelect, String fieldName, int statisticMode) {
+        Double result = 0.0;
+        try {
+            Layer layer = findLayerByPath(path);
+            DatasetVector datasetVector;
+            Recordset recordset;
+            if(isSelect){
+                Selection selection = layer.getSelection();
+                recordset = selection.toRecordset();
+            } else {
+                datasetVector = (DatasetVector) layer.getDataset();
+                recordset = datasetVector.getRecordset(false, CursorType.STATIC);
+            }
+            result = recordset.statistic(fieldName, (StatisticMode) Enum.parse(StatisticMode.class, statisticMode));
+            recordset.dispose();
+            return result;
+        } catch (Exception e){
+            throw e;
         }
     }
 
