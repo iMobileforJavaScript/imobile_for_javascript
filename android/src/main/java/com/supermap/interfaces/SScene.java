@@ -315,8 +315,6 @@ public class SScene extends ReactContextBaseJavaModule {
      * 开始获取属性值
      */
     public void startTouchAttribute() {
-        sScene=getInstance();
-        sScene.smSceneWc.getSceneControl().setAction(Action3D.PANSELECT3D);
         singleTapUpAction = SingleTapUpAction.ATTRIBUTE;
     }
 
