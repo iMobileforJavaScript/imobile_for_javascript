@@ -5833,15 +5833,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void outdoorNavigation(final boolean firstP, Promise promise) {
+    public void outdoorNavigation(final int naviType, Promise promise) {
         try {
             sMap = SMap.getInstance();
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(1);
-                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
-                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(firstP);          // 设置车头向上
+                    sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(naviType);
+                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
+                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(true);          // 设置车头向上
                 }
             });
             promise.resolve(true);
@@ -5952,15 +5952,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void indoorNavigation(final boolean firstP, Promise promise) {
+    public void indoorNavigation(final int naviType, Promise promise) {
         try {
             sMap = SMap.getInstance();
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(1);
-                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(firstP);        // 设置整屏绘制
-                    sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(firstP);          // 设置车头向上
+                    sMap.getSmMapWC().getMapControl().getNavigation3().startGuide(naviType);
+                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
+                    sMap.getSmMapWC().getMapControl().getNavigation3().setCarUpFront(true);          // 设置车头向上
 
                 }
             });
@@ -6062,13 +6062,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             for (int i = 0, count = datasources.getCount(); i < count; i++) {
                 Datasource datasource = datasources.get(i);
                 Datasets datasets = datasource.getDatasets();
-                for (int j = 0, length = datasets.getCount(); j < length; j++) {
-                    Dataset dataset = datasets.get(j);
-                    if (dataset.getType() == DatasetType.NETWORK) {
-                        WritableMap tempMap = Arguments.createMap();
-                        tempMap.putString("name", dataset.getName());
-                        tempMap.putString("datasourceName", datasource.getAlias());
-                        array.pushMap(tempMap);
+                if(!datasets.contains("FloorRelationTable")){
+                    for (int j = 0, length = datasets.getCount(); j < length; j++) {
+                        Dataset dataset = datasets.get(j);
+                        if (dataset.getType() == DatasetType.NETWORK) {
+                            WritableMap tempMap = Arguments.createMap();
+                            tempMap.putString("name", dataset.getName());
+                            tempMap.putString("datasourceName", datasource.getAlias());
+                            array.pushMap(tempMap);
+                        }
                     }
                 }
             }

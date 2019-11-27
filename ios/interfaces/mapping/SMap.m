@@ -1010,13 +1010,13 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
 }
 
 #pragma mark 进行行业导航
-RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[mapControl getNavigation2] startGuide:1];
-            [mapControl.map setIsFullScreenDrawModel:first];
-            [[mapControl getNavigation2] setIsCarUpFront:first];
+            [[mapControl getNavigation2] startGuide:naviType];
+            [mapControl.map setIsFullScreenDrawModel:YES];
+            [[mapControl getNavigation2] setIsCarUpFront:YES];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
@@ -1085,13 +1085,13 @@ RCT_REMAP_METHOD(beginIndoorNavigation, beginIndoorNavigationWithX:(double)x Y:(
 }
 
 #pragma mark 进行室内导航
-RCT_REMAP_METHOD(indoorNavigation, indoorNavigationWithBool:(BOOL)first resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(indoorNavigation, indoorNavigationWithInt:(int)naviType resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[mapControl getNavigation3] startGuide:1];
-            [mapControl.map setIsFullScreenDrawModel:first];
-            [[mapControl getNavigation3] setIsCarUpFront:first];
+            [[mapControl getNavigation3] startGuide:naviType];
+            [mapControl.map setIsFullScreenDrawModel:YES];
+            [[mapControl getNavigation3] setIsCarUpFront:YES];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
@@ -1153,14 +1153,16 @@ RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromis
         for(int i = 0; i < datasouces.count; i++){
             Datasource *datasource = [datasouces get:i];
             Datasets *datasets = datasource.datasets;
-            for(int j = 0; j < datasets.count; j++){
-                Dataset *dataset = [datasets get:j];
-                if(dataset.datasetType == Network){
-                    NSDictionary *dic = @{
-                                            @"name":dataset.name,
-                                            @"datasourceName":datasource.alias,
-                                        };
-                    [array addObject:dic];
+            if(![datasets contain:@"FloorRelationTable"]){
+                for(int j = 0; j < datasets.count; j++){
+                    Dataset *dataset = [datasets get:j];
+                    if(dataset.datasetType == Network){
+                        NSDictionary *dic = @{
+                                              @"name":dataset.name,
+                                              @"datasourceName":datasource.alias,
+                                              };
+                        [array addObject:dic];
+                    }
                 }
             }
         }
@@ -1537,7 +1539,6 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
         infoCallout.height = 60;
         
         [infoCallout addSubview:imageView];
-        infoCallout.backgroundColor = [UIColor redColor];
         [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
     });
 }
