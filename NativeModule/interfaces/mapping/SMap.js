@@ -56,17 +56,18 @@ export default (function () {
   /**
    * 楼层显隐监听
    * @param handler
+   * @returns {EmitterSubscription}
    */
-  function addFloorHiddenListener(handler) {
+  let addFloorHiddenListener = handler => {
     try {
       if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
+        return nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
         })
       }else {
-        DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
+        return DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
@@ -77,6 +78,17 @@ export default (function () {
     }
   }
 
+  /**
+   * 移除楼层显隐监听
+   * @param listeners 之前保存的listeners
+   * @returns {boolean}
+   */
+  let removeFloorHiddenListener = listeners => {
+    listeners.map(listener=>{
+      listener.remove()
+    })
+    return true
+  }
   /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
@@ -2723,7 +2735,7 @@ export default (function () {
    * @param networkDataset
    * @returns {*}
    */
-  function isInBounds(point,networkDataset){
+  function isInBounds(point,networkDataset = null){
     try {
       return SMap.isInBounds(point,networkDataset)
     } catch (e) {
@@ -3060,6 +3072,7 @@ export default (function () {
     getGestureDetector,
     addLegendListener,
     addFloorHiddenListener,
+    removeFloorHiddenListener,
     removeLegendListener,
     addScaleChangeDelegate,
 
