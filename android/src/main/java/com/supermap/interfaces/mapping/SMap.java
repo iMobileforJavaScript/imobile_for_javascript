@@ -6985,6 +6985,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 @Override
                 public void handle(ArrayList<Module> modules) {
 
+                    if(modules == null) {
+                        promise.resolve(false);
+                        return;
+                    }
+
                     String modulesStr = null;
                     if (modules.size() > 0) {
                         modulesStr = modules.get(0).value() + "";
@@ -7325,6 +7330,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (recycleHandler != null) {
                 recycleHandler.handle(false);
                 recycleHandler = null;
+            }
+            if (queryHandler != null) {
+                ArrayList<Module> arrayList = null;
+                queryHandler.handle(arrayList);
+                queryHandler = null;
             }
         }
     };
