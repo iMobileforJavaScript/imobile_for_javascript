@@ -406,6 +406,16 @@ RCT_REMAP_METHOD(getSetting,  getSettingResolver:(RCTPromiseResolveBlock)resolve
     }
 }
 
+RCT_REMAP_METHOD(checkoutListener, listenEvent:(NSString *) listenEvent Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if([listenEvent isEqualToString:@"startTouchAttribute"]) {
+        sSceneEvent = SS_Normal_Event;
+    } else if([listenEvent isEqualToString:@"startMeasure"]) {
+         sSceneEvent = SS_Analysis_Event;
+    }  else if([listenEvent isEqualToString:@"startLabelOperate"]) {
+         sSceneEvent = SS_Label_Event;
+    }
+    resolve([NSNumber numberWithBool:YES]);
+}
 
 RCT_REMAP_METHOD(flyToFeatureById,  index:(int)index flyToFeatureByIdResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1562,8 +1572,9 @@ RCT_REMAP_METHOD(removeOnTouchListener,  removeOnTouchListener:(RCTPromiseResolv
     NSDictionary* info = nil;
     [TouchUtil3D getAttribute:sceneControl attribute:&info];
     if (info!=nil) {
-        [self sendEventWithName:SSCENE_ATTRIBUTE
-                           body:info];
+        [self sendEventWithName:SSCENE_ATTRIBUTE body:info];
+    } else {
+        [self sendEventWithName:SSCENE_ATTRIBUTE body:@{}];
     }
 }
 
@@ -1717,8 +1728,6 @@ RCT_REMAP_METHOD( closeAllLabel,   closeAllLabel:(RCTPromiseResolveBlock)resolve
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-//        [sceneControl setAction3D:PANSELECT3D];
-        [SScene setActionHelper:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {
