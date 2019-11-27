@@ -922,7 +922,7 @@ RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver:
             NSDictionary *pathInfo = pathInfos[i];
             NSString *roadName = [pathInfo valueForKey:@"roadName"];
             int nextDirection = [[pathInfo valueForKey:@"nextDirection"] intValue];
-            double roadLength = [[pathInfo valueForKey:@"roadLength"] doubleValue];
+            double roadLength = [[pathInfo valueForKey:@"length"] doubleValue];
             [dic setObject:roadName forKey:@"roadName"];
             [dic setObject:[NSNumber numberWithInt:nextDirection] forKey:@"nextDirection"];
             [dic setObject:[NSNumber numberWithDouble: roadLength] forKey:@"roadLength"];

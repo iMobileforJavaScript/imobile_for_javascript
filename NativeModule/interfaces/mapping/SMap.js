@@ -2093,11 +2093,13 @@ export default (function () {
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          return nativeEvt.addListener(EventConst.NAVIGATION_WAYS, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
+          return DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
             handlers.callback(e);
           });
         }
@@ -2108,18 +2110,20 @@ export default (function () {
   }
 
   /**
-   * 路径分析路线详情监听
+   * 路径分析路线距离监听
    * @param handlers
    */
   function setOnlineNavigation2Listener(handlers){
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          return nativeEvt.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
+          return DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
             handlers.callback(e);
           });
         }
