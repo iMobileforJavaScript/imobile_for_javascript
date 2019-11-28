@@ -18,6 +18,7 @@ let SymbolType = NativeModules.JSSymbolType
 let Layer3DType = NativeModules.JSLayer3DType
 let ImageFormatType = NativeModules.JSImageFormatType
 let FixColorMode = NativeModules.FixColorMode
+let StatisticMode = NativeModules.StatisticMode
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js'
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js'
@@ -260,6 +261,7 @@ export {
   Layer3DType,
   ImageFormatType,
   FixColorMode,
+  StatisticMode,
 
   BufferAnalyst,
   BufferAnalystGeometry,

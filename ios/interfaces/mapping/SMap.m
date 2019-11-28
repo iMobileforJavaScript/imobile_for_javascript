@@ -81,7 +81,6 @@ RCT_EXPORT_MODULE();
              MAP_GEOMETRY_SELECTED,
              MAP_SCALE_CHANGED,
              MAP_BOUNDS_CHANGED,
-             IS_INDOOR_MAP,
              IS_FLOOR_HIDDEN,
              LEGEND_CONTENT_CHANGE,
              MAP_SCALEVIEW_CHANGED,
@@ -923,7 +922,7 @@ RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver:
             NSDictionary *pathInfo = pathInfos[i];
             NSString *roadName = [pathInfo valueForKey:@"roadName"];
             int nextDirection = [[pathInfo valueForKey:@"nextDirection"] intValue];
-            double roadLength = [[pathInfo valueForKey:@"roadLength"] doubleValue];
+            double roadLength = [[pathInfo valueForKey:@"length"] doubleValue];
             [dic setObject:roadName forKey:@"roadName"];
             [dic setObject:[NSNumber numberWithInt:nextDirection] forKey:@"nextDirection"];
             [dic setObject:[NSNumber numberWithDouble: roadLength] forKey:@"roadLength"];
@@ -998,11 +997,9 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
 RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        Point2D *startPoint = [SMap getPointWithX:x Y:y];
-        Point2D *endPoint = [SMap getPointWithX:x2 Y:y2];
         Navigation2 *navigation2 = [mapControl getNavigation2];
-        [navigation2 setStartPoint:startPoint.x sPointY:startPoint.y];
-        [navigation2 setDestinationPoint:endPoint.x dPointY:endPoint.y];
+        [navigation2 setStartPoint:x sPointY:y];
+        [navigation2 setDestinationPoint:x2 dPointY:y2];
         [navigation2 setPathVisible:YES];
         BOOL isFind = [navigation2 routeAnalyst];
         [mapControl.map refresh];
@@ -1013,13 +1010,13 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
 }
 
 #pragma mark 进行行业导航
-RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithBool:(BOOL)first resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[mapControl getNavigation2] startGuide:1];
-            [mapControl.map setIsFullScreenDrawModel:first];
-            [[mapControl getNavigation2] setIsCarUpFront:first];
+            [[mapControl getNavigation2] startGuide:naviType];
+            [mapControl.map setIsFullScreenDrawModel:YES];
+            [[mapControl getNavigation2] setIsCarUpFront:YES];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
@@ -1088,13 +1085,13 @@ RCT_REMAP_METHOD(beginIndoorNavigation, beginIndoorNavigationWithX:(double)x Y:(
 }
 
 #pragma mark 进行室内导航
-RCT_REMAP_METHOD(indoorNavigation, indoorNavigationWithBool:(BOOL)first resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(indoorNavigation, indoorNavigationWithInt:(int)naviType resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[mapControl getNavigation3] startGuide:1];
-            [mapControl.map setIsFullScreenDrawModel:first];
-            [[mapControl getNavigation3] setIsCarUpFront:first];
+            [[mapControl getNavigation3] startGuide:naviType];
+            [mapControl.map setIsFullScreenDrawModel:YES];
+            [[mapControl getNavigation3] setIsCarUpFront:YES];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
@@ -1148,7 +1145,7 @@ RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPro
 }
 
 #pragma mark 获取当前工作空间含有网络数据集
-RCT_REMAP_METHOD(getNetworkDataset, methodgetNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         Datasources *datasouces = sMap.smMapWC.workspace.datasources;
@@ -1156,14 +1153,16 @@ RCT_REMAP_METHOD(getNetworkDataset, methodgetNetworkDatasourceWithResolver: (RCT
         for(int i = 0; i < datasouces.count; i++){
             Datasource *datasource = [datasouces get:i];
             Datasets *datasets = datasource.datasets;
-            for(int j = 0; j < datasets.count; j++){
-                Dataset *dataset = [datasets get:j];
-                if(dataset.datasetType == Network){
-                    NSDictionary *dic = @{
-                                            @"name":dataset.name,
-                                            @"datasourceName":datasource.alias,
-                                        };
-                    [array addObject:dic];
+            if(![datasets contain:@"FloorRelationTable"]){
+                for(int j = 0; j < datasets.count; j++){
+                    Dataset *dataset = [datasets get:j];
+                    if(dataset.datasetType == Network){
+                        NSDictionary *dic = @{
+                                              @"name":dataset.name,
+                                              @"datasourceName":datasource.alias,
+                                              };
+                        [array addObject:dic];
+                    }
                 }
             }
         }
@@ -1334,11 +1333,10 @@ RCT_REMAP_METHOD(gpsBegin, gpsBeginWithResolver: (RCTPromiseResolveBlock) resolv
 }
 
 #pragma mark 添加GPS轨迹
-RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithDatasource:(NSString *)datasourceName LineDataset:(NSString *)lineDataset resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        Datasource *datasource = [sMap.smMapWC.workspace.datasources getAlias:datasourceName];
-        DatasetVector *datasetVector = (DatasetVector *)[datasource.datasets getWithName:lineDataset];
+        DatasetVector *datasetVector = (DatasetVector *)[incrementDatasource.datasets getWithName:incrementLineDatasetName];
         if(datasetVector != nil){
             [datasetVector setReadOnly:NO];
         }
@@ -1389,6 +1387,7 @@ RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolv
         if(naviDatasource != nil){
             Datasets *datasets = naviDatasource.datasets;
             Point2D *mapCenter = sMap.smMapWC.mapControl.map.center;
+            mapCenter = [SMap getPointWithX:mapCenter.x Y:mapCenter.y];
             for(int i = 0; i < datasets.count; i++){
                 Dataset *dataset = [datasets get:i];
                 if([dataset.bounds containsPoint2D:mapCenter] && [dataset.bounds containsX:x Y:y]){
@@ -1414,7 +1413,8 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
         if(isindoor){
             [[sMap.smMapWC.mapControl getNavigation3] setStartPoint:x Y:y ID:floorID];
         }else{
-            [SMap showPointByCalloutAtX:x Y:y PointName:@"startpoint"];
+            Point2D *point2d =[SMap getMapPointWithX:x Y:y];
+            [SMap showPointByCalloutAtX:point2d.x Y:point2d.y PointName:@"startpoint"];
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -1432,7 +1432,8 @@ RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: 
         if(isindoor){
             [[sMap.smMapWC.mapControl getNavigation3] setDestinationPoint:x Y:y ID:floorID];
         }else{
-            [SMap showPointByCalloutAtX:x Y:y PointName:@"endpoint"];
+            Point2D *point2d =[SMap getMapPointWithX:x Y:y];
+            [SMap showPointByCalloutAtX:point2d.x Y:point2d.y PointName:@"endpoint"];
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -1473,7 +1474,7 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
 RCT_REMAP_METHOD(getPointName, getPointNameWithX:(double)x Y:(double) y IsStart: (BOOL)isstart resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         isStart = isstart;
-        Point2D *point2D = [SMap getPointWithX:x Y:y];
+        Point2D *point2D = [[Point2D alloc] initWithX:x Y:y];
         Geocoding *reverseGeocoding = [[Geocoding alloc] init];
         [reverseGeocoding setKey:@"fvV2osxwuZWlY0wJb8FEb2i5"];
         reverseGeocoding.delegate = self;
@@ -1533,11 +1534,12 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
             image = [UIImage imageNamed:@"resources.bundle/icon_scene_tool_end.png"];
         }
         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-                [imageView setFrame:CGRectMake(0, 0, 40, 40)];
-                infoCallout.width = 40;
-                infoCallout.height = 40;
-                [infoCallout addSubview:imageView];
-                [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
+        [imageView setFrame:CGRectMake(0, 0, 60, 60)];
+        infoCallout.width = 60;
+        infoCallout.height = 60;
+        
+        [infoCallout addSubview:imageView];
+        [infoCallout showAt:[[Point2D alloc] initWithX:x Y:y] Tag:pointName];
     });
 }
 
@@ -1556,6 +1558,24 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
         point2D = [points getItem:0];
     }else{
         point2D = [[Point2D alloc] initWithX:x Y:y];
+    }
+    return point2D;
+}
+
+#pragma mark 经纬坐标点转地理坐标点
++(Point2D *)getMapPointWithX:(double)x Y:(double)y{
+    Point2D *point2D = nil;
+    if(x >= -180 && x <= 180 && y >= -90 && y <= 90){
+        PrjCoordSys *mapCoordSys = [SMap singletonInstance].smMapWC.mapControl.map.prjCoordSys;
+        Point2Ds *points = [[Point2Ds alloc]init];
+        Point2D *point = [[Point2D alloc] initWithX:x Y:y];
+        [points add:point];
+        PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
+        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+        [CoordSysTranslator convert:points PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        point2D = [points getItem:0];
+    }else{
+        point2D = [[Point2D alloc]initWithX:x Y:y];
     }
     return point2D;
 }
@@ -1635,10 +1655,13 @@ RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName re
 
 
 #pragma mark 拷贝室外地图网络模型snm文件
-RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithPath:(NSString *)path resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithArray:(NSArray *)files resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
         sMap = [SMap singletonInstance];
-        [sMap.smMapWC copyNaviSnmFileFrom:path];
+        for(int i = 0; i < files.count; i++){
+            NSDictionary *file = [files objectAtIndex:i];
+            [sMap.smMapWC copyNaviSnmFileFrom:file];
+        }
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"copyNaviSnmFile",exception.reason,nil);
@@ -1718,9 +1741,10 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
             [recordset close];
             [recordset dispose];
             
+            NSString *currentFloorID = floorListView.currentFloorId == nil ? @"" : floorListView.currentFloorId;
             [dic setValue:array forKey:@"data"];
             [dic setValue:curDatasource.alias forKey:@"datasource"];
-            [dic setValue:floorListView.currentFloorId forKey:@"currentFloorID"];
+            [dic setValue:currentFloorID forKey:@"currentFloorID"];
             
             resolve(dic);
         }else{
@@ -5983,36 +6007,37 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
 }
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
-    double x = newMapCenter.x;
-    NSNumber* nsX = [NSNumber numberWithDouble:x];
-    double y = newMapCenter.y;
-    NSNumber* nsY = [NSNumber numberWithDouble:y];
-    [self sendEventWithName:MAP_BOUNDS_CHANGED
-                       body:@{@"x":nsX,
-                              @"y":nsY
-                              }];
-    FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
-    NSString *floorID = floorListView.currentFloorId;
-    BOOL isHidden = floorListView.isHidden;
-    [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"isHidden":@(isHidden)}];
-    [self sendEventWithName:IS_INDOOR_MAP body:@{@"isIndoor":@(floorID != nil)}];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // Do the work in background
+        double x = newMapCenter.x;
+        NSNumber* nsX = [NSNumber numberWithDouble:x];
+        double y = newMapCenter.y;
+        NSNumber* nsY = [NSNumber numberWithDouble:y];
+        [self sendEventWithName:MAP_BOUNDS_CHANGED
+                           body:@{@"x":nsX,
+                                  @"y":nsY
+                                  }];
+        FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+        NSString *floorID = floorListView.currentFloorId;
+        NSString *currentFloorID = floorID == nil ? @"" : floorID;
+        [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
+    });
+    
+    
 }
 
 -(void) scaleChanged:(double)newscale{
-    sMap = [SMap singletonInstance];
-    sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
-    sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
-    sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
-    double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
-   // width = width * 100 / 70;
-//    if(sMap.scaleViewHelper.mScaleText){
-//
-//    }
-    [self sendEventWithName:MAP_SCALEVIEW_CHANGED
-                        body:@{@"width":[NSNumber numberWithDouble:width],
-                                @"title":sMap.scaleViewHelper.mScaleText
-                                }];
-    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        sMap = [SMap singletonInstance];
+        sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
+        sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
+        sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
+        double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
+        [self sendEventWithName:MAP_SCALEVIEW_CHANGED
+                           body:@{@"width":[NSNumber numberWithDouble:width],
+                                  @"title":sMap.scaleViewHelper.mScaleText
+                                  }];
+    });
 }
 
 - (void)longpress:(CGPoint)pressedPos{
@@ -6021,6 +6046,8 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
     NSNumber* nsX = [NSNumber numberWithFloat:x];
     NSNumber* nsY = [NSNumber numberWithFloat:y];
     Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:pressedPos];
+    
+    Point2D *LLpoint2D = [SMap getPointWithX:point2D.x Y:point2D.y];
     [self sendEventWithName:MAP_LONG_PRESS
                        body:@{@"mapPoint": @{
                                       @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
@@ -6029,6 +6056,10 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                               @"screenPoint": @{
                                       @"x":nsX,
                                       @"y":nsY
+                                      },
+                              @"LLPoint":@{
+                                      @"x":@(LLpoint2D.x),
+                                      @"y":@(LLpoint2D.y),
                                       },
                               }];
 }
@@ -6121,24 +6152,26 @@ static BOOL bDouble = false;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    UITouch *touch1 = [touches anyObject];
-    CGPoint startPoint = [touch1 locationInView:[touch1 view]];
-    CGFloat x = startPoint.x;
-    CGFloat y = startPoint.y;
-    NSNumber* nsX = [NSNumber numberWithFloat:x];
-    NSNumber* nsY = [NSNumber numberWithFloat:y];
-    
-    Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
-    [self sendEventWithName:MAP_SCROLL
-                       body:@{@"mapPoint": @{
-                                      @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
-                                      @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
-                                      },
-                              @"screenPoint": @{
-                                      @"x":nsX,
-                                      @"y":nsY
-                                      },
-                              }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UITouch *touch1 = [touches anyObject];
+        CGPoint startPoint = [touch1 locationInView:[touch1 view]];
+        CGFloat x = startPoint.x;
+        CGFloat y = startPoint.y;
+        NSNumber* nsX = [NSNumber numberWithFloat:x];
+        NSNumber* nsY = [NSNumber numberWithFloat:y];
+        
+        Point2D* point2D = [SMap.singletonInstance.smMapWC.mapControl.map pixelTomap:startPoint];
+        [self sendEventWithName:MAP_SCROLL
+                           body:@{@"mapPoint": @{
+                                          @"x":@(point2D.x == INFINITY ? 0 : point2D.x),
+                                          @"y":@(point2D.y == INFINITY ? 0 : point2D.y),
+                                          },
+                                  @"screenPoint": @{
+                                          @"x":nsX,
+                                          @"y":nsY
+                                          },
+                                  }];
+    });
 }
 
 -(void)geometrySelected:(int)geometryID Layer:(Layer*)layer{

@@ -8,6 +8,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.supermap.component.MapSuspension;
 import com.supermap.component.SMSymbolTable;
 import com.supermap.containts.FixColorMode;
+import com.supermap.containts.SMStatisticMode;
 import com.supermap.interfaces.ai.*;
 import com.supermap.interfaces.analyst.SAnalyst;
 import com.supermap.interfaces.analyst.SFacilityAnalyst;
@@ -48,7 +49,7 @@ public class SupermapFullPackage implements ReactPackage {
         return Arrays.<ViewManager>asList(
                 new MapViewManager(),
                 new LayerListViewManager(),new ScaleViewManager(),new CallOutManager()
-                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView(),new RCTFloorListView()
+                ,new SceneViewManager(), new SMSymbolTable(),new SMRLegendView(), new RCTArrowRenderView(),new RCTARView()
                 ,new AIDetectViewManager(), new MeasureViewManager(), new AIClassifyViewManager()
                 ,new CollectSceneFormViewManager(), new IllegallyParkViewManager()
                 , new CastModelOperateViewManager()
@@ -126,6 +127,7 @@ public class SupermapFullPackage implements ReactPackage {
         modules.add(new JSEncodeType(reactContext));
         modules.add(new JSDatasetType(reactContext));
         modules.add(new FixColorMode(reactContext));
+        modules.add(new SMStatisticMode(reactContext));
 
         modules.add(new JSAMQPManager(reactContext));
         modules.add(new JSAMQPSender(reactContext));

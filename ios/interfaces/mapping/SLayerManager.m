@@ -90,9 +90,9 @@ RCT_REMAP_METHOD(getLayerIndex, getLayerIndex:(NSString *)name value:(BOOL)value
 }
 
 #pragma mark 获取图层属性
-RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath page:(int)page size:(int)size resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getLayerAttribute, getLayerAttribute:(NSString *)layerPath page:(int)page size:(int)size params:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath page:page size:size];
+        NSDictionary* dic = [SMLayer getLayerAttribute:layerPath page:page size:size params:params];
         resolve(dic);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
@@ -630,6 +630,16 @@ RCT_REMAP_METHOD(removeRecordsetFieldInfo, removeRecordsetFieldInfo:(NSString *)
     @try {
         BOOL result=[SMLayer removeRecordsetFieldInfo:layerPath isSelectOrLayer:isSelect attributeName:attributeName];
         resolve([NSNumber numberWithBool:result]);
+    } @catch (NSException *exception) {
+        reject(@"removeRecordsetFieldInfo", exception.reason, nil);
+    }
+}
+
+#pragma mark - 统计
+RCT_REMAP_METHOD(statistic, statistic:(NSString *)path isSelect:(BOOL)isSelect fieldName:(NSString*)fieldName statisticMode:(int)statisticMode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        double result = [SMLayer statistic:path isSelect:isSelect fieldName:fieldName statisticMode:statisticMode];
+        resolve([NSNumber numberWithDouble:result]);
     } @catch (NSException *exception) {
         reject(@"removeRecordsetFieldInfo", exception.reason, nil);
     }

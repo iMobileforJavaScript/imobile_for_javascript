@@ -54,19 +54,20 @@ export default (function () {
   }
 
   /**
-   * 地图室内/室外切换事件
+   * 楼层显隐监听
    * @param handler
+   * @returns {EmitterSubscription}
    */
-  function addIndoorChangeListener(handler) {
+  let addFloorHiddenListener = handler => {
     try {
       if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_INDOOR_MAP,result=>{
+        return nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
         })
       }else {
-        DeviceEventEmitter.addListener(EventConst.IS_INDOOR_MAP,result=>{
+        return DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
@@ -78,29 +79,16 @@ export default (function () {
   }
 
   /**
-   * 楼层显隐监听
-   * @param handler
+   * 移除楼层显隐监听
+   * @param listeners 之前保存的listeners
+   * @returns {boolean}
    */
-  function addFloorHiddenListener(handler) {
-    try {
-      if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
-          if(typeof handler === "function"){
-            handler(result);
-          }
-        })
-      }else {
-        DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
-          if(typeof handler === "function"){
-            handler(result);
-          }
-        })
-      }
-    }catch (e) {
-      console.error(e)
-    }
+  let removeFloorHiddenListener = listeners => {
+    listeners.map(listener=>{
+      listener.remove()
+    })
+    return true
   }
-
   /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
@@ -2105,11 +2093,13 @@ export default (function () {
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          return nativeEvt.addListener(EventConst.NAVIGATION_WAYS, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
+          return DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
             handlers.callback(e);
           });
         }
@@ -2120,18 +2110,20 @@ export default (function () {
   }
 
   /**
-   * 路径分析路线详情监听
+   * 路径分析路线距离监听
    * @param handlers
    */
   function setOnlineNavigation2Listener(handlers){
     try {
       if (Platform.OS === 'ios' && handlers) {
         if (typeof handlers.callback === 'function') {
-
+          return nativeEvt.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
+            handlers.callback(e);
+          });
         }
       } else if (Platform.OS === 'android' && handlers) {
         if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
+          return DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
             handlers.callback(e);
           });
         }
@@ -2615,13 +2607,11 @@ export default (function () {
 
   /**
    * 添加GPS轨迹
-   * @param datasourceName
-   * @param datasetName
    * @returns {undefined}
    */
-  function addGPSRecordset(datasourceName,datasetName) {
+  function addGPSRecordset() {
     try {
-      return SMap.addGPSRecordset(datasourceName,datasetName)
+      return SMap.addGPSRecordset()
     } catch (e) {
       console.error(e)
     }
@@ -2749,7 +2739,7 @@ export default (function () {
    * @param networkDataset
    * @returns {*}
    */
-  function isInBounds(point,networkDataset){
+  function isInBounds(point,networkDataset = null){
     try {
       return SMap.isInBounds(point,networkDataset)
     } catch (e) {
@@ -2781,8 +2771,10 @@ export default (function () {
     }
   }
 
+
   /**
-   * 获取当前工作空间含有网络数据集的数据源
+   * 获取数据源中含有的所有网络数据集
+   * @param udb
    * @returns {*}
    */
   function getNetworkDataset() {
@@ -3083,8 +3075,8 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
     addLegendListener,
-    addIndoorChangeListener,
     addFloorHiddenListener,
+    removeFloorHiddenListener,
     removeLegendListener,
     addScaleChangeDelegate,
 
