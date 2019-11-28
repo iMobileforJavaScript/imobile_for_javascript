@@ -940,23 +940,29 @@ RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver:
     NSLog(@"%@",errorInfo);
 }
 #pragma mark 设置行业导航参数
-RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSString *)networkDatasetName NetModel:(NSString *)netModelPath resolver: (RCTPromiseResolveBlock)resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDictionary *)selectedItem resolver: (RCTPromiseResolveBlock)resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
+        
+        NSString *networkDatasetName = [selectedItem valueForKey:@"name"];
+        NSString *datasourceName = [selectedItem valueForKey:@"datasourceName"];
+        NSString *netModelFileName = [selectedItem valueForKey:@"modelFileName"];
+        
+        NSString *strUserName = [sMap.smMapWC getUserName];
+        NSString *strRootPath = [NSHomeDirectory() stringByAppendingString:@"/Documents/iTablet/User"];
+        NSString *netModelPath = [NSString stringWithFormat:@"%@/%@/Data/Datasource/%@.snm",strRootPath,strUserName,netModelFileName];
+        
         sMap = [SMap singletonInstance];
-        Workspace *workspace = sMap.smMapWC.workspace;
-        Datasources *datasources = workspace.datasources;
-        for(int i = 0; i < [datasources count]; i++){
-            Datasource *datasource = [datasources get:i];
-            Dataset *dataset = [datasource.datasets getWithName:networkDatasetName];
-            if(dataset != nil){
-                DatasetVector *networkDataset = (DatasetVector *)dataset;
-                Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
-                [navigation2 setNetworkDataset:networkDataset];
-                [navigation2 loadModel:netModelPath];
-                navigation2.navi2Delegate = self;
-                [networkDataset close];
-                resolve(@(YES));
-            }
+        Datasource *datasource = [sMap.smMapWC.workspace.datasources getAlias:datasourceName];
+        Dataset *dataset = [datasource.datasets getWithName:networkDatasetName];
+        
+        if(dataset != nil){
+            DatasetVector *networkDataset = (DatasetVector *)dataset;
+            Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
+            [navigation2 setNetworkDataset:networkDataset];
+            [navigation2 loadModel:netModelPath];
+            navigation2.navi2Delegate = self;
+            [networkDataset close];
+            resolve(@(YES));
         }
     } @catch (NSException *exception) {
         reject(@"startNavigation",exception.reason,nil);
@@ -1153,17 +1159,24 @@ RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromis
         for(int i = 0; i < datasouces.count; i++){
             Datasource *datasource = [datasouces get:i];
             Datasets *datasets = datasource.datasets;
-            if(![datasets contain:@"FloorRelationTable"]){
-                for(int j = 0; j < datasets.count; j++){
-                    Dataset *dataset = [datasets get:j];
-                    if(dataset.datasetType == Network){
+            Dataset *linkTable = [datasets getWithName:@"ModelFileLinkTable"];
+            if(linkTable != nil){
+                DatasetVector *datasetVector = (DatasetVector *)linkTable;
+                Recordset *recordset = [datasetVector recordset:NO cursorType:STATIC];
+                do{
+                    NSString *networkDataset = (NSString *)[recordset getFieldValueWithString:@"NetworkDataset"];
+                    NSString *netModel = (NSString *)[recordset getFieldValueWithString:@"NetworkModelFile"];
+                    if(networkDataset != nil && netModel != nil){
                         NSDictionary *dic = @{
-                                              @"name":dataset.name,
+                                              @"name":networkDataset,
+                                              @"modelFileName":netModel,
                                               @"datasourceName":datasource.alias,
                                               };
                         [array addObject:dic];
                     }
-                }
+                }while([recordset moveNext]);
+                [recordset close];
+                [recordset dispose];
             }
         }
         resolve(array);

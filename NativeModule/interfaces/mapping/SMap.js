@@ -2200,11 +2200,15 @@ export default (function () {
 
   /**
    * 设置行业导航
-   * @returns {*|void|Promise<void>}
+   * @param selectedObj { "name":string,
+   *                      "modelFileName":string,
+   *                      "datrasourceName":string
+   *                      }
+   * @returns {*}
    */
-  function startNavigation(networkDatasetName,netModel) {
+  function startNavigation(selectedObj) {
     try {
-      return SMap.startNavigation(networkDatasetName,netModel)
+      return SMap.startNavigation(selectedObj)
     } catch (e) {
       console.error(e)
     }
