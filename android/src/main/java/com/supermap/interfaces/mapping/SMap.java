@@ -6756,7 +6756,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean isIndoor = false;
             FloorListView floorListView = sMap.smMapWC.getFloorListView();
             if (floorListView != null) {
-                if (floorListView.getCurrentFloorId() != null) {
+                if (floorListView.getCurrentFloorId() != null && floorListView.getVisibility() == View.VISIBLE) {
                     isIndoor = true;
                 }
             }
