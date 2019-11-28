@@ -63,6 +63,11 @@
 -(BOOL)saveMedia:(NSArray *)filePaths toDictionary:(NSString *)toDictionary addNew:(BOOL)addNew;
 
 /**
+ * 保存AI识别图片，并保存Dataset
+ **/
+-(BOOL)saveAIClassifyMedia:(NSString *)mediaName toDictionary:(NSString*)toDictionary addNew:(BOOL)addNew;
+
+/**
  * 添加多媒体资源文件
  **/
 -(BOOL)addMediaFiles:(NSArray *)files;
