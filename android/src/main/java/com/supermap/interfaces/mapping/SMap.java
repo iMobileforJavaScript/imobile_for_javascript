@@ -7207,7 +7207,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     promise.reject(e);
                 }
             }
-            promise.resolve(null);
         } catch (Exception e) {
             promise.reject(e);
         }
