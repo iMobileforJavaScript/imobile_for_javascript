@@ -6025,7 +6025,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void getCurrentFloorID(Promise promise) {
         try {
             sMap = SMap.getInstance();
-            String floorID = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+            String floorID = "";
+            FloorListView floorListView = sMap.smMapWC.getFloorListView();
+            if(floorListView != null){
+                floorID = floorListView.getCurrentFloorId();
+            }
             promise.resolve(floorID);
         } catch (Exception e) {
             promise.reject(e);
