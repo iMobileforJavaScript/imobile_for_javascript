@@ -2173,6 +2173,20 @@ export default (function () {
   }
 
   /**
+   * 判断在线搜索的起始点是否在地图导航范围内
+   * @param startPoint
+   * @param endPoint
+   * @returns {*}
+   */
+  function isPointsInMapBounds(startPoint,endPoint) {
+    try {
+      return SMap.isPointsInMapBounds(startPoint,endPoint)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 清除导航路线
    * @returns {*|void|Promise<void>}
    */
@@ -3085,6 +3099,7 @@ export default (function () {
     addScaleChangeDelegate,
 
     routeAnalyst,
+    isPointsInMapBounds,
     clearTarckingLayer,
     startNavigation,
     startIndoorNavigation,

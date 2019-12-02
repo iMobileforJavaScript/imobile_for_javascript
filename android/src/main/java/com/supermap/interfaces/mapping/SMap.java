@@ -6864,6 +6864,67 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 判断搜索结果的两个点是否在某个路网数据集的bounds内，返回结果用于行业导航。无结果则进行在线路径分析
+     * @param navStartPoint
+     * @param navEndPoint
+     * @param promise
+     */
+    @ReactMethod
+    public void isPointsInMapBounds(ReadableMap navStartPoint, ReadableMap navEndPoint, Promise promise){
+        try {
+
+            WritableMap map = Arguments.createMap();
+
+            double x1 = navStartPoint.getDouble("x");
+            double y1 = navStartPoint.getDouble("y");
+            double x2 = navEndPoint.getDouble("x");
+            double y2 = navEndPoint.getDouble("y");
+
+            Datasource networkDatasource = null;
+            Dataset networkDataset = null;
+
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            for(int i = 0; i < datasources.getCount(); i++){
+                Datasource datasource = datasources.get(i);
+                Datasets datasets = datasource.getDatasets();
+                for(int j = 0; j < datasets.getCount(); j++){
+                    Dataset dataset = datasets.get(j);
+                    Rectangle2D bounds = dataset.getBounds();
+                    if(dataset.getType() == DatasetType.NETWORK && bounds.contains(x1,y1) && bounds.contains(x2,y2)){
+                        networkDataset = dataset;
+                        networkDatasource = datasource;
+                        break;
+                    }
+                }
+            }
+            if(networkDataset != null){
+                Datasets datasets = networkDatasource.getDatasets();
+                Dataset linkTable = datasets.get("ModelFileLinkTable");
+                if(linkTable != null){
+                    DatasetVector datasetVector = (DatasetVector)linkTable;
+                    Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+                    do{
+                        Object networkDatasetObj = recordset.getFieldValue("NetworkDataset");
+                        Object netModelObj = recordset.getFieldValue("NetworkModelFile");
+                        if(netModelObj != null && networkDatasetObj != null){
+                            String networkDatasetName = networkDatasetObj.toString();
+                            String netModelFileName = netModelObj.toString();
+                            map.putString("name",networkDatasetName);
+                            map.putString("modelFileName",netModelFileName);
+                            map.putString("datasourceName",networkDatasource.getAlias());
+                        }
+                    }while(recordset.moveNext());
+                    recordset.close();
+                    recordset.dispose();
+                }
+            }
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     /************************************** 导航模块 END ****************************************/
 
 
