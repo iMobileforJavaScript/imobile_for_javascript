@@ -6610,7 +6610,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
                 double density = dm.density;
 
-                int markerSize = 30;
+                int markerSize = 40;
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (markerSize * density), (int) (markerSize * density));
                 m_callout.setCustomize(true);
                 m_callout.setLayoutParams(params);
