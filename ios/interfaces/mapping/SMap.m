@@ -958,6 +958,9 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
         if(dataset != nil){
             DatasetVector *networkDataset = (DatasetVector *)dataset;
             Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
+            GeoStyle *style = [[GeoStyle alloc] init];
+            [style setLineSymbolID:964882];
+            [navigation2 setRouteStyle:style];
             [navigation2 setNetworkDataset:networkDataset];
             [navigation2 loadModel:netModelPath];
             navigation2.navi2Delegate = self;

@@ -5731,6 +5731,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 // 初始化行业导航对象
                 DatasetVector networkDataset = (DatasetVector) dataset;
                 Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
+                GeoStyle style = new GeoStyle();
+                style.setLineSymbolID(964882);
+                m_Navigation2.setRouteStyle(style);
                 m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
                 m_Navigation2.loadModel(netModelPath);  // 加载网络模型
                 m_Navigation2.addNaviInfoListener(new NaviListener() {
@@ -5776,6 +5779,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         Log.e("+++++++++++++", "-------------****************");
                     }
                     });
+                m_Navigation2.enablePanOnGuide(true);
             }
             promise.resolve(true);
         } catch (Exception e) {
