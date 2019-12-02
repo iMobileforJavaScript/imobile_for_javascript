@@ -192,8 +192,16 @@
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
 		18A3DC6823693DD60013B66D /* SSpeechRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */; };
+		2A5299552386814A0071AD06 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299542386814A0071AD06 /* Accelerate.framework */; };
+		2A5299BD2386A5460071AD06 /* tfOC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BB2386A5460071AD06 /* tfOC.a */; };
+		2A5299BE2386A5460071AD06 /* libTensorFlowLiteObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */; };
+		2A5299C02386A54F0071AD06 /* SuperMapAI in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BF2386A54E0071AD06 /* SuperMapAI */; };
+		2A5299C22386A5560071AD06 /* TensorFlowLiteC in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299C12386A5560071AD06 /* TensorFlowLiteC */; };
+		2A5299DF2387C6290071AD06 /* SAIClassifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5299DE2387C6290071AD06 /* SAIClassifyView.m */; };
 		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2AB23F432359B2A900884E9B /* KeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AB23F422359B2A900884E9B /* KeychainUtil.m */; };
+		2ABCA9C7238622330052EB6B /* SAIDetectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ABCA9C6238622330052EB6B /* SAIDetectView.m */; };
+		2ABCA9D0238634930052EB6B /* AIDetectViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ABCA9CF238634930052EB6B /* AIDetectViewManager.m */; };
 		2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */; };
 		2AD85BD523265A0600BDE6A6 /* SPlot.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD85BD423265A0600BDE6A6 /* SPlot.m */; };
 		4A99EBEB21EDD9D000493EB1 /* SPUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A99EBEA21EDD9CF00493EB1 /* SPUtils.m */; };
@@ -592,10 +600,26 @@
 		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
 		18A3DC6623693DA30013B66D /* SSpeechRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSpeechRecognizer.h; sourceTree = "<group>"; };
 		18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSpeechRecognizer.m; sourceTree = "<group>"; };
+		2A5299542386814A0071AD06 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		2A5299BB2386A5460071AD06 /* tfOC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = tfOC.a; path = AI/tfOC.a; sourceTree = SOURCE_ROOT; };
+		2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTensorFlowLiteObjC.a; path = AI/libTensorFlowLiteObjC.a; sourceTree = SOURCE_ROOT; };
+		2A5299BF2386A54E0071AD06 /* SuperMapAI */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = SuperMapAI; path = AI/SuperMapAI.framework/SuperMapAI; sourceTree = SOURCE_ROOT; };
+		2A5299C12386A5560071AD06 /* TensorFlowLiteC */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = TensorFlowLiteC; path = AI/TensorFlowLiteC.framework/TensorFlowLiteC; sourceTree = SOURCE_ROOT; };
+		2A5299C42386A5600071AD06 /* AIDetectView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectView.h; sourceTree = "<group>"; };
+		2A5299C52386A5600071AD06 /* AIDetectViewInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectViewInfo.h; sourceTree = "<group>"; };
+		2A5299C62386A5600071AD06 /* ImageClassification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageClassification.h; sourceTree = "<group>"; };
+		2A5299C72386A5600071AD06 /* SuperMapAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperMapAI.h; sourceTree = "<group>"; };
+		2A5299DD2387C6280071AD06 /* SAIClassifyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAIClassifyView.h; sourceTree = "<group>"; };
+		2A5299DE2387C6290071AD06 /* SAIClassifyView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAIClassifyView.m; sourceTree = "<group>"; };
+		2A5299E02387DF1D0071AD06 /* Recognition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recognition.h; sourceTree = "<group>"; };
 		2AAEE195230E68CD00902D1D /* GDataXMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
 		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2AB23F412359B2A900884E9B /* KeychainUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeychainUtil.h; sourceTree = "<group>"; };
 		2AB23F422359B2A900884E9B /* KeychainUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeychainUtil.m; sourceTree = "<group>"; };
+		2ABCA9C5238622330052EB6B /* SAIDetectView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAIDetectView.h; sourceTree = "<group>"; };
+		2ABCA9C6238622330052EB6B /* SAIDetectView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAIDetectView.m; sourceTree = "<group>"; };
+		2ABCA9CE238634930052EB6B /* AIDetectViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AIDetectViewManager.h; sourceTree = "<group>"; };
+		2ABCA9CF238634930052EB6B /* AIDetectViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AIDetectViewManager.m; sourceTree = "<group>"; };
 		2AD00E8322461CC70087FC43 /* PoiSearchHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PoiSearchHelper.m; sourceTree = "<group>"; };
 		2AD00E8422461CC70087FC43 /* PoiSearchHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PoiSearchHelper.h; sourceTree = "<group>"; };
 		2AD85BD323265A0600BDE6A6 /* SPlot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPlot.h; sourceTree = "<group>"; };
@@ -678,16 +702,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A5299BD2386A5460071AD06 /* tfOC.a in Frameworks */,
 				0AEFC1F32316867B006FEDD8 /* libstarpy.a in Frameworks */,
 				0AEFC1EC2316867B006FEDD8 /* _imagingmath.a in Frameworks */,
+				2A5299C22386A5560071AD06 /* TensorFlowLiteC in Frameworks */,
 				0AEFC1EB2316867B006FEDD8 /* _imagingft.a in Frameworks */,
+				2A5299C02386A54F0071AD06 /* SuperMapAI in Frameworks */,
 				0A4BFCEF22A666D1001563DF /* AMapFoundationKit in Frameworks */,
 				0AEFC1ED2316867B006FEDD8 /* _imagingmorph.a in Frameworks */,
 				0AEFC1EE2316867B006FEDD8 /* _imagingtk.a in Frameworks */,
+				2A5299BE2386A5460071AD06 /* libTensorFlowLiteObjC.a in Frameworks */,
 				0AEFC1EA2316867B006FEDD8 /* _imaging.a in Frameworks */,
 				0A4BFCF022A666D1001563DF /* AMapLocationKit in Frameworks */,
 				0AEFC1F42316867B006FEDD8 /* libpython2.7.a in Frameworks */,
 				0AEFC1F22316867B006FEDD8 /* libstarcore.a in Frameworks */,
+				2A5299552386814A0071AD06 /* Accelerate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -828,6 +857,40 @@
 			path = speech;
 			sourceTree = "<group>";
 		};
+		2A529950238680330071AD06 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2A5299542386814A0071AD06 /* Accelerate.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2A5299712386979E0071AD06 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				2A5299C32386A5600071AD06 /* Headers */,
+				2A5299C12386A5560071AD06 /* TensorFlowLiteC */,
+				2A5299BF2386A54E0071AD06 /* SuperMapAI */,
+				2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */,
+				2A5299BB2386A5460071AD06 /* tfOC.a */,
+			);
+			name = AI;
+			path = ../../../ios/AI;
+			sourceTree = "<group>";
+		};
+		2A5299C32386A5600071AD06 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				2A5299C42386A5600071AD06 /* AIDetectView.h */,
+				2A5299C52386A5600071AD06 /* AIDetectViewInfo.h */,
+				2A5299C62386A5600071AD06 /* ImageClassification.h */,
+				2A5299C72386A5600071AD06 /* SuperMapAI.h */,
+				2A5299E02387DF1D0071AD06 /* Recognition.h */,
+			);
+			name = Headers;
+			path = AI/SuperMapAI.framework/Headers;
+			sourceTree = SOURCE_ROOT;
+		};
 		2AAEE194230E68CD00902D1D /* GDataXMLNode */ = {
 			isa = PBXGroup;
 			children = (
@@ -837,9 +900,23 @@
 			path = GDataXMLNode;
 			sourceTree = "<group>";
 		};
+		2ABCA9C4238621700052EB6B /* ai */ = {
+			isa = PBXGroup;
+			children = (
+				2ABCA9C5238622330052EB6B /* SAIDetectView.h */,
+				2ABCA9C6238622330052EB6B /* SAIDetectView.m */,
+				2ABCA9CE238634930052EB6B /* AIDetectViewManager.h */,
+				2ABCA9CF238634930052EB6B /* AIDetectViewManager.m */,
+				2A5299DD2387C6280071AD06 /* SAIClassifyView.h */,
+				2A5299DE2387C6290071AD06 /* SAIClassifyView.m */,
+			);
+			path = ai;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				2A5299712386979E0071AD06 /* AI */,
 				617D9BD1230FE17300ADCCCA /* Libraries */,
 				2AAEE194230E68CD00902D1D /* GDataXMLNode */,
 				0A8D32E622A65D0C007EF3BA /* extern */,
@@ -850,6 +927,7 @@
 				D854D86A218310730075B5F8 /* native */,
 				134814211AA4EA7D00B7C361 /* Products */,
 				0AB00D2B21A6C6B600C35E4B /* Recovered References */,
+				2A529950238680330071AD06 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -920,6 +998,7 @@
 		D854D867218310720075B5F8 /* interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				2ABCA9C4238621700052EB6B /* ai */,
 				1806196623691F6E006487D2 /* speech */,
 				0AF3486522700175004D6D09 /* analyst */,
 				D83170CA21A399FC00DB5DC0 /* utils */,
@@ -1383,6 +1462,7 @@
 				0AF348682270018F004D6D09 /* SAnalyst.m in Sources */,
 				D8DD420F21748894009D80E9 /* JSSymbolGroup.m in Sources */,
 				0A51675121AD42B8003C77BE /* FlyHelper3D.m in Sources */,
+				2ABCA9C7238622330052EB6B /* SAIDetectView.m in Sources */,
 				0A332E31211D623E00F56F26 /* JSNavigation.m in Sources */,
 				0A332E07211D623E00F56F26 /* JSDatasetType.m in Sources */,
 				0A332DEA211D623E00F56F26 /* JSAction.m in Sources */,
@@ -1488,6 +1568,7 @@
 				0A332DF9211D623E00F56F26 /* JSChartLegend.m in Sources */,
 				0A332E09211D623E00F56F26 /* JSDatasetVectorInfo.m in Sources */,
 				0A332DF2211D623E00F56F26 /* JSBarChartViewManager.m in Sources */,
+				2A5299DF2387C6290071AD06 /* SAIClassifyView.m in Sources */,
 				0A332E19211D623E00F56F26 /* JSGeoPoint.m in Sources */,
 				0A332E3A211D623E00F56F26 /* JSPoint.m in Sources */,
 				0A332E13211D623E00F56F26 /* JSFacilityAnalystSetting.m in Sources */,
@@ -1504,6 +1585,7 @@
 				0A7196AC228C0873009C2C50 /* SMMedia.m in Sources */,
 				0A332E02211D623E00F56F26 /* JSCoordSysTransMethod.m in Sources */,
 				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,
+				2ABCA9D0238634930052EB6B /* AIDetectViewManager.m in Sources */,
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
 				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
 				0A22981222BB1762001B2356 /* SMParameter.m in Sources */,
@@ -1657,7 +1739,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/AI",
+					"$(PROJECT_DIR)/interfaces",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					ENV_IOS,
 					"$(inherited)",
@@ -1678,6 +1763,9 @@
 					"$(PROJECT_DIR)/python/starcore_for_ios",
 					"$(PROJECT_DIR)/python/Pillow-master",
 					"$(PROJECT_DIR)/python/starcore_for_ios/python-2.7",
+					"$(PROJECT_DIR)/AI",
+					"$(PROJECT_DIR)/AI/SuperMapAI.framework",
+					"$(PROJECT_DIR)/AI/TensorFlowLiteC.framework",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -1691,7 +1779,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/AI",
+					"$(PROJECT_DIR)/interfaces",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = ENV_IOS;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1709,6 +1800,9 @@
 					"$(PROJECT_DIR)/python/starcore_for_ios",
 					"$(PROJECT_DIR)/python/Pillow-master",
 					"$(PROJECT_DIR)/python/starcore_for_ios/python-2.7",
+					"$(PROJECT_DIR)/AI",
+					"$(PROJECT_DIR)/AI/SuperMapAI.framework",
+					"$(PROJECT_DIR)/AI/TensorFlowLiteC.framework",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";

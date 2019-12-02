@@ -5714,66 +5714,68 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void startNavigation(String networkDatasetName, String netModel, Promise promise) {
+    public void startNavigation(ReadableMap selectedItem, Promise promise) {
         try {
+            String networkDatasetName = selectedItem.getString("name");
+            String datasourceName = selectedItem.getString("datasourceName");
+            String netModelFileName = selectedItem.getString("modelFileName");
+
+            String strUserName = sMap.smMapWC.getUserName();
+            String strRootPath = homeDirectory + "/iTablet/User/";
+            String netModelPath = strRootPath + strUserName + "/Data/Datasource/" + netModelFileName + ".snm";
             sMap = SMap.getInstance();
 
-            Workspace mWorkspace = SMap.getInstance().getSmMapWC().getWorkspace();
-
-            for (int i = 0; i < mWorkspace.getDatasources().getCount(); i++) {
-                Datasource datasource = mWorkspace.getDatasources().get(i);
-                Dataset dataset = datasource.getDatasets().get(networkDatasetName);
-                if (dataset != null) {
-                    // 初始化行业导航对象
-                    DatasetVector networkDataset = (DatasetVector) dataset;
-                    Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
-                    m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
-                    m_Navigation2.loadModel(netModel);  // 加载网络模型
-                    m_Navigation2.addNaviInfoListener(new NaviListener() {
-
-                        @Override
-                        public void onStopNavi() {
-                            clearOutdoorPoint();
-                            // TODO Auto-generated method stub
-                            Log.e("+++++++++++++", "-------------****************");
-                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.INDUSTRYNAVIAGTION, true);
+            Datasource datasource =  SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(datasourceName);
+            Dataset dataset = datasource.getDatasets().get(networkDatasetName);
+            if (dataset != null) {
+                // 初始化行业导航对象
+                DatasetVector networkDataset = (DatasetVector) dataset;
+                Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
+                m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
+                m_Navigation2.loadModel(netModelPath);  // 加载网络模型
+                m_Navigation2.addNaviInfoListener(new NaviListener() {
+                    @Override
+                    public void onStopNavi() {
+                        clearOutdoorPoint();
+                        // TODO Auto-generated method stub
+                        Log.e("+++++++++++++", "-------------****************");
+                        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit(EventConst.INDUSTRYNAVIAGTION, true);
                         }
 
-                        @Override
-                        public void onStartNavi() {
-                            // TODO Auto-generated method stub
-                            Log.e("+++++++++++++", "-------------****************");
-                        }
+                    @Override
+                    public void onStartNavi() {
+                        // TODO Auto-generated method stub
+                        Log.e("+++++++++++++", "-------------****************");
+                    }
 
-                        @Override
-                        public void onNaviInfoUpdate(NaviInfo arg0) {
-                            // TODO Auto-generated method stub
-                            Log.e("+++++++++++++", "-------------****************");
-                        }
+                    @Override
+                    public void onNaviInfoUpdate(NaviInfo arg0) {
+                        // TODO Auto-generated method stub
+                        Log.e("+++++++++++++", "-------------****************");
+                    }
 
-                        @Override
-                        public void onAarrivedDestination() {
-                            clearOutdoorPoint();
-                            // TODO Auto-generated method stub
-                            Log.e("+++++++++++++", "-------------****************");
-                            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit(EventConst.INDUSTRYNAVIAGTION, true);
-                        }
+                    @Override
+                    public void onAarrivedDestination() {
+                        clearOutdoorPoint();
+                        // TODO Auto-generated method stub
+                        Log.e("+++++++++++++", "-------------****************");
+                        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit(EventConst.INDUSTRYNAVIAGTION, true);
+                    }
 
-                        @Override
-                        public void onAdjustFailure() {
-                            // TODO Auto-generated method stub
-                            Log.e("+++++++++++++", "-------------****************");
-                        }
+                    @Override
+                    public void onAdjustFailure() {
+                        // TODO Auto-generated method stub
+                        Log.e("+++++++++++++", "-------------****************");
+                    }
 
-                        @Override
-                        public void onPlayNaviMessage(String arg0) {
-                            // TODO Auto-generated method stub
-                            Log.e("+++++++++++++", "-------------****************");
-                        }
+                    @Override
+                    public void onPlayNaviMessage(String arg0) {
+                        // TODO Auto-generated method stub
+                        Log.e("+++++++++++++", "-------------****************");
+                    }
                     });
-                }
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -6062,16 +6064,21 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             for (int i = 0, count = datasources.getCount(); i < count; i++) {
                 Datasource datasource = datasources.get(i);
                 Datasets datasets = datasource.getDatasets();
-                if(!datasets.contains("FloorRelationTable")){
-                    for (int j = 0, length = datasets.getCount(); j < length; j++) {
-                        Dataset dataset = datasets.get(j);
-                        if (dataset.getType() == DatasetType.NETWORK) {
-                            WritableMap tempMap = Arguments.createMap();
-                            tempMap.putString("name", dataset.getName());
-                            tempMap.putString("datasourceName", datasource.getAlias());
-                            array.pushMap(tempMap);
+                Dataset linkTable = datasets.get("ModelFileLinkTable");
+                if(linkTable != null) {
+                    DatasetVector datasetVector = (DatasetVector) linkTable;
+                    Recordset recordset = datasetVector.getRecordset(false, CursorType.STATIC);
+                    do {
+                        Object networkDataset = recordset.getFieldValue("NetworkDataset");
+                        Object networkModelFile = recordset.getFieldValue("NetworkModelFile");
+                        if (networkDataset != null && networkModelFile != null) {
+                            WritableMap writableMap = Arguments.createMap();
+                            writableMap.putString("name", networkDataset.toString());
+                            writableMap.putString("modelFileName", networkModelFile.toString());
+                            writableMap.putString("datasourceName", datasource.getAlias());
+                            array.pushMap(writableMap);
                         }
-                    }
+                    }while(recordset.moveNext());
                 }
             }
             promise.resolve(array);
@@ -6756,7 +6763,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean isIndoor = false;
             FloorListView floorListView = sMap.smMapWC.getFloorListView();
             if (floorListView != null) {
-                if (floorListView.getCurrentFloorId() != null) {
+                if (floorListView.getCurrentFloorId() != null && floorListView.getVisibility() == View.VISIBLE) {
                     isIndoor = true;
                 }
             }
@@ -7207,7 +7214,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     promise.reject(e);
                 }
             }
-            promise.resolve(null);
         } catch (Exception e) {
             promise.reject(e);
         }
