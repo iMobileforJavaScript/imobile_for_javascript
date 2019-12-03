@@ -9,8 +9,8 @@
 #import "AIDetectViewManager.h"
 #import "SAIDetectView.h"
 #import <React/RCTUIManager.h>
-#import "SuperMapAI/AIDetectView.h"
-#import "SuperMapAI/AIRecognition.h"
+#import "AIDetectView.h"
+#import "AIRecognition.h"
 #import <React/RCTConvert.h>
 
 

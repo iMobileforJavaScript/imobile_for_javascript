@@ -56,6 +56,7 @@
     }else{
         CGContextSetLineWidth(context, 2);
     }
+    self.aIRectArr=[[NSMutableArray alloc] init];
     //清空所有rect对象
     [self.aIRectArr removeAllObjects];
     for(int i=0;i<self.aIRecognitionArray.count;i++){
@@ -222,8 +223,9 @@
         }
     }
     if(index!=-1&&index<[self.aIRectArr count]){
-        self.callBackBlock([self.aIRectArr objectAtIndex:index]);
-        return [self.aIRectArr objectAtIndex:index];
+        AIRecognition *aIRecognition=[self.aIRecognitionArray objectAtIndex:index];
+        self.callBackBlock(aIRecognition);
+        return [self.aIRecognitionArray objectAtIndex:index];
     }
     
     return nil;

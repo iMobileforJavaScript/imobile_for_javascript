@@ -9,9 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
 #import "SAIDetectView.h"
-#import "SuperMapAI/AIDetectViewInfo.h"
-#import "SuperMapAI/AIDetectStyle.h"
-#import "SuperMapAI/AIRecognition.h"
+#import "AIDetectViewInfo.h"
+#import "AIDetectStyle.h"
+#import "AIRecognition.h"
 #import "RCTViewManager.h"
 
 typedef enum {
