@@ -3727,6 +3727,46 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         recordset.dispose();
     }
 
+    private Rectangle2D getLayerGroupBounds(LayerGroup layer){
+        Rectangle2D bounds = null;
+        for(int i=0;i<layer.getCount();i++){
+            Layer tmp = layer.get(i);
+            if (layer instanceof  LayerGroup){
+                bounds = getLayerGroupBounds((LayerGroup)tmp);
+            }else{
+                Rectangle2D tmpBounds = getLayerBounds(layer);
+                if(bounds == null){
+                    bounds = new Rectangle2D(tmpBounds);
+                }else{
+                    bounds.union(tmpBounds);
+                }
+            }
+
+        }
+
+        return bounds;
+    }
+    private Rectangle2D getLayerBounds(Layer layer){
+        sMap = SMap.getInstance();
+        Rectangle2D bounds = layer.getDataset().getBounds();
+
+        if (!safeGetType(layer.getDataset().getPrjCoordSys(), sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
+            point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            prjCoordSys.setType(layer.getDataset().getPrjCoordSys().getType());
+            CoordSysTransParameter parameter = new CoordSysTransParameter();
+
+            CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            Point2D pt1 = point2Ds.getItem(0);
+            Point2D pt2 = point2Ds.getItem(1);
+
+            bounds = new Rectangle2D(pt1.getX(), pt2.getY(), pt2.getX(), pt1.getY());
+        }
+
+        return bounds;
+    }
     /**
      * 设置当前图层全副
      *
@@ -3737,29 +3777,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(name);
-//            Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(name);
-            Rectangle2D bounds = layer.getDataset().getBounds();
 
-            if (!safeGetType(layer.getDataset().getPrjCoordSys(), sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
-                Point2Ds point2Ds = new Point2Ds();
-                point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
-                point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
-                PrjCoordSys prjCoordSys = new PrjCoordSys();
-//                prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                prjCoordSys.setType(layer.getDataset().getPrjCoordSys().getType());
-                CoordSysTransParameter parameter = new CoordSysTransParameter();
-
-                CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-                Point2D pt1 = point2Ds.getItem(0);
-                Point2D pt2 = point2Ds.getItem(1);
-
-                bounds = new Rectangle2D(pt1.getX(), pt2.getY(), pt2.getX(), pt1.getY());
+            Rectangle2D bounds = null;
+            if (layer instanceof  LayerGroup){
+                bounds = getLayerGroupBounds((LayerGroup)layer);
+            }else{
+                bounds = getLayerBounds(layer);
             }
+
             if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
                 sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
             } else {
                 sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-                sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 200);
+                sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 200);
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
