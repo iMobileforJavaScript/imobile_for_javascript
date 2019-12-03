@@ -2531,7 +2531,8 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 
                 [map refresh];
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [map refresh];
+                    [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:100];
+//                    [map refresh];
                 });
             }
         }
