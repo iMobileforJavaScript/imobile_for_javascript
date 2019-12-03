@@ -2726,6 +2726,22 @@ export default (function () {
     }
   }
 
+
+  /**
+   * 初始化导航语音播报
+   * @returns {boolean|Promise<void>}
+   */
+  function initSpeakPlugin(){
+   try {
+     if(Platform.OS === 'android'){
+       return SMap.initSpeakPlugin();
+     }else{
+       return true;
+     }
+   }catch (error) {
+     console.warn(error)
+   }
+  }
   /**
    * 获取导航路径长度
    * @param isIndoor 是否室内
@@ -3136,6 +3152,7 @@ export default (function () {
     getNetworkDataset,
     getPathInfos,
     getNavPathLength,
+    initSpeakPlugin,
     // getIndoorDatasource,
     setIllegallyParkListener,
 
