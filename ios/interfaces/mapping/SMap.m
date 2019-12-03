@@ -2605,6 +2605,44 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
 }
 
 
++(Rectangle2D*)getLayerGroupBounds:(LayerGroup*)group {
+    Rectangle2D* bounds = nil;
+    for (int i = 0; i < [group getCount]; i++) {
+        Layer* temp = [group getLayer:i];
+        if ([temp isKindOfClass:[LayerGroup class]]) {
+            bounds = [SMap getLayerGroupBounds:temp];
+        }else{
+            Rectangle2D* tmpBounds =[SMap getLayerBounds:temp];
+            if(!bounds){
+                bounds = [[Rectangle2D alloc]initWithRectangle2D:tmpBounds];
+            }else{
+                [bounds unions:tmpBounds];
+            }
+        }
+    }
+    
+    return bounds;
+}
+
++(Rectangle2D*)getLayerBounds:(Layer*)layer{
+    Map* map = sMap.smMapWC.mapControl.map;
+    Rectangle2D* bounds = layer.dataset.bounds;
+    if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
+        Point2Ds *points = [[Point2Ds alloc]init];
+        [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
+        [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
+        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+        [srcPrjCoorSys setType: layer.dataset.prjCoordSys.type];
+        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+        
+        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+        Point2D* pt1 = [points getItem:0];
+        Point2D* pt2 = [points getItem:1];
+        bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+    }
+    return bounds;
+}
 #pragma mark 设置当前图层全副
 /**
  * 设置当前图层全副
@@ -2618,54 +2656,51 @@ RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLaye
          
          NSArray* paths = [layerPath componentsSeparatedByString:@"/"];
          Layer* layer =  [SMLayer findLayerByPath:paths[0]];
-         
-         Layers* layers = map.layers;
-         NSMutableArray* layerArr = [[NSMutableArray alloc] init];
-         for (int i = 0; i < [layers getCount]; i++) {
-             Layer* temp = [layers getLayerAtIndex:i];
-             if (temp.visible && ![temp.name isEqualToString:layer.name]) {
-                 temp.visible = NO;
-                 [layerArr addObject:temp];
-             }
-         }
-         
-         if ([layer isKindOfClass:[LayerGroup class]] && paths.count > 1) {
-             NSString* tempPath = paths[1];
-             for (int i = 2; i < paths.count; i++) {
-                 tempPath = [NSString stringWithFormat:@"%@/%@", tempPath, paths[i]];
-             }
-             NSArray* tempArr = [SMMap setLayersInvisibleByGroup:(LayerGroup *)layer except:tempPath];
-             layerArr = [[NSMutableArray alloc] initWithArray:[layerArr arrayByAddingObjectsFromArray:tempArr]];
-         }
-         
-         [map viewEntire];
-         for (int i = 0; i < layerArr.count; i++) {
-             Layer* temp = layerArr[i];
-             temp.visible = YES;
-         }
-         //sMap.smMapWC.mapControl.map.viewBounds
-//         Rectangle2D* bounds = layer.dataset.bounds;
-//         if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
-//             Point2Ds *points = [[Point2Ds alloc]init];
-//             [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
-//             [points add:[[Point2D alloc]initWithX:bounds.right Y:bounds.bottom]];
-//             PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-//             [srcPrjCoorSys setType: layer.dataset.prjCoordSys.type];
-//             CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
 //
-//             //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-//             [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-//             Point2D* pt1 = [points getItem:0];
-//             Point2D* pt2 = [points getItem:1];
-//             bounds = [[Rectangle2D alloc]initWith:pt1.x bottom:pt2.y right:pt2.x top:pt1.y];
+//         Layers* layers = map.layers;
+//         NSMutableArray* layerArr = [[NSMutableArray alloc] init];
+//         for (int i = 0; i < [layers getCount]; i++) {
+//             Layer* temp = [layers getLayerAtIndex:i];
+//             if ([temp isKindOfClass:[LayerGroup class]]) {
+//                 [SMap setLayerGroupInvisible:temp arr:layerArr name:layer.name];
+//             }else{
+//                 if (temp.visible && ![temp.name isEqualToString:layer.name]) {
+//                     temp.visible = NO;
+//                     [layerArr addObject:temp];
+//                 }
+//             }
+//
 //         }
 //
-//         if(bounds.width <= 0 || bounds.height <= 0){
-//             map.center = bounds.center;
-//         } else {
-//             sMap.smMapWC.mapControl.map.viewBounds = bounds;
-//             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
+//         if ([layer isKindOfClass:[LayerGroup class]] && paths.count > 1) {
+//             NSString* tempPath = paths[1];
+//             for (int i = 2; i < paths.count; i++) {
+//                 tempPath = [NSString stringWithFormat:@"%@/%@", tempPath, paths[i]];
+//             }
+//             NSArray* tempArr = [SMMap setLayersInvisibleByGroup:(LayerGroup *)layer except:tempPath];
+//             layerArr = [[NSMutableArray alloc] initWithArray:[layerArr arrayByAddingObjectsFromArray:tempArr]];
 //         }
+//
+//         [map viewEntire];
+//         for (int i = 0; i < layerArr.count; i++) {
+//             Layer* temp = layerArr[i];
+//             temp.visible = YES;
+//         }
+
+         Rectangle2D* bounds = nil;
+         if ([layer isKindOfClass:[LayerGroup class]]) {
+             bounds = [SMap getLayerGroupBounds:layer];
+         }else{
+             bounds = [SMap getLayerBounds:layer];
+         }
+         
+//         [bounds inflateX:bounds.width/26.0 Y:bounds.height/26.0];
+         if(bounds.width <= 0 || bounds.height <= 0){
+             map.center = bounds.center;
+         } else {
+             sMap.smMapWC.mapControl.map.viewBounds = bounds;
+             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.6 time:200];
+         }
          
          
          [map refresh];
