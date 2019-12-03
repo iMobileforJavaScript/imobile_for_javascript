@@ -3731,8 +3731,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         Rectangle2D bounds = null;
         for(int i=0;i<layer.getCount();i++){
             Layer tmp = layer.get(i);
-            if (layer instanceof  LayerGroup){
-                bounds = getLayerGroupBounds((LayerGroup)tmp);
+            if (LayerGroup.class.isInstance(tmp)){
+                try {
+                    bounds = getLayerGroupBounds((LayerGroup)tmp);
+                }catch (Exception e){
+                   continue;
+                }
+
             }else{
                 Rectangle2D tmpBounds = getLayerBounds(layer);
                 if(bounds == null){
