@@ -3201,6 +3201,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             map.refresh();
 
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 100);
+                }
+            }, 100);//3秒后执行Runnable中的run方法
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -3800,7 +3808,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     public void run() {
                         sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 200);
                     }
-                }, 200);//3秒后执行Runnable中的run方法
+                }, 100);//3秒后执行Runnable中的run方法
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();

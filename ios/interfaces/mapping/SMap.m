@@ -2700,7 +2700,7 @@ RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLaye
          } else {
              sMap.smMapWC.mapControl.map.viewBounds = bounds;
              dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                  [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.6 time:200];
+                  [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.6 time:100];
              });
          }
          [map refresh];
@@ -3873,6 +3873,9 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
         }
         
         [map refresh];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.6 time:100];
+        });
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
