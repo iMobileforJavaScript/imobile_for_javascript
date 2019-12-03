@@ -8,6 +8,7 @@
 
 #import "SMMedia.h"
 #import "SAIClassifyView.h"
+#import "SAIDetectView.h"
 
 @implementation SMMedia
 
@@ -422,6 +423,28 @@
     return res;
 }
 
+-(BOOL)saveArMedia:(NSString *)mediaName toDictionary:(NSString*)toDictionary addNew:(BOOL)addNew {
+    NSString* sdcard=[NSHomeDirectory() stringByAppendingString:@"/Documents"];
+    NSMutableArray* pathArr=[[NSMutableArray alloc] init];
+    [pathArr addObject:[toDictionary stringByAppendingFormat:@"%@.jpg",mediaName]];
+    
+    [SAIDetectView saveArPreviewBitmap:toDictionary name:mediaName];
+    
+    for(int i=0;i<pathArr.count;i++){
+        if([[pathArr objectAtIndex:i] hasPrefix:sdcard]){
+            NSString* path=[pathArr objectAtIndex:i];
+            path=[path stringByReplacingOccurrencesOfString:sdcard withString:@""];
+            [pathArr setObject:path atIndexedSubscript:i];
+        }
+    }
+    _paths=pathArr;
+    
+    if(pathArr&&addNew){
+        [self saveLocationDataToDataset];
+    }
+    
+    return pathArr&&[pathArr count]>0;
+}
 
 -(BOOL)saveAIClassifyMedia:(NSString *)mediaName toDictionary:(NSString*)toDictionary addNew:(BOOL)addNew {
     NSString* sdcard=[NSHomeDirectory() stringByAppendingString:@"/Documents"];

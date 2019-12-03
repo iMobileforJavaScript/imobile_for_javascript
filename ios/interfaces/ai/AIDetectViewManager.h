@@ -8,6 +8,10 @@
 
 #import <React/RCTViewManager.h>
 #import <Foundation/Foundation.h>
+#import "RCTBridge.h"
+#import "RCTEventDispatcher.h"
+#import "UIView+React.h"
+#import <objc/runtime.h>
 
 @interface AIDetectViewManager : RCTViewManager
 
