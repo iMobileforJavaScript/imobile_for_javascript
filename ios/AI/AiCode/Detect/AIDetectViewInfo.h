@@ -13,7 +13,7 @@
 //} FileType;
 
 @interface AIDetectViewInfo : NSObject
-@property(nonatomic,assign)  NSString* modeFile;
-@property(nonatomic,assign)  NSString* lableFile;
+@property(nonatomic,strong)  NSString* modeFile;
+@property(nonatomic,strong)  NSString* lableFile;
 //@property(nonatomic,assign)  FileType* fileType;
 @end

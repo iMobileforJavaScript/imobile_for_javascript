@@ -10,7 +10,7 @@
 
 #import <Foundation/Foundation.h>
 //#import "SuperMapAI/AIDetectView.h"
-#import <SuperMapAI/AIDetectView.h>
+#import "AIDetectView.h"
 
 
 @interface SAIDetectView : NSObject<RCTBridgeModule>

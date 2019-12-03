@@ -11,12 +11,19 @@
 #import <AVFoundation/AVFoundation.h>
 #import "AIDetectStyle.h"
 @class AIDetectViewInfo;
+@class AIRecognition;
+
+@protocol AIDetectTouchDelegate <NSObject>
+
+-(void)touchAIRecognition:(AIRecognition*)aIRecognition;
+
+@end
 
 
 @interface AIDetectView : UIView
 
 @property (nonatomic,assign) long detectInterval;
-
+@property(nonatomic,assign) id<AIDetectTouchDelegate> delegate;
 
 -(void)initData;
 /** 设置数据 **/

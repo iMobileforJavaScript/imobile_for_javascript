@@ -8,7 +8,7 @@
 
 #import "SAIClassifyView.h"
 #import "ImageClassification.h"
-#import "SuperMapAI/Recognition.h"
+#import "Recognition.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
 #import "SuperMap/DatasetVector.h"

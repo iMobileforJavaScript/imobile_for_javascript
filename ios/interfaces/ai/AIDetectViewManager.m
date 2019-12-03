@@ -9,7 +9,7 @@
 #import "AIDetectViewManager.h"
 #import "SAIDetectView.h"
 #import <React/RCTUIManager.h>
-#import "SuperMapAI/AIDetectView.h"
+#import "AIDetectView.h"
 
 @interface AIDetectViewManager ()
 
