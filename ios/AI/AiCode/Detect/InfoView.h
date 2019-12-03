@@ -14,14 +14,14 @@ typedef void(^CallBackBlock)(AIRecognition *aIRecognition); // 返回点击的�
 
 @interface InfoView : UIView
 @property (nonatomic,strong) NSArray *aIRecognitionArray;
-@property (nonatomic,retain) NSMutableArray *aIRectArr;
-@property (nonatomic,assign) AIDetectStyle* aIDetectStyle;
+@property (nonatomic,strong) NSMutableArray *aIRectArr;
+@property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
 
-@property (nonatomic, copy)CallBackBlock callBackBlock;
+@property (nonatomic, strong)CallBackBlock callBackBlock;
 
 // 起始点
 @property(nonatomic)CGPoint startPoint;
-// 是否是点击时间
+// 是否是点击事件
 @property(nonatomic)BOOL isTouchEvent;
 -(void)refresh;
 @end
