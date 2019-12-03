@@ -57,10 +57,11 @@
 }
 
 //刷新布局
--(void)setaIRecognitionArrayAndUpdateView:(NSArray *)aIRecognitionArray{
+-(void)setaIRecognitionArrayAndUpdateView:(NSArray *)aIRecognitionArray withSize:(CGSize)size{
 
     self.aIRecognitionArray=aIRecognitionArray;
     
+    _infoView.sizeCamera = size;
     _infoView.aIRecognitionArray=aIRecognitionArray;
     [_infoView refresh];
 }
@@ -109,7 +110,7 @@
         
        
         //更新所有子view
-        [self setaIRecognitionArrayAndUpdateView:result];
+        [self setaIRecognitionArrayAndUpdateView:result withSize:CGSizeMake(CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer))];
       
         for (int i=0; i<result.count; i++) {
             AIRecognition *inference = result[i];

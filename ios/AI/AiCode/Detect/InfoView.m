@@ -43,7 +43,7 @@
     return array;
 }
 
--(void)drawRect:(CGRect)rect//UIView绘制入口，系统回调
+-(void)drawRect:(CGRect)rx//UIView绘制入口，系统回调
 {
     NSArray *drawColors=[self colors];
     UIColor* color=nil;
@@ -56,18 +56,33 @@
     }else{
         CGContextSetLineWidth(context, 2);
     }
-    self.aIRectArr=[[NSMutableArray alloc] init];
     //清空所有rect对象
+    self.aIRectArr=[[NSMutableArray alloc] init];
     [self.aIRectArr removeAllObjects];
+    
+    
+    float xSize = rx.size.width;
+    float xOffset = 0;
+    float ySize = rx.size.height;
+    float yOffset = 0;
+    float scalex = xSize/self.sizeCamera.width;
+    float scaley = ySize/self.sizeCamera.height;
+    if (scalex>scaley) {
+        ySize = scalex * self.sizeCamera.height;
+        yOffset = 0.5*(rx.size.height - ySize);
+    }else{
+        xSize = scaley * self.sizeCamera.width;
+        xOffset = 0.5*(rx.size.width - xSize);
+    }
+    
     for(int i=0;i<self.aIRecognitionArray.count;i++){
         AIRecognition* recognition=[self.aIRecognitionArray objectAtIndex:i];
         
-        CGRect rx = self.frame;
-        CGRect tempCGRect=recognition.rect;
-//        tempCGRect.origin.x=recognition.rect.origin.x*rx.size.width;
-//        tempCGRect.origin.y=recognition.rect.origin.y*rx.size.height;
-//        tempCGRect.size.width=recognition.rect.size.width*rx.size.width;
-//        tempCGRect.size.height=recognition.rect.size.height*rx.size.height;
+        //CGRect rx = self.bounds;
+        CGRect tempCGRect=CGRectMake(recognition.rect.origin.x*xSize+xOffset,
+                                     recognition.rect.origin.y*ySize+yOffset,
+                                     recognition.rect.size.width*xSize,
+                                     recognition.rect.size.height*ySize);
         
 //        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height;
 //        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width;
@@ -75,10 +90,10 @@
 //        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
         
         
-        tempCGRect.size.width=recognition.rect.size.height*rx.size.height;
-        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
-        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height+tempCGRect.size.width/2;
-        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width-tempCGRect.size.height/2;
+//        tempCGRect.size.width=recognition.rect.size.height*rx.size.height;
+//        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
+//        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height+tempCGRect.size.width/2;
+//        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width-tempCGRect.size.height/2;
         if(tempCGRect.origin.x<0){
             tempCGRect.origin.x=2;
             tempCGRect.size.width=tempCGRect.size.width-(2-tempCGRect.origin.x);

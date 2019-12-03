@@ -2699,10 +2699,10 @@ RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLaye
              map.center = bounds.center;
          } else {
              sMap.smMapWC.mapControl.map.viewBounds = bounds;
-             [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.6 time:200];
+             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                  [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.6 time:200];
+             });
          }
-         
-         
          [map refresh];
          resolve(@(1));
      } @catch (NSException *exception) {

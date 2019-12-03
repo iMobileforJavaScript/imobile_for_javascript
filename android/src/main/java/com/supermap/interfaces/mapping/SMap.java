@@ -3730,16 +3730,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private Rectangle2D getLayerGroupBounds(LayerGroup layer){
         Rectangle2D bounds = null;
         for(int i=0;i<layer.getCount();i++){
-            Layer tmp = layer.get(i);
-            if (LayerGroup.class.isInstance(tmp)){
+            Layer tmpLayer = layer.get(i);
+            if (LayerGroup.class.isInstance(tmpLayer)){
                 try {
-                    bounds = getLayerGroupBounds((LayerGroup)tmp);
+                    bounds = getLayerGroupBounds((LayerGroup)tmpLayer);
                 }catch (Exception e){
                    continue;
                 }
 
             }else{
-                Rectangle2D tmpBounds = getLayerBounds(layer);
+                Rectangle2D tmpBounds = getLayerBounds(tmpLayer);
                 if(bounds == null){
                     bounds = new Rectangle2D(tmpBounds);
                 }else{
@@ -3794,7 +3794,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
             } else {
                 sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-                sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 200);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 200);
+                    }
+                }, 200);//3秒后执行Runnable中的run方法
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
