@@ -225,7 +225,8 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
 RCT_REMAP_METHOD(setPOIOptimized, bPOIOptimized:(BOOL)bPOIOptimized setPOIOptimizedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
-        sMap.smMapWC.mapControl.map.isPOIOptimized = bPOIOptimized;
+        sMap = [SMap singletonInstance];
+       // sMap.smMapWC.mapControl.map.isPOIOptimized = bPOIOptimized;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);

@@ -121,6 +121,8 @@ import com.supermap.plot.AnimationWay;
 import com.supermap.plot.GeoGraphicObject;
 import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
+import com.supermap.plugin.SpeakPlugin;
+import com.supermap.plugin.Speaker;
 import com.supermap.rnsupermap.R;
 import com.supermap.smNative.SMMapFixColors;
 import com.supermap.smNative.SMMapRender;
@@ -181,6 +183,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
+    private SpeakPlugin speakPlugin;
     private static Boolean hasBigCallout = false;
     private static final int curLocationTag = 118081;
     public static int fillNum;
@@ -5528,13 +5531,36 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setPOIOptimized(Boolean bPOIOptimized, Promise promise){
         try {
             sMap = SMap.getInstance();
-            sMap.smMapWC.getMapControl().getMap().setIsPOIOptimized(bPOIOptimized);
+            // sMap.smMapWC.getMapControl().getMap().setIsPOIOptimized(bPOIOptimized);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
     /************************************** 导航模块 START ****************************************/
+
+    /**
+     * 初始化导航语音播报
+     * @param promise
+     */
+    @ReactMethod
+    public void initSpeakPlugin(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            SpeakPlugin speakPlugin= SpeakPlugin.getInstance();
+            speakPlugin.setSpeakSpeed(5000);
+            speakPlugin.setSpeaker(Speaker.CONGLE);
+            speakPlugin.setSpeakVolum(32768);
+            boolean isLaungched =speakPlugin.laugchPlugin();
+            if(isLaungched){
+                sMap.speakPlugin = speakPlugin;
+            }
+            promise.resolve(isLaungched);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     /**
      * 清除导航路线
      *
@@ -5775,6 +5801,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     @Override
                     public void onPlayNaviMessage(String arg0) {
+                        sMap.speakPlugin.playSound(arg0);
                         // TODO Auto-generated method stub
                         Log.e("+++++++++++++", "-------------****************");
                     }
@@ -5902,7 +5929,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     @Override
                     public void onPlayNaviMessage(String message) {
                         // TODO Auto-generated method stub
-
+                        sMap.speakPlugin.playSound(message);
                     }
 
                     @Override
