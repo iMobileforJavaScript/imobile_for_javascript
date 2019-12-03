@@ -1024,6 +1024,7 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resol
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         dispatch_sync(dispatch_get_main_queue(), ^{
+            [[mapControl getNavigation2] enablePanOnGuide:YES];
             [[mapControl getNavigation2] startGuide:naviType];
             [mapControl.map setIsFullScreenDrawModel:YES];
             [[mapControl getNavigation2] setIsCarUpFront:YES];
