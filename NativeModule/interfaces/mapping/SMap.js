@@ -2733,14 +2733,30 @@ export default (function () {
    */
   function initSpeakPlugin(){
    try {
-     if(Platform.OS === 'android'){
+      if(Platform.OS === 'android'){
        return SMap.initSpeakPlugin();
-     }else{
+      }else{
        return true;
-     }
-   }catch (error) {
+      }
+    }catch (error) {
      console.warn(error)
-   }
+    }
+  }
+
+  /**
+   * 销毁语音播报
+   * @returns {boolean|*}
+   */
+  function destroySpeakPlugin(){
+    try {
+      if(Platform.OS === 'android'){
+        return SMap.destroySpeakPlugin();
+      }else{
+        return true;
+      }
+    }catch (error) {
+      console.warn(error)
+    }
   }
   /**
    * 获取导航路径长度
@@ -3153,6 +3169,7 @@ export default (function () {
     getPathInfos,
     getNavPathLength,
     initSpeakPlugin,
+    destroySpeakPlugin,
     // getIndoorDatasource,
     setIllegallyParkListener,
 

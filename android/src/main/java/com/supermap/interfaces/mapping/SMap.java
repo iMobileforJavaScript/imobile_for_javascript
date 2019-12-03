@@ -5549,13 +5549,31 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             SpeakPlugin speakPlugin= SpeakPlugin.getInstance();
             speakPlugin.setSpeakSpeed(5000);
-            speakPlugin.setSpeaker(Speaker.CONGLE);
+            speakPlugin.setSpeaker(Speaker.YUNXIA);
             speakPlugin.setSpeakVolum(32768);
             boolean isLaungched =speakPlugin.laugchPlugin();
             if(isLaungched){
                 sMap.speakPlugin = speakPlugin;
             }
             promise.resolve(isLaungched);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 销毁语音播报
+     * @param promise
+     */
+    @ReactMethod
+    public void destroySpeakPlugin(Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            boolean isDestroyed = true;
+            if(sMap.speakPlugin != null){
+              isDestroyed = sMap.speakPlugin.terminatePlugin();
+            }
+            promise.resolve(isDestroyed);
         }catch (Exception e){
             promise.reject(e);
         }
