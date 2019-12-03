@@ -225,7 +225,8 @@ RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latit
 RCT_REMAP_METHOD(setPOIOptimized, bPOIOptimized:(BOOL)bPOIOptimized setPOIOptimizedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     @try {
-        sMap.smMapWC.mapControl.map.isPOIOptimized = bPOIOptimized;
+        sMap = [SMap singletonInstance];
+       // sMap.smMapWC.mapControl.map.isPOIOptimized = bPOIOptimized;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
@@ -866,7 +867,7 @@ RCT_REMAP_METHOD(getPathInfos, getPathInfosWithBool:(BOOL)isIndoor resolver: (RC
     }
 }
 
-#pragma mark 路径分析
+#pragma mark 在线路径分析
 RCT_REMAP_METHOD(routeAnalyst, routeAnalystWithX:(double)x Y:(double)y resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
@@ -958,6 +959,9 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
         if(dataset != nil){
             DatasetVector *networkDataset = (DatasetVector *)dataset;
             Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
+            GeoStyle *style = [[GeoStyle alloc] init];
+            [style setLineSymbolID:964882];
+            [navigation2 setRouteStyle:style];
             [navigation2 setNetworkDataset:networkDataset];
             [navigation2 loadModel:netModelPath];
             navigation2.navi2Delegate = self;
@@ -1020,6 +1024,7 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resol
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         dispatch_sync(dispatch_get_main_queue(), ^{
+            [[mapControl getNavigation2] enablePanOnGuide:YES];
             [[mapControl getNavigation2] startGuide:naviType];
             [mapControl.map setIsFullScreenDrawModel:YES];
             [[mapControl getNavigation2] setIsCarUpFront:YES];
@@ -1765,6 +1770,62 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
         }
     }@catch(NSException *exception){
         reject(@"getFloorData", exception.reason, nil);
+    }
+}
+
+#pragma mark 判断搜索结果的两个点是否在某个路网数据集的bounds内，返回结果用于行业导航。无结果则进行在线路径分析
+RCT_REMAP_METHOD(isPointsInMapBounds, isPointsInMapBoundsWithStartPoint:(NSDictionary *)startPoint EndPoin:(NSDictionary *)endPoint resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        
+        NSDictionary *dic = @{};
+        double x1 = [[startPoint valueForKey:@"x"] doubleValue];
+        double y1 = [[startPoint valueForKey:@"y"] doubleValue];
+        double x2 = [[endPoint valueForKey:@"x"] doubleValue];
+        double y2 = [[endPoint valueForKey:@"y"] doubleValue];
+        Datasource *networkDatasource = nil;
+        Dataset *networkDataset = nil;
+        
+        sMap = [SMap singletonInstance];
+    
+        Datasources *datasouces = sMap.smMapWC.workspace.datasources;
+        for(int i = 0; i < datasouces.count; i++){
+            Datasource *datasource = [datasouces get:i];
+            Datasets *datasets = datasource.datasets;
+            for(int j = 0; j < datasets.count; j++){
+                Dataset *dataset = [datasets get:j];
+                if(dataset.datasetType == Network && [dataset.bounds containsX:x1 Y:y1] && [dataset.bounds containsX:x2 Y:y2]){
+                    networkDataset = dataset;
+                    networkDatasource = datasource;
+                    break;
+                }
+            }
+        }
+        if(networkDataset != nil){
+            Datasets *datasets = networkDatasource.datasets;
+            Dataset *linkTable = [datasets getWithName:@"ModelFileLinkTable"];
+            if(linkTable != nil){
+                DatasetVector *datasetVector = (DatasetVector *)linkTable;
+                Recordset *recordset = [datasetVector recordset:NO cursorType:STATIC];
+                do{
+                    NSString *networkDatasetName = (NSString *)[recordset getFieldValueWithString:@"NetworkDataset"];
+                    NSString *netModelFileName = (NSString *)[recordset getFieldValueWithString:@"NetworkModelFile"];
+                    if(networkDatasetName != nil && netModelFileName != nil){
+                        dic = @{
+                                  @"name":networkDatasetName,
+                                  @"modelFileName":netModelFileName,
+                                  @"datasourceName":networkDatasource.alias,
+                                  };
+                        break;
+                       
+                    }
+                }while([recordset moveNext]);
+                [recordset close];
+                [recordset dispose];
+            }
+        }
+        resolve(dic);
+    }@catch(NSException *exception){
+        reject(@"isPointsInMapBounds",exception.reason,nil);
     }
 }
 

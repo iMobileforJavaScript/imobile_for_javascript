@@ -121,6 +121,8 @@ import com.supermap.plot.AnimationWay;
 import com.supermap.plot.GeoGraphicObject;
 import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
+import com.supermap.plugin.SpeakPlugin;
+import com.supermap.plugin.Speaker;
 import com.supermap.rnsupermap.R;
 import com.supermap.smNative.SMMapFixColors;
 import com.supermap.smNative.SMMapRender;
@@ -181,6 +183,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private GestureDetector mGestureDetector;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
+    private SpeakPlugin speakPlugin;
     private static Boolean hasBigCallout = false;
     private static final int curLocationTag = 118081;
     public static int fillNum;
@@ -1050,7 +1053,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         public void run() {
                             sMap.smMapWC.getMapControl().getMap().refresh();
                         }
-                    }, 3000);//3秒后执行Runnable中的run方法
+                    }, 1000);//3秒后执行Runnable中的run方法
                 }
             }
 
@@ -5528,13 +5531,54 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void setPOIOptimized(Boolean bPOIOptimized, Promise promise){
         try {
             sMap = SMap.getInstance();
-            sMap.smMapWC.getMapControl().getMap().setIsPOIOptimized(bPOIOptimized);
+            // sMap.smMapWC.getMapControl().getMap().setIsPOIOptimized(bPOIOptimized);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
     /************************************** 导航模块 START ****************************************/
+
+    /**
+     * 初始化导航语音播报
+     * @param promise
+     */
+    @ReactMethod
+    public void initSpeakPlugin(Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            SpeakPlugin speakPlugin= SpeakPlugin.getInstance();
+            speakPlugin.setSpeakSpeed(5000);
+            speakPlugin.setSpeaker(Speaker.YUNXIA);
+            speakPlugin.setSpeakVolum(32768);
+            boolean isLaungched =speakPlugin.laugchPlugin();
+            if(isLaungched){
+                sMap.speakPlugin = speakPlugin;
+            }
+            promise.resolve(isLaungched);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 销毁语音播报
+     * @param promise
+     */
+    @ReactMethod
+    public void destroySpeakPlugin(Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            boolean isDestroyed = true;
+            if(sMap.speakPlugin != null){
+              isDestroyed = sMap.speakPlugin.terminatePlugin();
+            }
+            promise.resolve(isDestroyed);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
+
     /**
      * 清除导航路线
      *
@@ -5731,6 +5775,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 // 初始化行业导航对象
                 DatasetVector networkDataset = (DatasetVector) dataset;
                 Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
+                GeoStyle style = new GeoStyle();
+                style.setLineSymbolID(964882);
+                m_Navigation2.setRouteStyle(style);
                 m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
                 m_Navigation2.loadModel(netModelPath);  // 加载网络模型
                 m_Navigation2.addNaviInfoListener(new NaviListener() {
@@ -5772,10 +5819,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
                     @Override
                     public void onPlayNaviMessage(String arg0) {
+                        sMap.speakPlugin.playSound(arg0);
                         // TODO Auto-generated method stub
                         Log.e("+++++++++++++", "-------------****************");
                     }
                     });
+                m_Navigation2.enablePanOnGuide(true);
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -5898,7 +5947,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     @Override
                     public void onPlayNaviMessage(String message) {
                         // TODO Auto-generated method stub
-
+                        sMap.speakPlugin.playSound(message);
                     }
 
                     @Override
@@ -6025,7 +6074,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void getCurrentFloorID(Promise promise) {
         try {
             sMap = SMap.getInstance();
-            String floorID = sMap.smMapWC.getFloorListView().getCurrentFloorId();
+            String floorID = "";
+            FloorListView floorListView = sMap.smMapWC.getFloorListView();
+            if(floorListView != null){
+                floorID = floorListView.getCurrentFloorId();
+            }
             promise.resolve(floorID);
         } catch (Exception e) {
             promise.reject(e);
@@ -6606,7 +6659,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
                 double density = dm.density;
 
-                int markerSize = 30;
+                int markerSize = 40;
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (markerSize * density), (int) (markerSize * density));
                 m_callout.setCustomize(true);
                 m_callout.setLayoutParams(params);
@@ -6864,6 +6917,67 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 判断搜索结果的两个点是否在某个路网数据集的bounds内，返回结果用于行业导航。无结果则进行在线路径分析
+     * @param navStartPoint
+     * @param navEndPoint
+     * @param promise
+     */
+    @ReactMethod
+    public void isPointsInMapBounds(ReadableMap navStartPoint, ReadableMap navEndPoint, Promise promise){
+        try {
+
+            WritableMap map = Arguments.createMap();
+
+            double x1 = navStartPoint.getDouble("x");
+            double y1 = navStartPoint.getDouble("y");
+            double x2 = navEndPoint.getDouble("x");
+            double y2 = navEndPoint.getDouble("y");
+
+            Datasource networkDatasource = null;
+            Dataset networkDataset = null;
+
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            for(int i = 0; i < datasources.getCount(); i++){
+                Datasource datasource = datasources.get(i);
+                Datasets datasets = datasource.getDatasets();
+                for(int j = 0; j < datasets.getCount(); j++){
+                    Dataset dataset = datasets.get(j);
+                    Rectangle2D bounds = dataset.getBounds();
+                    if(dataset.getType() == DatasetType.NETWORK && bounds.contains(x1,y1) && bounds.contains(x2,y2)){
+                        networkDataset = dataset;
+                        networkDatasource = datasource;
+                        break;
+                    }
+                }
+            }
+            if(networkDataset != null){
+                Datasets datasets = networkDatasource.getDatasets();
+                Dataset linkTable = datasets.get("ModelFileLinkTable");
+                if(linkTable != null){
+                    DatasetVector datasetVector = (DatasetVector)linkTable;
+                    Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+                    do{
+                        Object networkDatasetObj = recordset.getFieldValue("NetworkDataset");
+                        Object netModelObj = recordset.getFieldValue("NetworkModelFile");
+                        if(netModelObj != null && networkDatasetObj != null){
+                            String networkDatasetName = networkDatasetObj.toString();
+                            String netModelFileName = netModelObj.toString();
+                            map.putString("name",networkDatasetName);
+                            map.putString("modelFileName",netModelFileName);
+                            map.putString("datasourceName",networkDatasource.getAlias());
+                        }
+                    }while(recordset.moveNext());
+                    recordset.close();
+                    recordset.dispose();
+                }
+            }
+            promise.resolve(map);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
     /************************************** 导航模块 END ****************************************/
 
 

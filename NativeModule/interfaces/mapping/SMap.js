@@ -2173,6 +2173,20 @@ export default (function () {
   }
 
   /**
+   * 判断在线搜索的起始点是否在地图导航范围内
+   * @param startPoint
+   * @param endPoint
+   * @returns {*}
+   */
+  function isPointsInMapBounds(startPoint,endPoint) {
+    try {
+      return SMap.isPointsInMapBounds(startPoint,endPoint)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 清除导航路线
    * @returns {*|void|Promise<void>}
    */
@@ -2712,6 +2726,38 @@ export default (function () {
     }
   }
 
+
+  /**
+   * 初始化导航语音播报
+   * @returns {boolean|Promise<void>}
+   */
+  function initSpeakPlugin(){
+   try {
+      if(Platform.OS === 'android'){
+       return SMap.initSpeakPlugin();
+      }else{
+       return true;
+      }
+    }catch (error) {
+     console.warn(error)
+    }
+  }
+
+  /**
+   * 销毁语音播报
+   * @returns {boolean|*}
+   */
+  function destroySpeakPlugin(){
+    try {
+      if(Platform.OS === 'android'){
+        return SMap.destroySpeakPlugin();
+      }else{
+        return true;
+      }
+    }catch (error) {
+      console.warn(error)
+    }
+  }
   /**
    * 获取导航路径长度
    * @param isIndoor 是否室内
@@ -3085,6 +3131,7 @@ export default (function () {
     addScaleChangeDelegate,
 
     routeAnalyst,
+    isPointsInMapBounds,
     clearTarckingLayer,
     startNavigation,
     startIndoorNavigation,
@@ -3121,6 +3168,8 @@ export default (function () {
     getNetworkDataset,
     getPathInfos,
     getNavPathLength,
+    initSpeakPlugin,
+    destroySpeakPlugin,
     // getIndoorDatasource,
     setIllegallyParkListener,
 

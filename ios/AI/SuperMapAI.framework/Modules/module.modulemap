@@ -1,6 +1,0 @@
-framework module SuperMapAI {
-  umbrella header "SuperMapAI.h"
-
-  export *
-  module * { export * }
-}
