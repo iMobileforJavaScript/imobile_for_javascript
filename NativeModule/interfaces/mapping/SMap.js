@@ -2158,15 +2158,28 @@ export default (function () {
   }
 
 
+  /**
+   * 绘制在线路径分析的路径
+   * @param pathPoints
+   * @returns {*}
+   */
+  function drawOnlinePath(pathPoints) {
+    try {
+      return SMap.drawOnlinePath(pathPoints)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
-   * 路径分析
-   * @param index
-   * @returns {*|void|Promise<void>}
+   * 判断在线搜索的起始点是否在地图导航范围内
+   * @param startPoint
+   * @param endPoint
+   * @returns {*}
    */
-  function routeAnalyst(x,y) {
+  function isPointsInMapBounds(startPoint,endPoint) {
     try {
-      return SMap.routeAnalyst(x,y)
+      return SMap.isPointsInMapBounds(startPoint,endPoint)
     } catch (e) {
       console.error(e)
     }
@@ -2176,9 +2189,9 @@ export default (function () {
    * 清除导航路线
    * @returns {*|void|Promise<void>}
    */
-  function clearTarckingLayer() {
+  function clearTrackingLayer() {
     try {
-      return SMap.clearTarckingLayer()
+      return SMap.clearTrackingLayer()
     } catch (e) {
       console.error(e)
     }
@@ -2712,6 +2725,38 @@ export default (function () {
     }
   }
 
+
+  /**
+   * 初始化导航语音播报
+   * @returns {boolean|Promise<void>}
+   */
+  function initSpeakPlugin(){
+   try {
+      if(Platform.OS === 'android'){
+       return SMap.initSpeakPlugin();
+      }else{
+       return true;
+      }
+    }catch (error) {
+     console.warn(error)
+    }
+  }
+
+  /**
+   * 销毁语音播报
+   * @returns {boolean|*}
+   */
+  function destroySpeakPlugin(){
+    try {
+      if(Platform.OS === 'android'){
+        return SMap.destroySpeakPlugin();
+      }else{
+        return true;
+      }
+    }catch (error) {
+      console.warn(error)
+    }
+  }
   /**
    * 获取导航路径长度
    * @param isIndoor 是否室内
@@ -2776,6 +2821,18 @@ export default (function () {
   }
 
 
+  /**
+   * 打开数据源，用于室外导航
+   * @param params
+   * @returns {*}
+   */
+  function openNavDatasource(params) {
+    try {
+      return SMap.openNavDatasource(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
   /**
    * 获取数据源中含有的所有网络数据集
    * @param udb
@@ -3084,8 +3141,9 @@ export default (function () {
     removeLegendListener,
     addScaleChangeDelegate,
 
-    routeAnalyst,
-    clearTarckingLayer,
+    drawOnlinePath,
+    isPointsInMapBounds,
+    clearTrackingLayer,
     startNavigation,
     startIndoorNavigation,
     beginNavigation,
@@ -3118,9 +3176,12 @@ export default (function () {
     isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
+    openNavDatasource,
     getNetworkDataset,
     getPathInfos,
     getNavPathLength,
+    initSpeakPlugin,
+    destroySpeakPlugin,
     // getIndoorDatasource,
     setIllegallyParkListener,
 

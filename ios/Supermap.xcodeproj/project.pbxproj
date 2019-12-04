@@ -13,6 +13,16 @@
 		005693BA2191696C00AEC46E /* SOnlineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 005693B92191696C00AEC46E /* SOnlineService.m */; };
 		0A0118A52122BC5600BC4AAB /* JSThemeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */; };
 		0A01192E212412C500BC4AAB /* JSRangeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A01192D212412C500BC4AAB /* JSRangeMode.m */; };
+		0A03BDDB2395F4D400A90044 /* AIDetectViewInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDBF2395F4D400A90044 /* AIDetectViewInfo.m */; };
+		0A03BDDC2395F4D400A90044 /* AIDetectStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDC22395F4D400A90044 /* AIDetectStyle.m */; };
+		0A03BDDD2395F4D400A90044 /* AIRecognition.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDC32395F4D400A90044 /* AIRecognition.m */; };
+		0A03BDDE2395F4D400A90044 /* InfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDC52395F4D400A90044 /* InfoView.m */; };
+		0A03BDDF2395F4D400A90044 /* AIDetectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDC62395F4D400A90044 /* AIDetectView.m */; };
+		0A03BDE02395F4D400A90044 /* CameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDC92395F4D400A90044 /* CameraManager.m */; };
+		0A03BDE12395F4D400A90044 /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDCB2395F4D400A90044 /* ImageUtil.m */; };
+		0A03BDE22395F4D400A90044 /* Recognition.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDCF2395F4D400A90044 /* Recognition.m */; };
+		0A03BDE32395F4D400A90044 /* ImageDetect.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDD72395F4D400A90044 /* ImageDetect.mm */; };
+		0A03BDE42395F4D400A90044 /* ImageClassification.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A03BDDA2395F4D400A90044 /* ImageClassification.mm */; };
 		0A0EDC4822C0B2C5003990A6 /* SNetworkAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0EDC4722C0B2C5003990A6 /* SNetworkAnalyst.m */; };
 		0A0EDC9E22C35250003990A6 /* SMAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A0EDC9D22C35250003990A6 /* SMAnalyst.m */; };
 		0A17279F212E88AC00CF978C /* JSGPSElementType.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A17279E212E88AC00CF978C /* JSGPSElementType.m */; };
@@ -195,7 +205,6 @@
 		2A5299552386814A0071AD06 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299542386814A0071AD06 /* Accelerate.framework */; };
 		2A5299BD2386A5460071AD06 /* tfOC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BB2386A5460071AD06 /* tfOC.a */; };
 		2A5299BE2386A5460071AD06 /* libTensorFlowLiteObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */; };
-		2A5299C02386A54F0071AD06 /* SuperMapAI in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BF2386A54E0071AD06 /* SuperMapAI */; };
 		2A5299C22386A5560071AD06 /* TensorFlowLiteC in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299C12386A5560071AD06 /* TensorFlowLiteC */; };
 		2A5299DF2387C6290071AD06 /* SAIClassifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5299DE2387C6290071AD06 /* SAIClassifyView.m */; };
 		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -261,6 +270,31 @@
 		0A0118A42122BC5600BC4AAB /* JSThemeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSThemeLabel.m; sourceTree = "<group>"; };
 		0A01192C212412C500BC4AAB /* JSRangeMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSRangeMode.h; sourceTree = "<group>"; };
 		0A01192D212412C500BC4AAB /* JSRangeMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSRangeMode.m; sourceTree = "<group>"; };
+		0A03BDBF2395F4D400A90044 /* AIDetectViewInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIDetectViewInfo.m; sourceTree = "<group>"; };
+		0A03BDC02395F4D400A90044 /* AIDetectView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectView.h; sourceTree = "<group>"; };
+		0A03BDC12395F4D400A90044 /* InfoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoView.h; sourceTree = "<group>"; };
+		0A03BDC22395F4D400A90044 /* AIDetectStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIDetectStyle.m; sourceTree = "<group>"; };
+		0A03BDC32395F4D400A90044 /* AIRecognition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRecognition.m; sourceTree = "<group>"; };
+		0A03BDC42395F4D400A90044 /* AIDetectStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectStyle.h; sourceTree = "<group>"; };
+		0A03BDC52395F4D400A90044 /* InfoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoView.m; sourceTree = "<group>"; };
+		0A03BDC62395F4D400A90044 /* AIDetectView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIDetectView.m; sourceTree = "<group>"; };
+		0A03BDC72395F4D400A90044 /* AIDetectViewInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectViewInfo.h; sourceTree = "<group>"; };
+		0A03BDC82395F4D400A90044 /* AIRecognition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRecognition.h; sourceTree = "<group>"; };
+		0A03BDC92395F4D400A90044 /* CameraManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraManager.m; sourceTree = "<group>"; };
+		0A03BDCB2395F4D400A90044 /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
+		0A03BDCC2395F4D400A90044 /* ImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtil.h; sourceTree = "<group>"; };
+		0A03BDCD2395F4D400A90044 /* ImageDetect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageDetect.h; sourceTree = "<group>"; };
+		0A03BDCF2395F4D400A90044 /* Recognition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Recognition.m; sourceTree = "<group>"; };
+		0A03BDD02395F4D400A90044 /* Recognition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recognition.h; sourceTree = "<group>"; };
+		0A03BDD22395F4D400A90044 /* TFLQuantizationParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFLQuantizationParameters.h; sourceTree = "<group>"; };
+		0A03BDD32395F4D400A90044 /* TFLInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFLInterpreter.h; sourceTree = "<group>"; };
+		0A03BDD42395F4D400A90044 /* TFLInterpreterOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFLInterpreterOptions.h; sourceTree = "<group>"; };
+		0A03BDD52395F4D400A90044 /* TFLTensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFLTensor.h; sourceTree = "<group>"; };
+		0A03BDD62395F4D400A90044 /* TFLTensorFlowLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFLTensorFlowLite.h; sourceTree = "<group>"; };
+		0A03BDD72395F4D400A90044 /* ImageDetect.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageDetect.mm; sourceTree = "<group>"; };
+		0A03BDD82395F4D400A90044 /* CameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraManager.h; sourceTree = "<group>"; };
+		0A03BDD92395F4D400A90044 /* ImageClassification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageClassification.h; sourceTree = "<group>"; };
+		0A03BDDA2395F4D400A90044 /* ImageClassification.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageClassification.mm; sourceTree = "<group>"; };
 		0A0EDC4622C0B2C5003990A6 /* SNetworkAnalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNetworkAnalyst.h; sourceTree = "<group>"; };
 		0A0EDC4722C0B2C5003990A6 /* SNetworkAnalyst.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SNetworkAnalyst.m; sourceTree = "<group>"; };
 		0A0EDC9C22C35250003990A6 /* SMAnalyst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMAnalyst.h; sourceTree = "<group>"; };
@@ -603,15 +637,9 @@
 		2A5299542386814A0071AD06 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		2A5299BB2386A5460071AD06 /* tfOC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = tfOC.a; path = AI/tfOC.a; sourceTree = SOURCE_ROOT; };
 		2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTensorFlowLiteObjC.a; path = AI/libTensorFlowLiteObjC.a; sourceTree = SOURCE_ROOT; };
-		2A5299BF2386A54E0071AD06 /* SuperMapAI */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = SuperMapAI; path = AI/SuperMapAI.framework/SuperMapAI; sourceTree = SOURCE_ROOT; };
 		2A5299C12386A5560071AD06 /* TensorFlowLiteC */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = TensorFlowLiteC; path = AI/TensorFlowLiteC.framework/TensorFlowLiteC; sourceTree = SOURCE_ROOT; };
-		2A5299C42386A5600071AD06 /* AIDetectView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectView.h; sourceTree = "<group>"; };
-		2A5299C52386A5600071AD06 /* AIDetectViewInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIDetectViewInfo.h; sourceTree = "<group>"; };
-		2A5299C62386A5600071AD06 /* ImageClassification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageClassification.h; sourceTree = "<group>"; };
-		2A5299C72386A5600071AD06 /* SuperMapAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperMapAI.h; sourceTree = "<group>"; };
 		2A5299DD2387C6280071AD06 /* SAIClassifyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAIClassifyView.h; sourceTree = "<group>"; };
 		2A5299DE2387C6290071AD06 /* SAIClassifyView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAIClassifyView.m; sourceTree = "<group>"; };
-		2A5299E02387DF1D0071AD06 /* Recognition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recognition.h; sourceTree = "<group>"; };
 		2AAEE195230E68CD00902D1D /* GDataXMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
 		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2AB23F412359B2A900884E9B /* KeychainUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeychainUtil.h; sourceTree = "<group>"; };
@@ -707,7 +735,6 @@
 				0AEFC1EC2316867B006FEDD8 /* _imagingmath.a in Frameworks */,
 				2A5299C22386A5560071AD06 /* TensorFlowLiteC in Frameworks */,
 				0AEFC1EB2316867B006FEDD8 /* _imagingft.a in Frameworks */,
-				2A5299C02386A54F0071AD06 /* SuperMapAI in Frameworks */,
 				0A4BFCEF22A666D1001563DF /* AMapFoundationKit in Frameworks */,
 				0AEFC1ED2316867B006FEDD8 /* _imagingmorph.a in Frameworks */,
 				0AEFC1EE2316867B006FEDD8 /* _imagingtk.a in Frameworks */,
@@ -732,6 +759,71 @@
 				182832BA22F98190006586BF /* SIPortalService.m */,
 			);
 			path = iServer;
+			sourceTree = "<group>";
+		};
+		0A03BDBD2395F4D400A90044 /* AiCode */ = {
+			isa = PBXGroup;
+			children = (
+				0A03BDD82395F4D400A90044 /* CameraManager.h */,
+				0A03BDC92395F4D400A90044 /* CameraManager.m */,
+				0A03BDCE2395F4D400A90044 /* Classifier */,
+				0A03BDBE2395F4D400A90044 /* Detect */,
+				0A03BDD12395F4D400A90044 /* Headers */,
+				0A03BDD92395F4D400A90044 /* ImageClassification.h */,
+				0A03BDDA2395F4D400A90044 /* ImageClassification.mm */,
+				0A03BDCD2395F4D400A90044 /* ImageDetect.h */,
+				0A03BDD72395F4D400A90044 /* ImageDetect.mm */,
+				0A03BDCA2395F4D400A90044 /* utils */,
+			);
+			name = AiCode;
+			path = AI/AiCode;
+			sourceTree = SOURCE_ROOT;
+		};
+		0A03BDBE2395F4D400A90044 /* Detect */ = {
+			isa = PBXGroup;
+			children = (
+				0A03BDC42395F4D400A90044 /* AIDetectStyle.h */,
+				0A03BDC22395F4D400A90044 /* AIDetectStyle.m */,
+				0A03BDC02395F4D400A90044 /* AIDetectView.h */,
+				0A03BDC62395F4D400A90044 /* AIDetectView.m */,
+				0A03BDC72395F4D400A90044 /* AIDetectViewInfo.h */,
+				0A03BDBF2395F4D400A90044 /* AIDetectViewInfo.m */,
+				0A03BDC82395F4D400A90044 /* AIRecognition.h */,
+				0A03BDC32395F4D400A90044 /* AIRecognition.m */,
+				0A03BDC12395F4D400A90044 /* InfoView.h */,
+				0A03BDC52395F4D400A90044 /* InfoView.m */,
+			);
+			path = Detect;
+			sourceTree = "<group>";
+		};
+		0A03BDCA2395F4D400A90044 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				0A03BDCB2395F4D400A90044 /* ImageUtil.m */,
+				0A03BDCC2395F4D400A90044 /* ImageUtil.h */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		0A03BDCE2395F4D400A90044 /* Classifier */ = {
+			isa = PBXGroup;
+			children = (
+				0A03BDCF2395F4D400A90044 /* Recognition.m */,
+				0A03BDD02395F4D400A90044 /* Recognition.h */,
+			);
+			path = Classifier;
+			sourceTree = "<group>";
+		};
+		0A03BDD12395F4D400A90044 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				0A03BDD22395F4D400A90044 /* TFLQuantizationParameters.h */,
+				0A03BDD32395F4D400A90044 /* TFLInterpreter.h */,
+				0A03BDD42395F4D400A90044 /* TFLInterpreterOptions.h */,
+				0A03BDD52395F4D400A90044 /* TFLTensor.h */,
+				0A03BDD62395F4D400A90044 /* TFLTensorFlowLite.h */,
+			);
+			path = Headers;
 			sourceTree = "<group>";
 		};
 		0A0EDC9B22C3522E003990A6 /* analyst */ = {
@@ -868,28 +960,14 @@
 		2A5299712386979E0071AD06 /* AI */ = {
 			isa = PBXGroup;
 			children = (
-				2A5299C32386A5600071AD06 /* Headers */,
+				0A03BDBD2395F4D400A90044 /* AiCode */,
 				2A5299C12386A5560071AD06 /* TensorFlowLiteC */,
-				2A5299BF2386A54E0071AD06 /* SuperMapAI */,
 				2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */,
 				2A5299BB2386A5460071AD06 /* tfOC.a */,
 			);
 			name = AI;
 			path = ../../../ios/AI;
 			sourceTree = "<group>";
-		};
-		2A5299C32386A5600071AD06 /* Headers */ = {
-			isa = PBXGroup;
-			children = (
-				2A5299C42386A5600071AD06 /* AIDetectView.h */,
-				2A5299C52386A5600071AD06 /* AIDetectViewInfo.h */,
-				2A5299C62386A5600071AD06 /* ImageClassification.h */,
-				2A5299C72386A5600071AD06 /* SuperMapAI.h */,
-				2A5299E02387DF1D0071AD06 /* Recognition.h */,
-			);
-			name = Headers;
-			path = AI/SuperMapAI.framework/Headers;
-			sourceTree = SOURCE_ROOT;
 		};
 		2AAEE194230E68CD00902D1D /* GDataXMLNode */ = {
 			isa = PBXGroup;
@@ -1449,6 +1527,7 @@
 				4AF967A421B50EC000105B74 /* SMCartography.m in Sources */,
 				0A332E2C211D623E00F56F26 /* JSMap.m in Sources */,
 				0A332E06211D623E00F56F26 /* JSDatasets.m in Sources */,
+				0A03BDE32395F4D400A90044 /* ImageDetect.mm in Sources */,
 				0A332E18211D623E00F56F26 /* JSGeometry.m in Sources */,
 				0A332DF0211D623E00F56F26 /* JSBarChartData.m in Sources */,
 				D8DD42302175BB69009D80E9 /* JSResources.m in Sources */,
@@ -1480,6 +1559,7 @@
 				0A332E5D211D623E00F56F26 /* JSThemeLabelItem.m in Sources */,
 				0A332DEB211D623E00F56F26 /* JSAdoptMapView.m in Sources */,
 				0A332DFB211D623E00F56F26 /* JSChartView.m in Sources */,
+				0A03BDDB2395F4D400A90044 /* AIDetectViewInfo.m in Sources */,
 				0A332E36211D623E00F56F26 /* JSOverlayAnalystParameter.m in Sources */,
 				0A332DF1211D623E00F56F26 /* JSBarChartDataItem.m in Sources */,
 				0A332E61211D623E00F56F26 /* JSThemeUnique.m in Sources */,
@@ -1575,6 +1655,7 @@
 				D8DD4209217471EF009D80E9 /* JSSymbol.m in Sources */,
 				D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */,
 				0A332E10211D623E00F56F26 /* JSEncodeType.m in Sources */,
+				0A03BDE12395F4D400A90044 /* ImageUtil.m in Sources */,
 				0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */,
 				D8DD422D21758371009D80E9 /* JSSymbolMarker.m in Sources */,
 				0A6F014E231E0AAC004D5290 /* FixColorMode.m in Sources */,
@@ -1589,6 +1670,7 @@
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
 				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
 				0A22981222BB1762001B2356 /* SMParameter.m in Sources */,
+				0A03BDDD2395F4D400A90044 /* AIRecognition.m in Sources */,
 				0A51675621AF7EF7003C77BE /* MapTool.m in Sources */,
 				182832BB22F98190006586BF /* SIPortalService.m in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
@@ -1603,12 +1685,14 @@
 				0A332DEE211D623E00F56F26 /* JSAMQPSender.m in Sources */,
 				0A332DF8211D623E00F56F26 /* JSChartData.m in Sources */,
 				0A332E67211D623E00F56F26 /* JSTransportationAnalystParameter.m in Sources */,
+				0A03BDDF2395F4D400A90044 /* AIDetectView.m in Sources */,
 				2AD00E8522461CC70087FC43 /* PoiSearchHelper.m in Sources */,
 				0A332E5F211D623E00F56F26 /* JSThemeRangeItem.m in Sources */,
 				0A332DEC211D623E00F56F26 /* JSAMQPManager.m in Sources */,
 				0A332E5E211D623E00F56F26 /* JSThemeRange.m in Sources */,
 				0A332E3D211D623E00F56F26 /* JSPointM.m in Sources */,
 				0A332E0B211D623E00F56F26 /* JSDatasourceConnectionInfo.m in Sources */,
+				0A03BDE42395F4D400A90044 /* ImageClassification.mm in Sources */,
 				0A332DF3211D623E00F56F26 /* JSBufferAnalyst.m in Sources */,
 				0A332E28211D623E00F56F26 /* JSLineChartData.m in Sources */,
 				0A332E34211D623E00F56F26 /* JsonUtil.m in Sources */,
@@ -1620,19 +1704,23 @@
 				D854DA3C2186F9AF0075B5F8 /* SCollector.m in Sources */,
 				0A332DFF211D623E00F56F26 /* JSColorGradientType.m in Sources */,
 				0A332E0A211D623E00F56F26 /* JSDatasource.m in Sources */,
+				0A03BDE02395F4D400A90044 /* CameraManager.m in Sources */,
 				0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */,
 				0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */,
 				0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */,
 				D835E5B0219EC726008910F0 /* SLayerManager.m in Sources */,
+				0A03BDDC2395F4D400A90044 /* AIDetectStyle.m in Sources */,
 				0A334CD222978A1400E4F302 /* SMMediaCollector.m in Sources */,
 				0A332E1F211D623E00F56F26 /* JSInstrumentChartViewManager.m in Sources */,
 				0A332E33211D623E00F56F26 /* JSObjManager.m in Sources */,
 				0A332E55211D623E00F56F26 /* JSSupplyCenter.m in Sources */,
+				0A03BDDE2395F4D400A90044 /* InfoView.m in Sources */,
 				D8DD422A2175830E009D80E9 /* JSSymbolLine.m in Sources */,
 				0015B98122F2C5E70084A880 /* POISearchHelper2D.m in Sources */,
 				0A51675321AD437D003C77BE /* SMSceneWC.m in Sources */,
 				0A332DF4211D623E00F56F26 /* JSBufferAnalystGeometry.m in Sources */,
 				0A332E43211D623E00F56F26 /* JSQueryService.m in Sources */,
+				0A03BDE22395F4D400A90044 /* Recognition.m in Sources */,
 				0A332E62211D623E00F56F26 /* JSThemeUniqueItem.m in Sources */,
 				0A332E00211D623E00F56F26 /* JSColorScheme.m in Sources */,
 				0A332E63211D623E00F56F26 /* JSTimeLine.m in Sources */,

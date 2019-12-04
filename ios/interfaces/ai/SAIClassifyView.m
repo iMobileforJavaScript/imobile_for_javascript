@@ -8,7 +8,7 @@
 
 #import "SAIClassifyView.h"
 #import "ImageClassification.h"
-#import "SuperMapAI/Recognition.h"
+#import "Recognition.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
 #import "SuperMap/DatasetVector.h"
@@ -365,13 +365,6 @@ RCT_REMAP_METHOD(modifyLastItem, modifyLastItem:(NSDictionary*)infoDic resolve:(
     DEFAULT_LABEL_CN_TRANSLATE=[NSHomeDirectory() stringByAppendingPathComponent:@"/Documents/iTablet/Common/AI/ClassifyModel/mobilenet_quant_224/mobilenet_quant_224_cn.txt"];
 
     
-//    NSString* modelPath= [[NSBundle mainBundle] pathForResource:@"mobilenet_quant_v1_224" ofType:@"tflite"];
-//    NSString* labelsPath = [[NSBundle mainBundle] pathForResource:@"labels" ofType:@"txt"];
-//    mImageClassification=[[[ImageClassification alloc] init] initWithModle:modelPath labels:labelsPath andThreadCount:1];
-    
-//    DEFAULT_MODEL_NAME= [[NSBundle mainBundle] pathForResource:@"mobilenet_quant_v1_224" ofType:@"tflite"];
-//    DEFAULT_LABEL_NAME= [[NSBundle mainBundle] pathForResource:@"labels" ofType:@"txt"];
-//    DEFAULT_LABEL_CN_TRANSLATE= [[NSBundle mainBundle] pathForResource:@"labels_cn" ofType:@"txt"];
     
     if (mModelType == ASSETS_FILE) {
         mImageClassification=[[[ImageClassification alloc] init] initWithModle:DEFAULT_MODEL_NAME labels:DEFAULT_LABEL_NAME andThreadCount:1];
@@ -394,8 +387,8 @@ RCT_REMAP_METHOD(modifyLastItem, modifyLastItem:(NSDictionary*)infoDic resolve:(
         }else{
             dataFile = [NSString stringWithContentsOfFile:LABEL_PATH encoding:NSUTF8StringEncoding error:nil];
         }
-        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\r\n"];
-//        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\n"];
+//        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\r\n"];
+        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\n"];
         for (NSString *str in dataarr) {
             [array addObject:str];
         }
@@ -429,8 +422,8 @@ RCT_REMAP_METHOD(modifyLastItem, modifyLastItem:(NSDictionary*)infoDic resolve:(
         }else{
             dataFile = [NSString stringWithContentsOfFile:LABEL_PATH encoding:NSUTF8StringEncoding error:nil];
         }
-//        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\n"];
-        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\r\n"];
+        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\n"];
+//        NSArray *dataarr = [dataFile componentsSeparatedByString:@"\r\n"];
         for (NSString *str in dataarr) {
             [array addObject:str];
         }
@@ -438,14 +431,6 @@ RCT_REMAP_METHOD(modifyLastItem, modifyLastItem:(NSDictionary*)infoDic resolve:(
     } @catch (NSException *exception) {
         return nil;
     }
-    
-//    NSMutableArray* array=[[NSMutableArray alloc] init];
-//    NSString *dataFile = [NSString stringWithContentsOfFile:LABEL_PATH encoding:NSUTF8StringEncoding error:nil];
-//    NSArray *dataarr = [dataFile componentsSeparatedByString:@"\n"];
-//    for (NSString *str in dataarr) {
-//        [array addObject:str];
-//    }
-//    return array;
 }
 
 @end

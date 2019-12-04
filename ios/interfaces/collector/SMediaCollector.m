@@ -147,6 +147,44 @@ RCT_REMAP_METHOD(updateMedia, updateMedia:(NSString *)layerName geoIDs:(NSArray 
 
 
 #pragma mark 把AI分类的结果添加到数据集中(图片直接保存在Media文件夹中)
+RCT_REMAP_METHOD(addArMedia, addArMedia:(NSDictionary *)info addToMap:(BOOL)addToMap resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = NO;
+        SMMediaCollector* collector = [SMMediaCollector singletonInstance];
+        if (!collector || [collector.mediaPath isEqualToString:@""])  {
+            reject(@"SMediaCollector", @"MediaCollector should be initialized", nil);
+        } else {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            NSString* datasourceName = [info objectForKey:@"datasourceName"];
+            NSString* datasetName = [info objectForKey:@"datasetName"];
+            NSString* mediaName = [info objectForKey:@"mediaName"];
+            
+            
+            SMMedia* media = [[SMMedia alloc] initWithName:mediaName];
+            
+            Datasource* ds = [mapControl.map.workspace.datasources getAlias:datasourceName];
+            if ([media setMediaDataset:ds datasetName:datasetName]) {
+                if (addToMap) {
+                    mediaLayer = [SMLayer findLayerByDatasetName:datasetName];
+                    if (!mediaLayer) {
+                        mediaLayer = [SMLayer addLayerByName:datasourceName datasetName:datasetName];
+                    }
+                    
+                    result = [media saveArMedia:mediaName toDictionary:collector.mediaPath addNew:YES];
+                    
+                    if(result){
+                        [self addCallout:media layer:mediaLayer];
+                    }
+                }
+            }
+            resolve(@(result));
+        }
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
+#pragma mark 把AI分类的结果添加到数据集中(图片直接保存在Media文件夹中)
 RCT_REMAP_METHOD(addAIClassifyMedia, addAIClassifyMedia:(NSDictionary *)info addToMap:(BOOL)addToMap resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL result = NO;
@@ -272,6 +310,28 @@ RCT_REMAP_METHOD(removeMedias, removeMediaWithResolver:(RCTPromiseResolveBlock)r
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
         [mapControl removeAllCallouts];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
+RCT_REMAP_METHOD(removeByIds, removeByIds:(NSArray *)geoIds layerName:(NSString *)layerName solver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for(int i = 0; i < mapControl.callouts.count; i++) {
+                InfoCallout* callout = (InfoCallout *)mapControl.callouts[i];
+                for(int n = 0; n < geoIds.count; n++) {
+                    int geoId = [[geoIds objectAtIndex:n] intValue];
+                    if (callout && [callout.layerName isEqualToString:layerName] && callout.geoID == geoId) {
+                        [mapControl removeCalloutAtIndex:i];
+                    }
+                }
+            }
+            
+        });
+        
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"SMediaCollector", exception.reason, nil);

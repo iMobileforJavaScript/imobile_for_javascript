@@ -299,6 +299,10 @@ function removeMedias () {
   return Collector.removeMedias()
 }
 
+function removeByIds(ids, layerName) {
+  return Collector.removeByIds(ids, layerName)
+}
+
 /**
  * 显示指定图层多媒体采集callouts
  * @returns {*}
@@ -366,6 +370,7 @@ export default {
   saveMediaByLayer,
   saveMediaByDataset,
   removeMedias,
+  removeByIds,
   showMedia,
   hideMedia,
   updateMedia,
