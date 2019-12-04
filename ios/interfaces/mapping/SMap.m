@@ -2683,9 +2683,12 @@ RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLaye
              map.center = bounds.center;
          } else {
              sMap.smMapWC.mapControl.map.viewBounds = bounds;
-             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                  [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
-             });
+             sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
+//             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                 sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
+//                 [map refresh];
+////                  [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
+//             });
          }
          [map refresh];
          resolve(@(1));
@@ -3857,9 +3860,9 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
         }
         
         [map refresh];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
-        });
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
+//        });
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
