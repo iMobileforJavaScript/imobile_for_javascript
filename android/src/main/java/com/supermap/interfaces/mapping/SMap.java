@@ -1052,7 +1052,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         @Override
                         public void run() {
                             sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.9, 100);
-//                            sMap.smMapWC.getMapControl().getMap().refresh();
                         }
                     }, 100);//3秒后执行Runnable中的run方法
                 }
@@ -5483,8 +5482,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Rectangle2D bounds = geoRegion.getBounds();
             //bounds.inflate(-bounds.getWidth() * 0.2,-bounds.getHeight() * 0.5);
             mapControl.getMap().setViewBounds(bounds);
-            double scale = mapControl.getMap().getScale() * 0.2;
-            mapControl.zoomTo(scale, 200);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.2, 100);
+                }
+            }, 200);//3秒后执行Runnable中的run方法
             mapControl.getMap().refresh();
             geoRegion.dispose();
 
