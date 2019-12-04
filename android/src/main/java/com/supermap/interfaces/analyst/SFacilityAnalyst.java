@@ -860,7 +860,7 @@ public class SFacilityAnalyst extends SNetworkAnalyst {
                     Geometry geometry = recordset.getGeometry();
                     GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
                     geometry.setStyle(style);
-                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer().add(geometry, "");
+                    SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer().add(geometry, routeTag);
                     recordset.moveNext();
                 }
                 SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
