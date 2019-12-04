@@ -32,8 +32,8 @@ NSString *const onArObjectClick  = @"onArObjectClick";
 static AIDetectView* mAIDetectView = nil;
 static NSString* mLanguage=nil;
 static AIDetectStyle* mAIDetectStyle=nil;   //识别框类型
-static BOOL mIsDrawTitle=NO;         //是否显示title
-static BOOL mIsDrawConfidence=NO;    //是否显示可信度
+static BOOL mIsDrawTitle=YES;         //是否显示title
+static BOOL mIsDrawConfidence=YES;    //是否显示可信度
 
 static ModelType mModelType = ASSETS_FILE;
 
@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE();
     
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
-    mAIDetectView.detectInterval=2000;
+    mAIDetectView.detectInterval=200;
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];

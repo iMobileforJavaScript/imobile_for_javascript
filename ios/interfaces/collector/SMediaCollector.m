@@ -316,6 +316,28 @@ RCT_REMAP_METHOD(removeMedias, removeMediaWithResolver:(RCTPromiseResolveBlock)r
     }
 }
 
+RCT_REMAP_METHOD(removeByIds, removeByIds:(NSArray *)geoIds layerName:(NSString *)layerName solver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for(int i = 0; i < mapControl.callouts.count; i++) {
+                InfoCallout* callout = (InfoCallout *)mapControl.callouts[i];
+                for(int n = 0; n < geoIds.count; n++) {
+                    int geoId = [[geoIds objectAtIndex:n] intValue];
+                    if (callout && [callout.layerName isEqualToString:layerName] && callout.geoID == geoId) {
+                        [mapControl removeCalloutAtIndex:i];
+                    }
+                }
+            }
+            
+        });
+        
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"SMediaCollector", exception.reason, nil);
+    }
+}
+
 #pragma mark 显示指定图层多媒体采集callouts
 RCT_REMAP_METHOD(showMedia, showMediaWithLayerName:(NSString *)layerName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

@@ -16,7 +16,7 @@ typedef void(^CallBackBlock)(AIRecognition *aIRecognition); // 返回点击的�
 @property (nonatomic,strong) NSArray *aIRecognitionArray;
 @property (nonatomic,strong) NSMutableArray *aIRectArr;
 @property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
-
+@property(nonatomic)CGSize sizeCamera;
 @property (nonatomic, strong)CallBackBlock callBackBlock;
 
 // 起始点
