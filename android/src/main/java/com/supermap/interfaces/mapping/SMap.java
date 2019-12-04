@@ -92,6 +92,7 @@ import com.supermap.mapping.ThemeGridRange;
 import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
 import com.supermap.mapping.ThemeUnique;
+import com.supermap.mapping.TrackingLayer;
 import com.supermap.mapping.collector.Collector;
 import com.supermap.navi.NaviInfo;
 import com.supermap.navi.NaviListener;
@@ -5639,7 +5640,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void clearTarckingLayer(Promise promise) {
+    public void clearTrackingLayer(Promise promise) {
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
@@ -5708,104 +5709,42 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
-    private void setNavigationOnline(NavigationOnlineData data) {
-        if (data == null) {
-            return;
-        }
-        sMap = SMap.getInstance();
-        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
-//		从data中获取geoline
-        GeoLine geoLine = data.getRoute();
-        GeoStyle geoLineStyle = new GeoStyle();
-        Color color = new Color(0, 191, 255);
-        geoLineStyle.setLineSymbolID(15);
-        geoLineStyle.setLineColor(color);
-//		为geoLine设置风格
-        geoLine.setStyle(geoLineStyle);
-//		在跟踪图层上显示geoLine
-        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(geoLine, "线路");
-        LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-        Point2D pt = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-        if (!safeGetType(sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)) {
-            Point2Ds point2Ds = new Point2Ds();
-            point2Ds.add(pt);
-            PrjCoordSys prjCoordSys = new PrjCoordSys();
-            prjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-            CoordSysTransParameter parameter = new CoordSysTransParameter();
-
-            CoordSysTranslator.convert(point2Ds, prjCoordSys, sMap.smMapWC.getMapControl().getMap().getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-            pt = point2Ds.getItem(0);
-            showMarkerHelper(pt, curLocationTag);
-        }
-//		得到线路信息的集合
-        List<PathInfo> pathInfoList = data.getPathInfos();
-
-
-        WritableArray array = Arguments.createArray();
-        for (int i = 0; i < pathInfoList.size(); i++) {
-            WritableMap map = Arguments.createMap();
-            PathInfo pathInfo = pathInfoList.get(i);
-            String roadName = pathInfo.getRoadName();
-            int nextDirection = pathInfo.getNextDirection();
-            double roadLength = pathInfo.getLength();
-
-            map.putString("roadName", roadName);
-            map.putInt("nextDirection", nextDirection);
-            map.putDouble("roadLength", roadLength);
-            array.pushMap(map);
-        }
-
-        WritableMap map = Arguments.createMap();
-        map.putString("Length", data.getLength());
-
-        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(EventConst.NAVIGATION_WAYS, array);
-
-        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(EventConst.NAVIGATION_LENGTH, map);
-    }
-
-    Point2D endPoint, startPoint;
-
     /**
-     * 路径分析
-     *
-     * @param x
-     * @param y
+     * 绘制在线路径分析的路径
+     * @param pathInfos
      * @param promise
      */
     @ReactMethod
-    public void routeAnalyst(double x, double y, Promise promise) {
+    public void drawOnlinePath(ReadableArray pathInfos, Promise promise){
         try {
             sMap = SMap.getInstance();
-            endPoint = new Point2D(x, y);
-            LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
-            startPoint = new Point2D(gpsDat.dLongitude, gpsDat.dLatitude);
-            NavigationOnline navigationOnline = new NavigationOnline();
-            navigationOnline.setKey("fvV2osxwuZWlY0wJb8FEb2i5");
-            navigationOnline.setNavigationOnlineCallback(new NavigationOnline.NavigationOnlineCallback() {
-                @Override
-                public void calculateSuccess(NavigationOnlineData data) {
-                    setNavigationOnline(data);
-                }
+            TrackingLayer trackingLayer = sMap.smMapWC.getMapControl().getMap().getTrackingLayer();
+            trackingLayer.clear();
+            Point2Ds point2Ds = new Point2Ds();
 
-                @Override
-                public void calculateFailed(String errorInfo) {
-                    Log.e("LocationMore", errorInfo);
-                }
-            });
-            NavigationOnlineParameter parameter = new NavigationOnlineParameter();
-            parameter.setStartPoint(startPoint);
-            parameter.setEndPoint(endPoint);
-            parameter.setCoordinateType(CoordinateType.NAVINFO_AMAP_MERCATOR);
-            parameter.setRouteType(RouteType.RE_COMMEND);
-            navigationOnline.routeAnalyst(parameter);
+            for(int i = 0; i < pathInfos.size(); i++){
+                ReadableMap map = pathInfos.getMap(i);
+                double x = map.getDouble("x");
+                double y = map.getDouble("y");
+
+                Point2D point2D = new Point2D(x,y);
+                point2Ds.add(point2D);
+            }
+
+            GeoLine geoLine = new GeoLine(point2Ds);
+            GeoStyle geoStyle = new GeoStyle();
+
+            Color color = new Color(0,191,255);
+            geoStyle.setLineSymbolID(15);
+            geoStyle.setLineColor(color);
+            geoLine.setStyle(geoStyle);
+
+            trackingLayer.add(geoLine,"线路");
             promise.resolve(true);
-        } catch (Exception e) {
+        }catch (Exception e){
             promise.reject(e);
         }
     }
-
     /**
      * 设置行业导航参数
      *
@@ -6162,14 +6101,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
      * @param promise
      */
     @ReactMethod
-    public void openNavDatasource(Map <String,String>params, Promise promise){
+    public void openNavDatasource(ReadableMap params, Promise promise){
         try {
             sMap = SMap.getInstance();
-            String alias = params.get("alias");
+            String alias = params.getString("alias");
             Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
             Datasource datasource = datasources.get(alias);
             if(datasource == null){
-                datasource = sMap.smMapWC.openDatasource(params);
+                datasource = sMap.smMapWC.openDatasource(params.toHashMap());
                 if(datasource != null){
                     Dataset linkTable = datasource.getDatasets().get("ModelFileLinkTable");
                     if(linkTable == null){

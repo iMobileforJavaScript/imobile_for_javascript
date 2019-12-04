@@ -2158,15 +2158,14 @@ export default (function () {
   }
 
 
-
   /**
-   * 路径分析
-   * @param index
-   * @returns {*|void|Promise<void>}
+   * 绘制在线路径分析的路径
+   * @param pathPoints
+   * @returns {*}
    */
-  function routeAnalyst(x,y) {
+  function drawOnlinePath(pathPoints) {
     try {
-      return SMap.routeAnalyst(x,y)
+      return SMap.drawOnlinePath(pathPoints)
     } catch (e) {
       console.error(e)
     }
@@ -2190,9 +2189,9 @@ export default (function () {
    * 清除导航路线
    * @returns {*|void|Promise<void>}
    */
-  function clearTarckingLayer() {
+  function clearTrackingLayer() {
     try {
-      return SMap.clearTarckingLayer()
+      return SMap.clearTrackingLayer()
     } catch (e) {
       console.error(e)
     }
@@ -3142,9 +3141,9 @@ export default (function () {
     removeLegendListener,
     addScaleChangeDelegate,
 
-    routeAnalyst,
+    drawOnlinePath,
     isPointsInMapBounds,
-    clearTarckingLayer,
+    clearTrackingLayer,
     startNavigation,
     startIndoorNavigation,
     beginNavigation,
