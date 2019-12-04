@@ -79,6 +79,10 @@ async function clear () {
   return Analyst.clear()
 }
 
+/** 清除路线，保留点 **/
+async function clearRoutes () {
+  return Analyst.clearRoutes()
+}
 
 /**
  * 最佳路径分析
@@ -99,6 +103,15 @@ async function findPath (params = {}, hasLeastEdgeCount = false) {
 async function findTSPPath (params = {}, isEndNodeAssigned = false) {
   return Analyst.findTSPPath(params, isEndNodeAssigned)
 }
+
+async function undo () {
+  return Analyst.undo()
+}
+
+async function redo () {
+  return Analyst.redo()
+}
+
 export default {
   load,
   addBarrierNode,
@@ -106,6 +119,9 @@ export default {
   setStartPoint,
   setEndPoint,
   clear,
+  clearRoutes,
+  undo,
+  redo,
   
   findPath,
   findTSPPath,

@@ -26,12 +26,14 @@ import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.GeoLineM;
+import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
+import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
 import com.supermap.data.TextStyle;
 import com.supermap.data.Workspace;
@@ -39,6 +41,7 @@ import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.MapControl;
+import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
 import com.supermap.smNative.Network_tool;
 import com.supermap.smNative.SMAnalyst;
@@ -49,6 +52,8 @@ import com.supermap.smNative.SMParameter;
 import org.apache.http.cookie.SM;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class STransportationAnalyst extends SNetworkAnalyst {
@@ -99,15 +104,26 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         try {
             String nodeTag = "startNode";
             String textTag = "startNodeText";
+            int pointID = 3614;
 
             GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
-            style.setMarkerSymbolID(3614);
+            style.setMarkerSymbolID(pointID);
             Point2D tempPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
             if (tempPoint != null) {
                 if (startPoint != null) {
                     this.removeTagFromTrackingLayer(nodeTag);
                     this.removeTagFromTrackingLayer(textTag);
                     startPoint = null;
+
+                    int i = 0;
+                    while (i < history.getCount()) {
+                        HashMap item = history.get(i);
+                        if (item.get("tag").equals("startNode") || item.get("tag").equals("startNodeText")) {
+                            history.remove(i);
+                        } else {
+                            i++;
+                        }
+                    }
                 }
                 if (nodeLayer != null) {
 //                startNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
@@ -119,11 +135,23 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                     startPoint = tempPoint;
 
                     TextStyle textStyle = new TextStyle();
-//                textStyle.setFontWidth(6);
-//                textStyle.setFontHeight(8);
                     textStyle.setForeColor(new Color(255, 105, 0));
                     this.setText(text, startPoint, textStyle, textTag);
+
+                    HashMap nodeMap = new HashMap();
+                    nodeMap.put("tag", nodeTag);
+                    nodeMap.put("labelTag", textTag);
+                    nodeMap.put("label", text);
+                    nodeMap.put("point", startPoint);
+                    nodeMap.put("pointID", pointID);
+                    nodeMap.put("pointStyle", style);
+                    nodeMap.put("labelStyle", textStyle);
+                    if (history == null) {
+                        history = new History();
+                    }
+                    history.addHistory(nodeMap);
                 }
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
                 promise.resolve(startNodeID);
             } else {
                 promise.resolve(-1);
@@ -143,31 +171,48 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         try {
             String nodeTag = "endNode";
             String textTag = "endNodeText";
+            int pointID = 3614;
 
             GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(105, 255, 0));
-            style.setMarkerSymbolID(3614);
+            style.setMarkerSymbolID(pointID);
             Point2D tempPoint = this.selectPoint(point, nodeLayer, style, nodeTag);
             if (tempPoint != null) {
                 if (endPoint != null) {
                     this.removeTagFromTrackingLayer(nodeTag);
                     this.removeTagFromTrackingLayer(textTag);
                     endPoint = null;
+
+                    int i = 0;
+                    while (i < history.getCount()) {
+                        HashMap item = history.get(i);
+                        if (item.get("tag").equals("endNode") || item.get("tag").equals("endNodeText")) {
+                            history.remove(i);
+                        } else {
+                            i++;
+                        }
+                    }
                 }
                 if (nodeLayer != null) {
-//                endNodeID = this.selectNode(point, nodeLayer, style, nodeTag);
-//
-//                double x = point.getDouble("x");
-//                double y = point.getDouble("y");
-//                Point p = new Point((int)x, (int)y);
-//                endPoint = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
                     endPoint = tempPoint;
 
                     TextStyle textStyle = new TextStyle();
-//                textStyle.setFontWidth(6);
-//                textStyle.setFontHeight(8);
                     textStyle.setForeColor(new Color(105, 255, 0));
                     this.setText(text, endPoint, textStyle, textTag);
+
+                    HashMap nodeMap = new HashMap();
+                    nodeMap.put("tag", nodeTag);
+                    nodeMap.put("labelTag", textTag);
+                    nodeMap.put("label", text);
+                    nodeMap.put("point", endPoint);
+                    nodeMap.put("pointID", pointID);
+                    nodeMap.put("pointStyle", style);
+                    nodeMap.put("labelStyle", textStyle);
+                    if (history == null) {
+                        history = new History();
+                    }
+                    history.addHistory(nodeMap);
                 }
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
                 promise.resolve(endNodeID);
             } else {
                 promise.resolve(-1);
@@ -185,40 +230,52 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     @ReactMethod
     public void addBarrierNode(ReadableMap point, String text, Promise promise) {
         try {
-            String nodeTag = "";
+            String nodeTag = "barrier_node_" + new Date().getTime();
             int node = -1;
+            int pointID = 3614;
             if (nodeLayer != null) {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(255, 0, 0));
-                style.setMarkerSymbolID(3614);
+                style.setMarkerSymbolID(pointID);
 
-                node = this.selectNode(point, nodeLayer, style, nodeTag);
-                if (barrierNodes == null) {
-                    barrierNodes = new ArrayList<>();
-                }
+//                node = this.selectNode(point, nodeLayer, style, nodeTag);
+//                if (barrierNodes == null) {
+//                    barrierNodes = new ArrayList<>();
+//                }
 
                 if (barrierPoints == null) {
                     barrierPoints = new Point2Ds();
                 }
-//                double x = point.getDouble("x");
-//                double y = point.getDouble("y");
-//                Point p = new Point((int)x, (int)y);
-//                Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
-//                barrierPoints.add(point2D);
                 Point2D point2D = this.selectPoint(point, nodeLayer, style, nodeTag);
                 if (point2D != null) {
+//                    int index = barrierNodes != null;
                     this.addBarrierPoints(point2D);
 
+                    String label = text+barrierPoints.getCount();
                     TextStyle textStyle = new TextStyle();
 //                    textStyle.setFontWidth(6);
 //                    textStyle.setFontHeight(8);
                     textStyle.setForeColor(new Color(255, 0, 0));
-                    this.setText(text, point2D, textStyle, nodeTag);
+                    this.setText(label, point2D, textStyle, nodeTag);
+
+                    HashMap nodeMap = new HashMap();
+                    nodeMap.put("tag", nodeTag);
+                    nodeMap.put("labelTag", nodeTag);
+                    nodeMap.put("label", label);
+                    nodeMap.put("point", point2D);
+                    nodeMap.put("pointID", pointID);
+                    nodeMap.put("pointStyle", style);
+                    nodeMap.put("labelStyle", textStyle);
+                    if (history == null) {
+                        history = new History();
+                    }
+                    history.addHistory(nodeMap);
                 }
 
-                if (node > 0) {
-                    barrierNodes.add(node);
-                }
+//                if (node > 0) {
+//                    barrierNodes.add(node);
+//                }
             }
+            SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(node);
         } catch (Exception e) {
             promise.reject(e);
@@ -233,41 +290,52 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     @ReactMethod
     public void addNode(ReadableMap point, String text, Promise promise) {
         try {
-            String nodeTag = "";
-            int node = -1;
+            String nodeTag = "node_" + new Date().getTime();
+//            int node = -1;
+            int pointID = 3614;
             if (nodeLayer != null) {
                 GeoStyle style = getGeoStyle(new Size2D(10, 10), new Color(212, 161, 70));
-                style.setMarkerSymbolID(3614);
+                style.setMarkerSymbolID(pointID);
 
-                node = this.selectNode(point, nodeLayer, style, nodeTag);
-                if (nodes == null) {
-                    nodes = new ArrayList<>();
-                }
+//                node = this.selectNode(point, nodeLayer, style, nodeTag);
+//                if (nodes == null) {
+//                    nodes = new ArrayList<>();
+//                }
 
                 if (points == null) {
                     points = new Point2Ds();
                 }
-//                double x = point.getDouble("x");
-//                double y = point.getDouble("y");
-//                Point p = new Point((int)x, (int)y);
-//                Point2D point2D = SMap.getInstance().getSmMapWC().getMapControl().getMap().pixelToMap(p);
-//                points.add(point2D);
                 Point2D point2D = this.selectPoint(point, nodeLayer, style, nodeTag);
                 if (point2D != null) {
                     this.addPoint(point2D);
 
+                    String label = text + points.getCount();
                     TextStyle textStyle = new TextStyle();
 //                    textStyle.setFontWidth(6);
 //                    textStyle.setFontHeight(8);
                     textStyle.setForeColor(new Color(212, 161, 70));
-                    this.setText(text, point2D, textStyle, nodeTag);
+                    this.setText(label, point2D, textStyle, nodeTag);
+
+                    HashMap nodeMap = new HashMap();
+                    nodeMap.put("tag", nodeTag);
+                    nodeMap.put("labelTag", nodeTag);
+                    nodeMap.put("label", label);
+                    nodeMap.put("point", point2D);
+                    nodeMap.put("pointID", pointID);
+                    nodeMap.put("pointStyle", style);
+                    nodeMap.put("labelStyle", textStyle);
+                    if (history == null) {
+                        history = new History();
+                    }
+                    history.addHistory(nodeMap);
                 }
 
-                if (node > 0) {
-                    nodes.add(node);
-                }
+//                if (node > 0) {
+//                    nodes.add(node);
+//                }
             }
-            promise.resolve(node);
+            SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -289,6 +357,21 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             if (barrierNodes != null) barrierNodes.clear();
             if (points != null) points.clear();
             if (barrierPoints != null) barrierPoints.clear();
+            if (history != null) history.clear();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 清除路线，保留点
+     * @param promise
+     */
+    @ReactMethod
+    public void clearRoutes(Promise promise) {
+        try {
+            clearRoutes();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -516,6 +599,91 @@ public class STransportationAnalyst extends SNetworkAnalyst {
         }
     }
 
+    @ReactMethod
+    public void undo(Promise promise) {
+        try {
+            int preIndex = history.undo();
+            if (preIndex == - 1) {
+                promise.resolve(false);
+            } else {
+                HashMap node = history.get(preIndex);
+
+                String tag = node.get("tag").toString();
+                String labelTag = node.get("labelTag").toString();
+                if (tag.indexOf("node_") == 0 && points != null) {
+                    points.remove(points.getCount() - 1);
+                } else if (tag.indexOf("barrier_node_") == 0 && barrierPoints != null) {
+                    barrierPoints.remove(barrierPoints.getCount() - 1);
+                } else if (tag.equals("startNode") && startPoint != null) {
+                    startPoint = null;
+                } else if (tag.equals("endNode") && endPoint != null) {
+                    endPoint = null;
+                }
+
+                TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
+
+                if (trackingLayer.indexOf(tag) >= 0) trackingLayer.remove(trackingLayer.indexOf(tag));
+                if (trackingLayer.indexOf(labelTag) >= 0) trackingLayer.remove(trackingLayer.indexOf(labelTag));
+
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    @ReactMethod
+    public void redo(Promise promise) {
+        try {
+            int preIndex = history.redo();
+            if (preIndex == history.getCount() - 1) {
+                promise.resolve(false);
+            } else {
+                HashMap node = history.get(history.getCurrentIndex());
+
+                String tag = node.get("tag").toString();
+                String labelTag = node.get("labelTag").toString();
+                String label = node.get("label").toString();
+                TextStyle labelStyle = (TextStyle)node.get("labelStyle");
+                GeoStyle pointStyle = (GeoStyle)node.get("pointStyle");
+                int pointID = (int)node.get("pointID");
+                Point2D point2D = (Point2D)node.get("point");
+                if (tag.indexOf("node_") == 0 && points != null) {
+                    points.add(point2D);
+                } else if (tag.indexOf("barrier_node_") == 0 && barrierPoints != null) {
+                    barrierPoints.add(point2D);
+                } else if (tag.equals("startNode")) {
+                    startPoint = point2D;
+                } else if (tag.equals("endNode")) {
+                    endPoint = point2D;
+                }
+
+                TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
+
+                GeoPoint geoPoint = new GeoPoint();
+
+                if (pointStyle == null) {
+                    pointID = pointID > 0 ? pointID : 3614;
+                    pointStyle.setMarkerSymbolID(pointID);
+                }
+                geoPoint.setStyle(pointStyle);
+                geoPoint.setX((int)point2D.getX());
+                geoPoint.setY((int)point2D.getY());
+
+                trackingLayer.add(geoPoint, tag);
+
+                this.setText(label, point2D, labelStyle, labelTag);
+
+                geoPoint.dispose();
+
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
+                promise.resolve(true);
+            }
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
 
     public boolean displayRoutes(GeoLineM[] routes) {
         SMap sMap = SMap.getInstance();
@@ -537,7 +705,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             style.setLineColor(new Color(225, 80, 0));
             style.setLineWidth(1);
             geoLineM.setStyle(style);
-            trackingLayer.add(geoLineM, "");
+            trackingLayer.add(geoLineM, routeTag);
         }
         mapControl.getMap().refresh();
         return true;

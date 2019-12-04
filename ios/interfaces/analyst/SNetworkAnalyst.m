@@ -8,6 +8,59 @@
 
 #import "SNetworkAnalyst.h"
 
+@implementation History : NSObject
+
+-(id)init {
+    self = [super init];
+    _history = [[NSMutableArray alloc] init];
+    return self;
+}
+-(int)getCount {
+    return _history.count;
+}
+-(NSArray *)getHistory {
+    return [_history subarrayWithRange:NSMakeRange(0, _currentIndex)];
+}
+-(NSDictionary *)get:(int)index {
+    return _history[index];
+}
+-(void)addHistory:(NSDictionary *)obj {
+    if (_currentIndex < (NSInteger)_history.count - 1) {
+        NSArray* temp = [_history subarrayWithRange:NSMakeRange(0, _currentIndex + 1)];
+        _history = [[NSMutableArray alloc] initWithArray:temp];
+    }
+    [_history addObject:obj];
+    _currentIndex = (NSInteger)_history.count - 1;
+}
+-(void)removeObjectAtIndex:(int)index {
+    [_history removeObjectAtIndex:index];
+    _currentIndex--;
+}
+-(void)removeObject:(NSObject *)obj {
+    [_history removeObject:obj];
+    _currentIndex--;
+}
+-(void)clear {
+    [_history removeAllObjects];
+    _currentIndex = -1;
+}
+-(int)undo {
+    int preIndex = _currentIndex >= 0 ? _currentIndex : -1;
+    if (_currentIndex > -1) {
+        _currentIndex--;
+    }
+    return preIndex;
+}
+-(int)redo {
+    int historyCount = (NSInteger)_history.count;
+    int preIndex = _currentIndex < historyCount - 1 ? _currentIndex : (historyCount - 1);
+    if (_currentIndex < historyCount - 1) {
+        _currentIndex++;
+    }
+    return preIndex;
+}
+@end
+
 @implementation SNetworkAnalyst
 RCT_EXPORT_MODULE();
 
@@ -39,11 +92,23 @@ RCT_EXPORT_MODULE();
     }
 }
 
-- (void)clear:(Selection *)selection {
+- (void)clear {
     if (selection) {
         [selection clear];
     }
     [[SMap singletonInstance].smMapWC.mapControl.map.trackingLayer clear];
+}
+
+- (void)clearRoutes:(Selection *)selection {
+    if (selection) {
+        [selection clear];
+    }
+    TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
+    int routeIndex = [trackingLayer indexof:@"route"];
+    while (routeIndex >= 0) {
+        [trackingLayer removeAt:routeIndex];
+        routeIndex = [trackingLayer indexof:@"route"];
+    }
 }
 
 - (int)selectNode:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
@@ -73,7 +138,14 @@ RCT_EXPORT_MODULE();
         
         TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
         [trackingLayer addGeometry:gPoint WithTag:tag];
-        [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+        
+//        NSMutableDictionary* nodeData = [[NSMutableDictionary alloc] init];
+//        [nodeData setObject:tag forKey:@"tag"];
+//        [nodeData setObject:point forKey:@"node"];
+//        if (history == nil) {
+//            history = [[History alloc] init];
+//        }
+//        [history addHistory:nodeData];
         
         [gPoint dispose];
         [rs close];
@@ -84,31 +156,10 @@ RCT_EXPORT_MODULE();
 
 - (Point2D *)selectPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
 //    int ID = -1;
-    //    if (!elementIDs) {
-    //        elementIDs = [[NSMutableArray alloc] init];
-    //    }
     double x = [(NSNumber *)[point objectForKey:@"x"] doubleValue];
     double y = [(NSNumber *)[point objectForKey:@"y"] doubleValue];
     CGPoint p = CGPointMake(x, y);
     Selection* hitSelection = [nodeLayer hitTestEx:p With:20];
-    
-//    if (!hitSelection || hitSelection.getCount == 0) {
-//        Point2D* pt = [[SMap singletonInstance].smMapWC.mapControl.map pixelTomap:p];
-//        SMap* sMap = [SMap singletonInstance];
-//        if ([sMap.smMapWC.mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-//            Point2Ds *points = [[Point2Ds alloc] init];
-//            [points add:pt];
-//            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-//            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-//            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-//
-//            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-//            [CoordSysTranslator convert:points PrjCoordSys:[sMap.smMapWC.mapControl.map prjCoordSys] PrjCoordSys:srcPrjCoorSys CoordSysTransParameter:param CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-//            pt = [points getItem:0];
-//        }
-//        hitSelection = [nodeLayer hitTest:pt With:20];
-//    }
-    
     NSMutableDictionary* pDic = nil;
     Point2D* p2D = nil;
     
@@ -116,14 +167,9 @@ RCT_EXPORT_MODULE();
         pDic = [[NSMutableDictionary alloc] init];
         Recordset* rs = hitSelection.toRecordset;
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
-//        ID = (int)rs.ID;
-        //        [elementIDs addObject:@(ID)];
         
         p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
-//        CGPoint cgp = [SMap.singletonInstance.smMapWC.mapControl.map mapToPixel:[[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY]];
-//        [pDic setObject:@(cgp.x) forKey:@"x"];
-//        [pDic setObject:@(cgp.y) forKey:@"y"];
-        
+
         GeoStyle* style = geoStyle;
         if (!style) {
             style = [[GeoStyle alloc] init];
@@ -135,7 +181,6 @@ RCT_EXPORT_MODULE();
         
         TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
         [trackingLayer addGeometry:gPoint WithTag:tag];
-        [[SMap singletonInstance].smMapWC.mapControl.map refresh];
         
         [gPoint dispose];
         [rs close];
