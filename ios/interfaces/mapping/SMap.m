@@ -1155,6 +1155,28 @@ RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPro
     }
 }
 
+#pragma mark 打开含有ModelFileLinkTable的数据源，用于室外导航
+RCT_REMAP_METHOD(openNavDatasource, openNavDatasourceWithParams:(NSDictionary *) params resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+    @try{
+        sMap = [SMap singletonInstance];
+        NSString *alias = [params valueForKey:@"alias"];
+        Datasources *datasources = sMap.smMapWC.workspace.datasources;
+        Datasource *datasource = [datasources getAlias:alias];
+        if(datasource == nil){
+            datasource = [sMap.smMapWC openDatasource:params];
+            if(datasource != nil){
+                Dataset *linkTable = [datasource.datasets getWithName:@"ModelFileLinkTable"];
+                if(linkTable == nil){
+                    [datasources closeAlias:alias];
+                }
+            }
+        }
+        resolve(@(YES));
+    }@catch(NSException *exception){
+        reject(@"openNavDatasource",exception.reason,nil);
+    }
+}
+
 #pragma mark 获取当前工作空间含有网络数据集
 RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{

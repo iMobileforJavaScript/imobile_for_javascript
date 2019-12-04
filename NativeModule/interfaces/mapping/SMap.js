@@ -2823,6 +2823,18 @@ export default (function () {
 
 
   /**
+   * 打开数据源，用于室外导航
+   * @param params
+   * @returns {*}
+   */
+  function openNavDatasource(params) {
+    try {
+      return SMap.openNavDatasource(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 获取数据源中含有的所有网络数据集
    * @param udb
    * @returns {*}
@@ -3165,6 +3177,7 @@ export default (function () {
     isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
+    openNavDatasource,
     getNetworkDataset,
     getPathInfos,
     getNavPathLength,

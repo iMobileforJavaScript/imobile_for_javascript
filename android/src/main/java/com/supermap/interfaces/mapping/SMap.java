@@ -6132,6 +6132,32 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     *  打开含有ModelFileLinkTable的数据源，用于室外导航
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void openNavDatasource(Map <String,String>params, Promise promise){
+        try {
+            sMap = SMap.getInstance();
+            String alias = params.get("alias");
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Datasource datasource = datasources.get(alias);
+            if(datasource == null){
+                datasource = sMap.smMapWC.openDatasource(params);
+                if(datasource != null){
+                    Dataset linkTable = datasource.getDatasets().get("ModelFileLinkTable");
+                    if(linkTable == null){
+                        datasources.close(alias);
+                    }
+                }
+            }
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.reject(e);
+        }
+    }
 
     /**
      * 获取当前工作空间含有网络数据集的数据源
