@@ -982,8 +982,7 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resol
         dispatch_sync(dispatch_get_main_queue(), ^{
             [[mapControl getNavigation2] enablePanOnGuide:YES];
             [[mapControl getNavigation2] startGuide:naviType];
-            [mapControl.map setIsFullScreenDrawModel:YES];
-            [[mapControl getNavigation2] setIsCarUpFront:YES];
+            [[mapControl getNavigation2] setIsCarUpFront:NO];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
