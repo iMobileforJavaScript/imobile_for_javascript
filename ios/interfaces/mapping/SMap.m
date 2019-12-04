@@ -2535,9 +2535,9 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
                 
                 [map refresh];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //                    [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
-                    [map refresh];
+                    [sMap.smMapWC.mapControl.map refresh];
                 });
             }
         }
