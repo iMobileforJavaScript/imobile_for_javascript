@@ -923,7 +923,10 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
             navigation2.navi2Delegate = self;
             [networkDataset close];
             resolve(@(YES));
+        }else{
+            resolve(@(NO));
         }
+        
     } @catch (NSException *exception) {
         reject(@"startNavigation",exception.reason,nil);
     }
