@@ -57,14 +57,10 @@ export default {
   ONLINE_ANALYST_RESULT: 'com.supermap.RN.online_analyst_result',
 
   /** 导航路线 **/
-  NAVIGATION_WAYS :"com.supermap.RN.Navigation.online_navigation_ways",
-  NAVIGATION_LENGTH :"com.supermap.RN.Navigation.online_navigation_length",
   INDUSTRYNAVIAGTION:"com.supermap.RN.Navigation.industry_navigation",
   MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
   MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",
   ILLEGALLYPARK:"com.supermap.RN.Navigation.illegallypark",
-  /** 室内地图 bounds改变，且floorlist的id存在 **/
-  IS_INDOOR_MAP : "com.supermap.RN.FloorListView.isIndoorChanged",
   /** 室内地图 楼层控件是否隐藏 **/
   IS_FLOOR_HIDDEN:'com.supermap.RN.FloorListView.isFloorHidden',
   

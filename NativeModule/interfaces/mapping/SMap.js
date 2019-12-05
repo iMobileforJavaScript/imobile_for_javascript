@@ -54,19 +54,20 @@ export default (function () {
   }
 
   /**
-   * 地图室内/室外切换事件
+   * 楼层显隐监听
    * @param handler
+   * @returns {EmitterSubscription}
    */
-  function addIndoorChangeListener(handler) {
+  let addFloorHiddenListener = handler => {
     try {
       if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_INDOOR_MAP,result=>{
+        return nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
         })
       }else {
-        DeviceEventEmitter.addListener(EventConst.IS_INDOOR_MAP,result=>{
+        return DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
           if(typeof handler === "function"){
             handler(result);
           }
@@ -78,29 +79,16 @@ export default (function () {
   }
 
   /**
-   * 楼层显隐监听
-   * @param handler
+   * 移除楼层显隐监听
+   * @param listeners 之前保存的listeners
+   * @returns {boolean}
    */
-  function addFloorHiddenListener(handler) {
-    try {
-      if(Platform.OS === 'ios'){
-        nativeEvt.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
-          if(typeof handler === "function"){
-            handler(result);
-          }
-        })
-      }else {
-        DeviceEventEmitter.addListener(EventConst.IS_FLOOR_HIDDEN,result=>{
-          if(typeof handler === "function"){
-            handler(result);
-          }
-        })
-      }
-    }catch (e) {
-      console.error(e)
-    }
+  let removeFloorHiddenListener = listeners => {
+    listeners.map(listener=>{
+      listener.remove()
+    })
+    return true
   }
-
   /**
    * 添加图例的监听事件，会返回相应的图例数据
    * @returns {*}
@@ -2095,52 +2083,6 @@ export default (function () {
   //     console.error(error);
   //   }
   // }
-
-
-  /**
-   * 路径分析路线详情监听
-   * @param handlers
-   */
-  function setOnlineNavigationListener(handlers){
-    try {
-      if (Platform.OS === 'ios' && handlers) {
-        if (typeof handlers.callback === 'function') {
-
-        }
-      } else if (Platform.OS === 'android' && handlers) {
-        if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
-            handlers.callback(e);
-          });
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  /**
-   * 路径分析路线详情监听
-   * @param handlers
-   */
-  function setOnlineNavigation2Listener(handlers){
-    try {
-      if (Platform.OS === 'ios' && handlers) {
-        if (typeof handlers.callback === 'function') {
-
-        }
-      } else if (Platform.OS === 'android' && handlers) {
-        if (typeof handlers.callback === "function") {
-          DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
-            handlers.callback(e);
-          });
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   /**
    * 导航结束监听
    * @param handlers
@@ -2166,15 +2108,28 @@ export default (function () {
   }
 
 
+  /**
+   * 绘制在线路径分析的路径
+   * @param pathPoints
+   * @returns {*}
+   */
+  function drawOnlinePath(pathPoints) {
+    try {
+      return SMap.drawOnlinePath(pathPoints)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   /**
-   * 路径分析
-   * @param index
-   * @returns {*|void|Promise<void>}
+   * 判断在线搜索的起始点是否在地图导航范围内
+   * @param startPoint
+   * @param endPoint
+   * @returns {*}
    */
-  function routeAnalyst(x,y) {
+  function isPointsInMapBounds(startPoint,endPoint) {
     try {
-      return SMap.routeAnalyst(x,y)
+      return SMap.isPointsInMapBounds(startPoint,endPoint)
     } catch (e) {
       console.error(e)
     }
@@ -2184,9 +2139,9 @@ export default (function () {
    * 清除导航路线
    * @returns {*|void|Promise<void>}
    */
-  function clearTarckingLayer() {
+  function clearTrackingLayer() {
     try {
-      return SMap.clearTarckingLayer()
+      return SMap.clearTrackingLayer()
     } catch (e) {
       console.error(e)
     }
@@ -2208,11 +2163,15 @@ export default (function () {
 
   /**
    * 设置行业导航
-   * @returns {*|void|Promise<void>}
+   * @param selectedObj { "name":string,
+   *                      "modelFileName":string,
+   *                      "datrasourceName":string
+   *                      }
+   * @returns {*}
    */
-  function startNavigation(networkDatasetName,netModel) {
+  function startNavigation(selectedObj) {
     try {
-      return SMap.startNavigation(networkDatasetName,netModel)
+      return SMap.startNavigation(selectedObj)
     } catch (e) {
       console.error(e)
     }
@@ -2615,13 +2574,11 @@ export default (function () {
 
   /**
    * 添加GPS轨迹
-   * @param datasourceName
-   * @param datasetName
    * @returns {undefined}
    */
-  function addGPSRecordset(datasourceName,datasetName) {
+  function addGPSRecordset() {
     try {
-      return SMap.addGPSRecordset(datasourceName,datasetName)
+      return SMap.addGPSRecordset()
     } catch (e) {
       console.error(e)
     }
@@ -2718,6 +2675,38 @@ export default (function () {
     }
   }
 
+
+  /**
+   * 初始化导航语音播报
+   * @returns {boolean|Promise<void>}
+   */
+  function initSpeakPlugin(){
+   try {
+      if(Platform.OS === 'android'){
+       return SMap.initSpeakPlugin();
+      }else{
+       return true;
+      }
+    }catch (error) {
+     console.warn(error)
+    }
+  }
+
+  /**
+   * 销毁语音播报
+   * @returns {boolean|*}
+   */
+  function destroySpeakPlugin(){
+    try {
+      if(Platform.OS === 'android'){
+        return SMap.destroySpeakPlugin();
+      }else{
+        return true;
+      }
+    }catch (error) {
+      console.warn(error)
+    }
+  }
   /**
    * 获取导航路径长度
    * @param isIndoor 是否室内
@@ -2749,7 +2738,7 @@ export default (function () {
    * @param networkDataset
    * @returns {*}
    */
-  function isInBounds(point,networkDataset){
+  function isInBounds(point,networkDataset = null){
     try {
       return SMap.isInBounds(point,networkDataset)
     } catch (e) {
@@ -2781,8 +2770,22 @@ export default (function () {
     }
   }
 
+
   /**
-   * 获取当前工作空间含有网络数据集的数据源
+   * 打开数据源，用于室外导航
+   * @param params
+   * @returns {*}
+   */
+  function openNavDatasource(params) {
+    try {
+      return SMap.openNavDatasource(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
+   * 获取数据源中含有的所有网络数据集
+   * @param udb
    * @returns {*}
    */
   function getNetworkDataset() {
@@ -2943,8 +2946,6 @@ export default (function () {
     getMapcenterPosition,
     toLocationPoint,
     //setPointSearchListener,
-    setOnlineNavigationListener,
-    setOnlineNavigation2Listener,
     // pointSearch,
     // initPointSearch,
     setIndustryNavigationListener,
@@ -3083,13 +3084,14 @@ export default (function () {
     addTextRecordset,
     getGestureDetector,
     addLegendListener,
-    addIndoorChangeListener,
     addFloorHiddenListener,
+    removeFloorHiddenListener,
     removeLegendListener,
     addScaleChangeDelegate,
 
-    routeAnalyst,
-    clearTarckingLayer,
+    drawOnlinePath,
+    isPointsInMapBounds,
+    clearTrackingLayer,
     startNavigation,
     startIndoorNavigation,
     beginNavigation,
@@ -3122,9 +3124,12 @@ export default (function () {
     isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
+    openNavDatasource,
     getNetworkDataset,
     getPathInfos,
     getNavPathLength,
+    initSpeakPlugin,
+    destroySpeakPlugin,
     // getIndoorDatasource,
     setIllegallyParkListener,
 

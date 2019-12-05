@@ -64,7 +64,6 @@ NSString * const MAP_GEOMETRY_MULTI_SELECTED = @"com.supermap.RN.Mapcontrol.geom
 NSString * const MAP_GEOMETRY_SELECTED = @"com.supermap.RN.Mapcontrol.geometry_selected";
 NSString * const MAP_SCALE_CHANGED = @"Supermap.MapControl.MapParamChanged.ScaleChanged";
 NSString * const MAP_BOUNDS_CHANGED = @"Supermap.MapControl.MapParamChanged.BoundsChanged";
-NSString * const IS_INDOOR_MAP = @"com.supermap.RN.FloorListView.isIndoorChanged";
 /**  楼层控件是否应该隐藏  **/
 NSString * const IS_FLOOR_HIDDEN = @"com.supermap.RN.FloorListView.isFloorHidden";
 
@@ -86,8 +85,6 @@ NSString * const ONLINE_ANALYST_RESULT = @"com.supermap.RN.online_analyst_result
 NSString * const MATCH_IMAGE_RESULT = @"com.supermap.RN.match_image_result";
 
 /** 导航路线 **/
-NSString * const NAVIGATION_WAYS = @"com.supermap.RN.Navigation.online_navigation_ways";
-NSString * const NAVIGATION_LENGTH = @"com.supermap.RN.Navigation.online_navigation_length";
 NSString * const INDUSTRYNAVIAGTION = @"com.supermap.RN.Navigation.industry_navigation";
 NSString * const MAPSELECTPOINTNAMESTART = @"com.supermap.RN.Navigation.mapselectpointnamestart";
 NSString * const MAPSELECTPOINTNAMEEND = @"com.supermap.RN.Navigation.mapselectpointnameend";

@@ -220,11 +220,8 @@
  * 停止飞行
  */
 -(void)flyStop{
-    if ( [m_sceneControl.scene.flyManager status]!=STOP) {
-        [m_sceneControl.scene.flyManager stop];
-        [SScene setActionHelper:PANSELECT3D];
-//        [m_sceneControl setAction3D:PANSELECT3D];
-    }
+    [m_sceneControl.scene.flyManager stop];
+    [SScene setActionHelper:PANSELECT3D];
 }
 
 -(void)startRefreashFlyProgress{
@@ -266,17 +263,8 @@
  *保存当前飞行站点
  */
 -(void)saveCurrentRouteStop{
-    
-    NSString* bundleId=[[NSBundle mainBundle] bundleIdentifier];
-    NSLog(@"%@",bundleId);
-//    sendTextContent();
-    
     if(!m_RouteStops){
-        m_route=[[Route alloc]init];
-        [m_route setIsStopsVisible:false];
-        [m_route setIsLinesVisible:false];
-        [m_route setIsFlyAlongTheRoute:true];
-        m_RouteStops=m_route.routeStops;
+        m_RouteStops=[[RouteStops alloc]init];
     }
     RouteStop* routeStop=[[RouteStop alloc]init];
     Camera tempCamera=m_sceneControl.scene.firstPersonCamera;
@@ -303,12 +291,21 @@
  *保存所有记录的站点并开始飞行
  */
 -(void)saveRoutStop{
-    FlyManager *flymanager = m_sceneControl.scene.flyManager;
-    Routes* routes=flymanager.routes;
-    int index=(int)[routes addRoute:m_route];
-    [routes setCurrentRouteIndex:index];
-    [flymanager play];
-    [m_sceneControl.scene.workspace save];
+    if(m_RouteStops) {
+        FlyManager *flymanager = m_sceneControl.scene.flyManager;
+        Routes* routes=flymanager.routes;
+        
+        m_route=[[Route alloc]init];
+        [m_route setIsStopsVisible:false];
+        [m_route setIsLinesVisible:false];
+        [m_route setIsFlyAlongTheRoute:true];
+        [m_route setRouteStops:m_RouteStops];
+        
+        int index=(int)[routes addRoute:m_route];
+        [routes setCurrentRouteIndex:index];
+        [flymanager play];
+        [m_sceneControl.scene.workspace save];
+    }
 }
 
 /**

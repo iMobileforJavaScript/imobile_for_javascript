@@ -49,7 +49,6 @@ extern NSString * const MAP_GEOMETRY_MULTI_SELECTED;
 extern NSString * const MAP_GEOMETRY_SELECTED;
 extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
-extern NSString * const IS_INDOOR_MAP;
 extern NSString * const IS_FLOOR_HIDDEN;
 extern NSString * const POINTSEARCH2D_KEYWORDS;
 extern NSString * const MAP_SCALEVIEW_CHANGED;
@@ -61,8 +60,6 @@ extern NSString * const MEDIA_CAPTURE_TAP_ACTION;
 extern NSString * const ONLINE_ANALYST_RESULT;
 extern NSString * const MATCH_IMAGE_RESULT;
 
-extern NSString * const NAVIGATION_WAYS;
-extern NSString * const NAVIGATION_LENGTH;
 extern NSString * const INDUSTRYNAVIAGTION;
 extern NSString * const MAPSELECTPOINTNAMESTART;
 extern NSString * const MAPSELECTPOINTNAMEEND;

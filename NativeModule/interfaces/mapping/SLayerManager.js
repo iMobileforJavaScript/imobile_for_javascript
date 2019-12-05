@@ -96,13 +96,13 @@ function getLayerIndexByName(name) {
  * @param path
  * @returns {*}
  */
-function getLayerAttribute(path, page = 0, size = 20) {
+function getLayerAttribute(path, page = 0, size = 20, filter = '') {
   try {
     if (!path) {
       console.warn('path is null')
       return
     }
-    return LayerManager.getLayerAttribute(path, page, size)
+    return LayerManager.getLayerAttribute(path, page, size, filter)
   } catch (e) {
     console.error(e)
   }
@@ -502,6 +502,25 @@ function removeRecordsetFieldInfo(path,isSelect,attributeName) {
 //   return LayerManager.setVisible(layerPath, visible)
 // }
 
+/**
+ * 统计
+ * @param path
+ * @param isSelect
+ * @param fieldName
+ * @param statisticMode
+ * @returns {*}
+ */
+function statistic(path, isSelect, fieldName, statisticMode) {
+  try {
+    if (!path) {
+      console.warn('path is null')
+      return
+    }
+    return LayerManager.statistic(path, isSelect, fieldName, statisticMode)
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 export {
   getLayersByType,
@@ -537,4 +556,5 @@ export {
   removeRecordsetFieldInfo,
   // setEditable,
   // setVisible,
+  statistic,
 }

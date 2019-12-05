@@ -175,11 +175,29 @@
     return [layers findLayerWithName:name];
 }
 
-+ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size {
++ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size params:(NSDictionary *)params {
     Layer* layer = [self findLayerByPath:path];
     DatasetVector* dv = (DatasetVector *)layer.dataset;
     
-    Recordset* recordSet = [dv recordset:false cursorType:STATIC];
+    Recordset* recordSet;
+    if (params != nil) {
+        QueryParameter* parameter = [[QueryParameter alloc] init];
+        [parameter setCursorType:STATIC];
+        if ([params objectForKey:@"filter"]) {
+            NSArray* filterArr = [[params objectForKey:@"filter"] componentsSeparatedByString:@","];
+            [parameter setOrderBy:filterArr];
+        }
+        
+        if ([params objectForKey:@"groupBy"]) {
+            NSArray* group = [[params objectForKey:@"groupBy"] componentsSeparatedByString:@","];
+            [parameter setGroupBy:group];
+        }
+        
+        recordSet = [dv query:parameter];
+    } else {
+        recordSet = [dv recordset:false cursorType:STATIC];
+    }
+    
     long nCount = recordSet.recordCount > size ? size : recordSet.recordCount;
     NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:recordSet page:page size:nCount];
     [recordSet dispose];
@@ -588,6 +606,27 @@
         }
         
         BOOL result=[datasetVector.fieldInfos removeFieldName:(attributeName)];
+        
+        return result;
+    }@catch (NSException *exception) {
+        return NO;
+    }
+}
+
++ (double)statistic:(NSString *)path isSelect:(BOOL)isSelect fieldName:(NSString*)fieldName statisticMode:(int)statisticMode {
+    @try{
+        Layer* layer = [self findLayerByPath:path];
+        DatasetVector* datasetVector;
+        Recordset* recordset;
+        double result = 0.0;
+        if(isSelect){
+            Selection* selection = [layer getSelection];
+            recordset = [selection toRecordset];
+        }else{
+            datasetVector = (DatasetVector *)layer.dataset;
+            recordset = [datasetVector recordset:NO cursorType:STATIC];
+        }
+        result = [recordset statisticByName:fieldName statisticMode:statisticMode];
         
         return result;
     }@catch (NSException *exception) {

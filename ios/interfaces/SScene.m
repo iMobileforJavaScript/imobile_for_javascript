@@ -406,6 +406,16 @@ RCT_REMAP_METHOD(getSetting,  getSettingResolver:(RCTPromiseResolveBlock)resolve
     }
 }
 
+RCT_REMAP_METHOD(checkoutListener, listenEvent:(NSString *) listenEvent Resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if([listenEvent isEqualToString:@"startTouchAttribute"]) {
+        sSceneEvent = SS_Normal_Event;
+    } else if([listenEvent isEqualToString:@"startMeasure"]) {
+         sSceneEvent = SS_Analysis_Event;
+    }  else if([listenEvent isEqualToString:@"startLabelOperate"]) {
+         sSceneEvent = SS_Label_Event;
+    }
+    resolve([NSNumber numberWithBool:YES]);
+}
 
 RCT_REMAP_METHOD(flyToFeatureById,  index:(int)index flyToFeatureByIdResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1127,6 +1137,40 @@ RCT_REMAP_METHOD( getcompass,  getcompassResolver:(RCTPromiseResolveBlock)resolv
         NSLog(@"this path is not exist!");
     }
 }
+
+#pragma mark-影像"sci3d"
+RCT_REMAP_METHOD(setImageCacheName, url:(NSString*)url getImageCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        NSString* path = [sScene.smSceneWC.workspace.connectionInfo server];
+        NSArray* strArr = [path componentsSeparatedByString:@"/"];
+        NSString * strServerName = [strArr lastObject];
+        NSString* strDir = [[path substringToIndex:path.length-strServerName.length] stringByAppendingString:@"image"];
+        
+//        String[] res = url.split("/");
+        NSArray *res = [url componentsSeparatedByString:@"/"];
+        NSString* layerName =  res[[res count]-1];
+        
+        NSString* filePath  = [strDir stringByAppendingFormat:@"/%@.sci3dOnline",layerName];
+        
+        int n = 1;
+        
+        while([[NSFileManager defaultManager] fileExistsAtPath:filePath]){
+//            file = new File(strDir+'/'+layerName+  "_"+ n + ".sctOnline");
+            filePath  = [strDir stringByAppendingFormat:@"/%@_%i.sci3dOnline",layerName,n];
+            n++;
+        }
+        
+        BOOL bREs = false;
+        bREs = [[NSFileManager defaultManager] createFileAtPath:filePath contents:[url dataUsingEncoding:UTF8] attributes:nil];
+        resolve(@(bREs));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
+
 #pragma mark-获取影像"sci3d"
 RCT_REMAP_METHOD(getImageCacheNames, getImageCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1147,31 +1191,57 @@ RCT_REMAP_METHOD(getImageCacheNames, getImageCacheNames:(RCTPromiseResolveBlock)
         reject(@"SScene", exception.reason, nil);
     }
 }
+
++(NSString*)addTerrainOnlineLayer:(NSString*)url{
+    sScene = [SScene singletonInstance];
+    SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+    
+    int n = 1;
+    
+    NSArray* resArr = [url componentsSeparatedByString:@"/"];
+    NSString* layerName  = resArr[[resArr count]-1];;
+    NSString* AvailableName = layerName;
+    while(true){
+        if([sceneControl.scene.terrainLayers contains:AvailableName]){
+            AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
+        }else{
+            break;
+        }
+    }
+    
+    sceneControl.isRender = false;
+    TerrainLayer* layer = [sceneControl.scene.terrainLayers addLayerWithURL:url];
+    sceneControl.isRender = YES;
+    
+    return [layer name];
+}
+
 //+(NSString*)findAvailableName:()
 #pragma mark-添加影像缓存
 RCT_REMAP_METHOD(addTerrainCacheLayer, TerrainCachePath:(NSString*)terrainCache layerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
-        int n = 1;
-        NSString* AvailableName = layerName;
-        while(true){
-            if([sceneControl.scene.terrainLayers contains:AvailableName]){
-                AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
-            }else{
-                break;
+        
+        if([terrainCache containsString:@"iserver/services"]){
+            resolve([SScene addTerrainOnlineLayer:terrainCache]);
+        }else{
+            sScene = [SScene singletonInstance];
+            SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+            int n = 1;
+            NSString* AvailableName = layerName;
+            while(true){
+                if([sceneControl.scene.terrainLayers contains:AvailableName]){
+                    AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
+                }else{
+                    break;
+                }
             }
-        }
-//        if([sceneControl.scene.terrainLayers contains:layerName]){
-//
-//            resolve(layerName);
-//        }else
-        {
+            
             sceneControl.isRender = false;
             TerrainLayer* layer = [sceneControl.scene.terrainLayers addLayerWithPath:terrainCache toHead:YES name:AvailableName password:nil];
             sceneControl.isRender = YES;
             resolve(layer.name);
         }
+
        
     } @catch (NSException *exception) {
         reject(@"SScene", exception.reason, nil);
@@ -1195,26 +1265,51 @@ RCT_REMAP_METHOD(removeTerrainCacheLayer, terrainlayerName:(NSString*)layerName 
     }
 }
 
++(NSString*)addImageOnlineLayer:(NSString*)url{
+    sScene = [SScene singletonInstance];
+    SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+    
+    int n = 1;
+    
+    NSArray* resArr = [url componentsSeparatedByString:@"/"];
+    NSString* layerName  = resArr[[resArr count]-1];;
+    NSString* AvailableName = layerName;
+    while(true){
+        if([sceneControl.scene.layers getLayerWithName:AvailableName] != nil){
+            AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
+        }else{
+            break;
+        }
+    }
+    
+    sceneControl.isRender = false;
+    Layer3D* layer = [sceneControl.scene.layers addLayerWithURL:url type:IMAGEFILE dataLayerName:layerName toHead:YES];
+//    Layer3D* layer = [sceneControl.scene.layers addLayerWith:terrainCache Type:IMAGEFILE ToHead:YES LayerName:layerName];
+    sceneControl.isRender = YES;
+    
+    return [layer name];
+}
 #pragma mark-添加影像缓存
 RCT_REMAP_METHOD(addImageCacheLayer, ImageCachePath:(NSString*)terrainCache layerName:(NSString*)layerName getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        sScene = [SScene singletonInstance];
-        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
         
-        int n = 1;
-        NSString* AvailableName = layerName;
-        while(true){
-            if([sceneControl.scene.layers getLayerWithName:AvailableName] != nil){
-                AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
-            }else{
-                break;
+        if([terrainCache containsString:@"iserver/services"]){
+            resolve([SScene addImageOnlineLayer:terrainCache]);
+        }else{
+            sScene = [SScene singletonInstance];
+            SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+            
+            int n = 1;
+            NSString* AvailableName = layerName;
+            while(true){
+                if([sceneControl.scene.layers getLayerWithName:AvailableName] != nil){
+                    AvailableName = [layerName stringByAppendingFormat:@"#%i",n++];
+                }else{
+                    break;
+                }
             }
-        }
-//        if([sceneControl.scene.layers getLayerWithName:layerName] != nil){
-//            resolve(layerName);
-//        }else
-        {
-             sceneControl.isRender = false;
+            
+            sceneControl.isRender = false;
             Layer3D* layer = [sceneControl.scene.layers addLayerWith:terrainCache Type:IMAGEFILE ToHead:YES LayerName:layerName];
             sceneControl.isRender = YES;
             resolve(layer.name);
@@ -1240,6 +1335,38 @@ RCT_REMAP_METHOD(removeImageCacheLayer, ImagelayerName:(NSString*)layerName getT
         reject(@"SScene", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(setTerrainCacheName, url:(NSString*)url TerrainCacheName:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        sScene = [SScene singletonInstance];
+        SceneControl* sceneControl = [[sScene smSceneWC]sceneControl];
+        NSString* path = [sScene.smSceneWC.workspace.connectionInfo server];
+        NSArray* strArr = [path componentsSeparatedByString:@"/"];
+        NSString * strServerName = [strArr lastObject];
+        NSString* strDir = [[path substringToIndex:path.length-strServerName.length] stringByAppendingString:@"terrain"];
+        
+        //        String[] res = url.split("/");
+        NSArray *res = [url componentsSeparatedByString:@"/"];
+        NSString* layerName =  res[[res count]-1];
+        
+        NSString* filePath  = [strDir stringByAppendingFormat:@"/%@.sctOnline",layerName];
+        
+        int n = 1;
+        
+        while([[NSFileManager defaultManager] fileExistsAtPath:filePath]){
+            //            file = new File(strDir+'/'+layerName+  "_"+ n + ".sctOnline");
+            filePath  = [strDir stringByAppendingFormat:@"/%@_%i.sctOnline",layerName,n];
+            n++;
+        }
+        
+        BOOL bREs = false;
+        bREs = [[NSFileManager defaultManager] createFileAtPath:filePath contents:[url dataUsingEncoding:UTF8] attributes:nil];
+        resolve(@(bREs));
+    } @catch (NSException *exception) {
+        reject(@"SScene", exception.reason, nil);
+    }
+}
+
 #pragma mark-获取地形缓存 “.sct”
 RCT_REMAP_METHOD(getTerrainCacheNames, getTerrainCacheNames:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -1445,8 +1572,9 @@ RCT_REMAP_METHOD(removeOnTouchListener,  removeOnTouchListener:(RCTPromiseResolv
     NSDictionary* info = nil;
     [TouchUtil3D getAttribute:sceneControl attribute:&info];
     if (info!=nil) {
-        [self sendEventWithName:SSCENE_ATTRIBUTE
-                           body:info];
+        [self sendEventWithName:SSCENE_ATTRIBUTE body:info];
+    } else {
+        [self sendEventWithName:SSCENE_ATTRIBUTE body:@{}];
     }
 }
 
@@ -1600,8 +1728,6 @@ RCT_REMAP_METHOD( closeAllLabel,   closeAllLabel:(RCTPromiseResolveBlock)resolve
         sSceneEvent = SS_Normal_Event;
         sScene = [SScene singletonInstance];
         SceneControl* sceneControl = sScene.smSceneWC.sceneControl;
-//        [sceneControl setAction3D:PANSELECT3D];
-        [SScene setActionHelper:PANSELECT3D];
         
         resolve(@(1));
     } @catch (NSException *exception) {

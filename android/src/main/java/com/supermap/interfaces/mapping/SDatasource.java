@@ -273,20 +273,25 @@ public class SDatasource extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void importTIF(String tifPath, ReadableMap params, Promise promise) {
-        try {
-            Workspace workspace = SMap.getSMWorkspace().getWorkspace();
-            Datasource datasource = null;
-            DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(params.toHashMap());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Workspace workspace = SMap.getSMWorkspace().getWorkspace();
+                    Datasource datasource = null;
+                    DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(params.toHashMap());
 
-            datasource = workspace.getDatasources().open(info);
-            boolean result = false;
-            if(datasource != null) {
-                result = DataConversion.importTIF(tifPath, datasource);
+                    datasource = workspace.getDatasources().open(info);
+                    boolean result = false;
+                    if(datasource != null) {
+                        result = DataConversion.importTIF(tifPath, datasource);
+                    }
+                    promise.resolve(result);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
             }
-            promise.resolve(result);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
+        }).start();
     }
 
     @ReactMethod

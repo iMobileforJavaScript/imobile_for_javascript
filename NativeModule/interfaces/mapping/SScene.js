@@ -413,9 +413,25 @@ export default (function () {
         }
     }
 
+    function setTerrainCacheName(vaue) {
+        try {
+            return SScene.setTerrainCacheName(vaue)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     function getImageCacheNames() {
         try {
             return SScene.getImageCacheNames()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    function setImageCacheName(value) {
+        try {
+            return SScene.setImageCacheName(value)
         } catch (error) {
             console.log(error)
         }
@@ -957,7 +973,6 @@ export default (function () {
         clearcurrentLabel,
         save,
         setAllLayersSelection,
-        // addTerrainLayer,
         changeBaseLayer,
         startDrawFavorite,
         setFavoriteText,
@@ -1000,7 +1015,9 @@ export default (function () {
         navigationLine,
         ensureVisibleLayer,
         getImageCacheNames,
+        setImageCacheName,
         getTerrainCacheNames,
+        setTerrainCacheName,
         addTerrainCacheLayer,
         addImageCacheLayer,
         removeTerrainCacheLayer,

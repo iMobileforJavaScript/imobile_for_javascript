@@ -74,12 +74,9 @@ public class EventConst {
     public static final String ONLINE_ANALYST_RESULT = "com.supermap.RN.online_analyst_result";
 
     /** 导航路线 **/
-    public static final String NAVIGATION_WAYS = "com.supermap.RN.Navigation.online_navigation_ways";
-    public static final String NAVIGATION_LENGTH = "com.supermap.RN.Navigation.online_navigation_length";
     public static final String INDUSTRYNAVIAGTION = "com.supermap.RN.Navigation.industry_navigation";
     public static final String MAPSELECTPOINTNAMESTART = "com.supermap.RN.Navigation.mapselectpointnamestart";
     public static final String MAPSELECTPOINTNAMEEND = "com.supermap.RN.Navigation.mapselectpointnameend";
-    public static final String IS_INDOOR_MAP = "com.supermap.RN.FloorListView.isIndoorChanged";
     public static final String IS_FLOOR_HIDDEN = "com.supermap.RN.FloorListView.isFloorHidden";
     public static final String ILLEGALLYPARK = "com.supermap.RN.Navigation.illegallypark";
 

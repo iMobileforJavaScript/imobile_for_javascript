@@ -28,7 +28,7 @@
 + (NSArray *)getLayersByGroupPath:(NSString *)path;
 + (void)setLayerVisible:(NSString *)path value:(BOOL)value;
 + (void)setLayerEditable:(NSString *)path value:(BOOL)value;
-+ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size;
++ (NSDictionary *)getLayerAttribute:(NSString *)path page:(int)page size:(int)size params:(NSDictionary *)params;
 + (NSDictionary *)getSelectionAttributeByLayer:(NSString *)path page:(int)page size:(int)size;
 + (NSDictionary *)getAttributeByLayer:(NSString *)path ids:(NSArray *)ids;
 + (Layer *)findLayerByPath:(NSString *)path;
@@ -48,4 +48,5 @@
 + (InfoCallout *)addCallOutWithLongitude:(double)longitude latitude:(double)latitude image:(NSString *)imagePath;
 + (BOOL)addRecordsetFieldInfo:(NSString *)path isSelectOrLayer:(BOOL)isSelect fieldInfo:(NSDictionary*)fieldInfo;
 + (BOOL)removeRecordsetFieldInfo:(NSString *)path isSelectOrLayer:(BOOL)isSelect attributeName:(NSString*)attributeName;
++ (double)statistic:(NSString *)path isSelect:(BOOL)isSelect fieldName:(NSString*)fieldName statisticMode:(int)statisticMode;
 @end

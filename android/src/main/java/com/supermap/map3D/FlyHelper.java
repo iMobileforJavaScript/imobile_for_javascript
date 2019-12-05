@@ -286,8 +286,8 @@ public class FlyHelper {
     public void saveCurrentRouteStop(){
         if(mRouteStops==null){
             route=new Route();
-            route.setStopsVisible(true);
-            route.setLinesVisible(true);
+            route.setStopsVisible(false);
+            route.setLinesVisible(false);
             route.setFlyAlongTheRoute(true);
             mRouteStops=route.getStops();
         }
@@ -338,9 +338,11 @@ public class FlyHelper {
     public void clearRoutStops (){
         point3Ds.clear();
         mSceneControl.getScene().getTrackingLayer().clear();
-        int count =mRouteStops.getCount();
-        for (int i=0;i<count;i++){
-            mRouteStops.remove(0);
+        if(mRouteStops != null){
+            int count =mRouteStops.getCount();
+            for (int i=0;i<count;i++){
+                mRouteStops.remove(0);
+            }
         }
     }
 

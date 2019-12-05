@@ -3422,6 +3422,7 @@ RCT_REMAP_METHOD(modifyDotDensityThemeMap, modifyDotDensityThemeMapWithResolver:
                 [[themeDotDensity getStyle] setMarkerSize:[[Size2D alloc]initWithWidth:dotSize Height:dotSize]];
             }
             if (lineColor != nil) {
+                [[themeDotDensity getStyle]setMarkerSymbolID:0];
                 [[themeDotDensity getStyle]setLineColor:lineColor];
             }
             if (symbolID != -1) {
@@ -3662,6 +3663,7 @@ RCT_REMAP_METHOD(modifyGraduatedSymbolThemeMap, modifyGraduatedSymbolThemeMapWit
                 [[themeGraduatedSymbol getPositiveStyle] setMarkerSize:[[Size2D alloc]initWithWidth:symbolSize Height:symbolSize]];
             }
             if (lineColor != nil) {
+                [[themeGraduatedSymbol getPositiveStyle] setMarkerSymbolID:0];
                 [[themeGraduatedSymbol getPositiveStyle] setLineColor:lineColor];
             }
             if (symbolID != -1) {
