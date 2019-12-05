@@ -809,6 +809,7 @@ RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerWithResolver: (RCTPromise
     @try {
         sMap = [SMap singletonInstance];
         [sMap.smMapWC.mapControl.map.trackingLayer clear];
+        [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"clearTarckingLayer",exception.reason,nil);
@@ -849,11 +850,11 @@ RCT_REMAP_METHOD(getPathInfos, getPathInfosWithBool:(BOOL)isIndoor resolver: (RC
         NSMutableArray *array = [[NSMutableArray alloc] init];
         for(int i = 0; i < navipath.count; i++){
             NaviStep *step = navipath[i];
-            double getTime = step.time;
+            //NSString *roadName = step.name;
             int roadLength = step.length;
             int type = step.toSwerve;
             roadLength = (int)roadLength;
-            NSDictionary *dic = @{@"roadName":[NSNumber numberWithDouble:getTime],
+            NSDictionary *dic = @{
                                   @"roadLength":[NSNumber numberWithInt:roadLength],
                                   @"turnType":[NSNumber numberWithInt:type],
                                   };

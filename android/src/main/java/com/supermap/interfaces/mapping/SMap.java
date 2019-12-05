@@ -5644,6 +5644,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = SMap.getInstance();
             sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -5695,10 +5696,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             for (int i = 0; i < naviStep.size(); i++) {
                 WritableMap map = Arguments.createMap();
                 NaviStep naviStep1 = naviStep.get(i);
-                double getTime = naviStep1.getTime();
+
+                //String routeName = naviStep1.getName();
                 int roadLength = (int) naviStep1.getLength();
                 int type = naviStep1.getToSwerve();
-                map.putDouble("roadName", getTime);
+                //map.putString("routeName", routeName);
                 map.putDouble("roadLength", roadLength);
                 map.putInt("turnType", type);
                 array.pushMap(map);
