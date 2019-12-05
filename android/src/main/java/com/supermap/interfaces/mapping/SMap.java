@@ -5885,7 +5885,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 public void run() {
                     sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(naviType);
                     sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
-                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(true);          // 设置车头向上
+                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(false);          // 设置车头向上
                 }
             });
             promise.resolve(true);
