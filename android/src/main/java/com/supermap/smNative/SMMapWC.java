@@ -190,6 +190,89 @@ public class SMMapWC {
         }
     }
 
+    /**
+     * 打开导航数据源 如果别名存在，改名打开
+     * @param data
+     * @return
+     */
+    public Datasource openNavDatasource(Map data) {
+        try {
+            DatasourceConnectionInfo info = new DatasourceConnectionInfo();
+            Datasource ds = data.get("alias") != null ? SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get((String) data.get("alias")) : null;
+
+            String alias = "";
+            if (data.containsKey("alias")) {
+                alias = data.get("alias").toString();
+            }
+            while(ds != null && ds.isOpened()){
+                alias = alias + "_#1";
+                ds = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(alias);
+            }
+            Boolean isOpen = ds != null && ds.isOpened();
+
+            String server = "";
+            if (data.containsKey("server")) {
+                server = data.get("server").toString();
+            }
+            if (ds != null && data.get("server") != null) {
+                String currentDSAlias = ds.getConnectionInfo().getAlias();
+                String currentDSServer = ds.getConnectionInfo().getServer();
+                if (currentDSAlias.equals(alias) && !currentDSServer.equals(server)) {
+                    int index = 1;
+                    while (currentDSAlias.equals(alias) || SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(alias) != null) {
+                        alias = currentDSAlias + "_" + index;
+                        index++;
+                    }
+                    isOpen = false;
+                }
+            }
+            Datasource dataSource = isOpen ? ds : null;
+            if (!isOpen) {
+                if (data.containsKey("alias")) {
+//                    String alias = data.get("alias").toString();
+                    info.setAlias(alias);
+
+//                    if (this.workspace.getDatasources().indexOf(alias) != -1) {
+//                        dataSource = this.workspace.getDatasources().get(alias);
+//                        info.dispose();
+//
+//                        return dataSource;
+//                    }
+                }
+                if (data.containsKey("engineType")) {
+                    Double type = Double.parseDouble(data.get("engineType").toString());
+                    info.setEngineType((EngineType) Enum.parse(EngineType.class, type.intValue()));
+                }
+                if (data.containsKey("server")) {
+                    info.setServer(server);
+                }
+
+
+                if (data.containsKey("driver")) info.setDriver(data.get("driver").toString());
+                if (data.containsKey("user")) info.setUser(data.get("user").toString());
+                if (data.containsKey("readOnly"))
+                    info.setReadOnly(Boolean.parseBoolean(data.get("readOnly").toString()));
+                if (data.containsKey("password")) info.setPassword(data.get("password").toString());
+                if (data.containsKey("webCoordinate"))
+                    info.setWebCoordinate(data.get("webCoordinate").toString());
+                if (data.containsKey("webVersion"))
+                    info.setWebVersion(data.get("webVersion").toString());
+                if (data.containsKey("webFormat"))
+                    info.setWebFormat(data.get("webFormat").toString());
+                if (data.containsKey("webVisibleLayers"))
+                    info.setWebVisibleLayers(data.get("webVisibleLayers").toString());
+                if (data.containsKey("webExtendParam"))
+                    info.setWebExtendParam(data.get("webExtendParam").toString());
+
+                dataSource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().open(info);
+                info.dispose();
+            }
+
+            return dataSource;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
     public Datasource openDatasource(Map data) {
         try {
             DatasourceConnectionInfo info = new DatasourceConnectionInfo();

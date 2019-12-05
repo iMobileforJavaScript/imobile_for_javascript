@@ -50,6 +50,92 @@
     }
 }
 
+#pragma mark 打开导航数据源 如果别名存在，改名打开
+- (Datasource *)openNavDatasource:(NSDictionary*)params{
+    @try {
+        if (!params) {
+            return nil;
+        }
+        DatasourceConnectionInfo* info = [[DatasourceConnectionInfo alloc]init];
+        Datasource* tempDs = [params objectForKey:@"alias"] ? [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:[params objectForKey:@"alias"]] : nil;
+        //        BOOL isOpen = tempDs && [params objectForKey:@"server"] && [tempDs.datasourceConnectionInfo.server isEqualToString:[params objectForKey:@"server"]] && [tempDs isOpended];
+        NSString* alias = @"";
+        if ([params objectForKey:@"alias"]) {
+            alias = [params objectForKey:@"alias"];
+        }
+        while(tempDs != nil && [tempDs isOpended]){
+            alias = [alias stringByAppendingString:@"_#1"];
+            tempDs =[SMap.singletonInstance.smMapWC.workspace.datasources getAlias:alias];
+        }
+        
+        BOOL isOpen = tempDs != nil && [tempDs isOpended];
+        
+        
+        NSString* server = @"";
+  
+        if ([params objectForKey:@"server"]) {
+            server = [params objectForKey:@"server"];
+        }
+        if (tempDs != nil && ![server isEqualToString:@""]) {
+            NSString* currentDSAlias = tempDs.datasourceConnectionInfo.alias;
+            NSString* currentDSServer = tempDs.datasourceConnectionInfo.server;
+            if ([currentDSAlias isEqualToString:alias] && ![currentDSServer isEqualToString:server]) {
+                int index = 1;
+                while ([currentDSAlias isEqualToString:alias] || [SMap.singletonInstance.smMapWC.workspace.datasources getAlias:alias] != nil) {
+                    alias = [NSString stringWithFormat:@"%@_%d", currentDSAlias, index];
+                    index++;
+                }
+                isOpen = false;
+            }
+        }
+        
+        Datasource* dataSource = isOpen ? tempDs : nil;
+        if (!isOpen) {
+            NSArray* keyArr = [params allKeys];
+            BOOL bDefault = YES;
+            if ([keyArr containsObject:@"alias"]){
+                //                info.alias = [params objectForKey:@"alias"];
+                info.alias = alias;
+                bDefault = NO;
+            }
+            if ([keyArr containsObject:@"engineType"]){
+                NSNumber* num = [params objectForKey:@"engineType"];
+                long type = num.floatValue;
+                info.engineType = (EngineType)type;
+            }
+            if ([keyArr containsObject:@"server"]){
+                //                NSString* path = [params objectForKey:@"server"];
+                info.server = server;
+                if(bDefault){
+                    info.alias = [[server lastPathComponent] stringByDeletingPathExtension];
+                }
+            }
+            
+            //            if([SMap.singletonInstance.smMapWC.workspace.datasources indexOf:info.alias] != -1){
+            //                [SMap.singletonInstance.smMapWC.workspace.datasources closeAlias:info.alias];
+            //            }
+            if ([keyArr containsObject:@"driver"]) info.driver = [params objectForKey:@"driver"];
+            if ([keyArr containsObject:@"user"]) info.user = [params objectForKey:@"user"];
+            if ([keyArr containsObject:@"readOnly"]) info.readOnly = ((NSNumber*)[params objectForKey:@"readOnly"]).boolValue;
+            if ([keyArr containsObject:@"password"]) info.password = [params objectForKey:@"password"];
+            if ([keyArr containsObject:@"webCoordinate"]) info.webCoordinate = [params objectForKey:@"webCoordinate"];
+            if ([keyArr containsObject:@"webVersion"]) info.webVersion = [params objectForKey:@"webVersion"];
+            if ([keyArr containsObject:@"webFormat"]) info.webFormat = [params objectForKey:@"webFormat"];
+            if ([keyArr containsObject:@"webVisibleLayers"]) info.webVisibleLayers = [params objectForKey:@"webVisibleLayers"];
+            if ([keyArr containsObject:@"webExtendParam"]) info.webExtendParam = [params objectForKey:@"webExtendParam"];
+            //            if ([keyArr containsObject:@"webBBox"]){
+            //                Rectangle2D* rect2d = [JSObjManager getObjWithKey:[params objectForKey:@"webBBox"]];
+            //                info.webBBox = rect2d;
+            //            }
+            dataSource = [SMap.singletonInstance.smMapWC.workspace.datasources open:info];
+            [info dispose];
+        }
+        return dataSource;
+    } @catch (NSException *exception) {
+        @throw exception;
+    }
+}
+
 - (Datasource *)openDatasource:(NSDictionary*)params{
     @try {
         if (!params) {

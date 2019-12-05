@@ -86,8 +86,6 @@ RCT_EXPORT_MODULE();
              MAP_SCALEVIEW_CHANGED,
 //             POINTSEARCH2D_KEYWORDS,
              MATCH_IMAGE_RESULT,
-             NAVIGATION_WAYS,
-             NAVIGATION_LENGTH,
              INDUSTRYNAVIAGTION,
              MAPSELECTPOINTNAMESTART,
              MAPSELECTPOINTNAMEEND,
@@ -890,6 +888,7 @@ RCT_REMAP_METHOD(drawOnlinePath,drawOnlinePathWithPathPoints:(NSArray *)pathPoin
         [geoline setStyle:geostyle];
         
         [trackingLayer addGeometry:geoline WithTag:@"线路"];
+        [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     }@catch(NSException *exception){
         reject(@"drawOnlinePath", exception.reason, nil);

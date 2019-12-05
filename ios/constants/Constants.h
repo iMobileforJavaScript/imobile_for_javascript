@@ -60,8 +60,6 @@ extern NSString * const MEDIA_CAPTURE_TAP_ACTION;
 extern NSString * const ONLINE_ANALYST_RESULT;
 extern NSString * const MATCH_IMAGE_RESULT;
 
-extern NSString * const NAVIGATION_WAYS;
-extern NSString * const NAVIGATION_LENGTH;
 extern NSString * const INDUSTRYNAVIAGTION;
 extern NSString * const MAPSELECTPOINTNAMESTART;
 extern NSString * const MAPSELECTPOINTNAMEEND;

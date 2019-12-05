@@ -57,8 +57,6 @@ export default {
   ONLINE_ANALYST_RESULT: 'com.supermap.RN.online_analyst_result',
 
   /** 导航路线 **/
-  NAVIGATION_WAYS :"com.supermap.RN.Navigation.online_navigation_ways",
-  NAVIGATION_LENGTH :"com.supermap.RN.Navigation.online_navigation_length",
   INDUSTRYNAVIAGTION:"com.supermap.RN.Navigation.industry_navigation",
   MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
   MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",

@@ -5740,6 +5740,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             geoLine.setStyle(geoStyle);
 
             trackingLayer.add(geoLine,"线路");
+            sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         }catch (Exception e){
             promise.reject(e);
@@ -6108,7 +6109,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
             Datasource datasource = datasources.get(alias);
             if(datasource == null){
-                datasource = sMap.smMapWC.openDatasource(params.toHashMap());
+                datasource = sMap.smMapWC.openNavDatasource(params.toHashMap());
                 if(datasource != null){
                     Dataset linkTable = datasource.getDatasets().get("ModelFileLinkTable");
                     if(linkTable == null){
@@ -6151,6 +6152,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             array.pushMap(writableMap);
                         }
                     }while(recordset.moveNext());
+                    recordset.close();
+                    recordset.dispose();
                 }
             }
             promise.resolve(array);
