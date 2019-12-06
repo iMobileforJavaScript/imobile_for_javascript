@@ -27,12 +27,7 @@
 
 @property (nonatomic,assign) BOOL isDetecting;
 @property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
-
-//@property (nonatomic,strong) NSArray *lables;
-//@property (nonatomic,strong) NSArray *aIRecognitionArray;
-
 @property (nonatomic,strong) InfoView *infoView;
-@property(nonatomic)BOOL bWithInfo;
 @end
 
 @implementation AIDetectView
@@ -62,32 +57,6 @@
 }
 
 -(void)outputImage:(getImageCallBackBlock)getImageCallback withInfo:(BOOL)bInfo{
-//    _bWithInfo = bInfo;
-//    id takePictureSuccess = ^(CMSampleBufferRef sampleBuffer,NSError *error){
-//        UIImage*imageRes = nil;
-//        if (sampleBuffer != NULL) {
-//
-//            NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:sampleBuffer];
-//            UIImage* image = [[UIImage alloc]initWithData:imageData];
-//            imageData = nil;
-//
-//            UIImageView* uiimage = [[UIImageView alloc]initWithImage:image];
-//            uiimage.backgroundColor = [UIColor clearColor];
-//            uiimage.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-////            [uiimage addSubview:_infoView];
-//
-//             CGSize s = uiimage.bounds.size;
-//             UIGraphicsBeginImageContextWithOptions(s, NO, 1);
-//             [uiimage.layer renderInContext:UIGraphicsGetCurrentContext()];
-//             imageRes = UIGraphicsGetImageFromCurrentImageContext();
-//             UIGraphicsEndImageContext();
-//            [self addSubview:uiimage];
-//
-//        }
-//        getImageCallback(imageRes,error);
-//        NSLog(@"%@",error);
-//    };
-//     [self.cameraManager outputImage:takePictureSuccess] ;
     dispatch_async(dispatch_get_main_queue(), ^{
         UIImageView* uiimage = [[UIImageView alloc]initWithImage:m_image];
         uiimage.backgroundColor = [UIColor clearColor];
@@ -103,15 +72,14 @@
          getImageCallback(imageRes,nil);
     });
 
-//    [self addSubview:uiimage];
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    
-    [self outputImage:^(UIImage *image, NSError *error) {
-        
-    } withInfo:YES];
-}
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+//
+//    [self outputImage:^(UIImage *image, NSError *error) {
+//
+//    } withInfo:YES];
+//}
 
 //刷新布局
 -(void)setaIRecognitionArrayAndUpdateView:(NSArray *)aIRecognitionArray withSize:(CGSize)size{

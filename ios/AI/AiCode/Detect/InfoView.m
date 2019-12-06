@@ -13,49 +13,53 @@
 #define VERT_SWIPE_DRAG_MAX    4    //垂直方向最大偏移量
 
 @interface InfoView()
-
+{
+    NSArray* m_colors;
+    NSMutableDictionary* m_lable_color;
+}
 
 @end
 
 @implementation InfoView
 
 
+-(id)initWithFrame:(CGRect)frame{
+    if(self=[super initWithFrame:frame]){
+        m_lable_color = [[NSMutableDictionary alloc] initWithCapacity:11];
+        NSMutableArray* array=[[NSMutableArray alloc] init];
+        [array addObject:[UIColor grayColor]];
+        [array addObject:[UIColor redColor]];
+        [array addObject:[UIColor greenColor]];
+        [array addObject:[UIColor blueColor]];
+        [array addObject:[UIColor cyanColor]];
+        [array addObject:[UIColor yellowColor]];
+        [array addObject:[UIColor magentaColor]];
+        [array addObject:[UIColor orangeColor]];
+        [array addObject:[UIColor purpleColor]];
+        [array addObject:[UIColor brownColor]];
+        [array addObject:[UIColor blackColor]];
+        m_colors = [[NSArray alloc]initWithArray:array];
+        _aIDetectStyle = [[AIDetectStyle alloc]init];
+        _aIDetectStyle.aiStrokeWidth = 2;
+        _aIDetectStyle.isSameColor = false;
+        _aIDetectStyle.isDrawConfidence = true;
+        _aIDetectStyle.isDrawTitle = true;
+    }
+    return self;
+}
 -(void)refresh{
 //    [self setNeedsDisplay];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay];
     });
 }
--(NSArray*)colors{
-    
-    NSMutableArray* array=[[NSMutableArray alloc] init];
-//    [array addObject:[UIColor grayColor]];
-    [array addObject:[UIColor redColor]];
-    [array addObject:[UIColor greenColor]];
-    [array addObject:[UIColor blueColor]];
-    [array addObject:[UIColor cyanColor]];
-    [array addObject:[UIColor yellowColor]];
-    [array addObject:[UIColor magentaColor]];
-    [array addObject:[UIColor orangeColor]];
-    [array addObject:[UIColor purpleColor]];
-    [array addObject:[UIColor purpleColor]];
-    
-    return array;
-}
 
 -(void)drawRect:(CGRect)rx//UIView绘制入口，系统回调
 {
-    NSArray *drawColors=[self colors];
     UIColor* color=nil;
     
     // 获得上下文
     CGContextRef context =UIGraphicsGetCurrentContext();
-    // 设置线宽
-    if(_aIDetectStyle){
-        CGContextSetLineWidth(context, _aIDetectStyle.aiStrokeWidth);
-    }else{
-        CGContextSetLineWidth(context, 2);
-    }
     //清空所有rect对象
     self.aIRectArr=[[NSMutableArray alloc] init];
     [self.aIRectArr removeAllObjects];
@@ -103,30 +107,25 @@
 //        NSValue* value;
 //        value.CGRectValue
         //设置识别框颜色
-        if(_aIDetectStyle&&_aIDetectStyle.isSameColor){
+        if(_aIDetectStyle&&_aIDetectStyle.isSameColor && _aIDetectStyle.aiColor!=nil){
             if(_aIDetectStyle.aiColor){
                 color=_aIDetectStyle.aiColor;
-            }else if(!color){
-                int x = arc4random() % drawColors.count;
-                color=drawColors[x];
             }
         }else{
-            int x = arc4random() % drawColors.count;
-            color=drawColors[x];
+            if(m_lable_color[recognition.label] == nil){
+                int n = arc4random() % m_colors.count;
+                m_lable_color[recognition.label] = m_colors[n];
+            }
+            color = m_lable_color[recognition.label];
         }
         
-        //获取一个随机整数范围在：颜色数组的长度内
-//        if(!color||(_aIDetectStyle&&!_aIDetectStyle.isSameColor)){
-//            int x = arc4random() % drawColors.count;
-//            color=drawColors[x];
-//        }
         
         // 设置绘制颜色
         CGContextSetStrokeColorWithColor(context, color.CGColor);
         //设置线条样式
         CGContextSetLineCap(context, kCGLineCapSquare);
         //设置线条粗细宽度
-        CGContextSetLineWidth(context, 2.0);
+        CGContextSetLineWidth(context, _aIDetectStyle.aiStrokeWidth);
         //开始一个起始路径
         CGContextBeginPath(context);
         //起始点设置为(0,0):注意这是上下文对应区域中的相对坐标，
