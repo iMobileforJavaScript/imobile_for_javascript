@@ -85,8 +85,6 @@ NSString * const ONLINE_ANALYST_RESULT = @"com.supermap.RN.online_analyst_result
 NSString * const MATCH_IMAGE_RESULT = @"com.supermap.RN.match_image_result";
 
 /** 导航路线 **/
-NSString * const NAVIGATION_WAYS = @"com.supermap.RN.Navigation.online_navigation_ways";
-NSString * const NAVIGATION_LENGTH = @"com.supermap.RN.Navigation.online_navigation_length";
 NSString * const INDUSTRYNAVIAGTION = @"com.supermap.RN.Navigation.industry_navigation";
 NSString * const MAPSELECTPOINTNAMESTART = @"com.supermap.RN.Navigation.mapselectpointnamestart";
 NSString * const MAPSELECTPOINTNAMEEND = @"com.supermap.RN.Navigation.mapselectpointnameend";

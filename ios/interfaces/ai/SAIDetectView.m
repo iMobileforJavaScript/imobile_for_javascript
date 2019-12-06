@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE();
     
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
-    mAIDetectView.detectInterval=2000;
+    mAIDetectView.detectInterval=200;
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];

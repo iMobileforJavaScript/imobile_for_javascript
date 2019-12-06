@@ -782,16 +782,16 @@
 		0A03BDBD2395F4D400A90044 /* AiCode */ = {
 			isa = PBXGroup;
 			children = (
-				0A03BDBE2395F4D400A90044 /* Detect */,
-				0A03BDC92395F4D400A90044 /* CameraManager.m */,
-				0A03BDCA2395F4D400A90044 /* utils */,
-				0A03BDCD2395F4D400A90044 /* ImageDetect.h */,
-				0A03BDCE2395F4D400A90044 /* Classifier */,
-				0A03BDD12395F4D400A90044 /* Headers */,
-				0A03BDD72395F4D400A90044 /* ImageDetect.mm */,
 				0A03BDD82395F4D400A90044 /* CameraManager.h */,
+				0A03BDC92395F4D400A90044 /* CameraManager.m */,
+				0A03BDCE2395F4D400A90044 /* Classifier */,
+				0A03BDBE2395F4D400A90044 /* Detect */,
+				0A03BDD12395F4D400A90044 /* Headers */,
 				0A03BDD92395F4D400A90044 /* ImageClassification.h */,
 				0A03BDDA2395F4D400A90044 /* ImageClassification.mm */,
+				0A03BDCD2395F4D400A90044 /* ImageDetect.h */,
+				0A03BDD72395F4D400A90044 /* ImageDetect.mm */,
+				0A03BDCA2395F4D400A90044 /* utils */,
 			);
 			name = AiCode;
 			path = AI/AiCode;

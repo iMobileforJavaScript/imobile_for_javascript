@@ -2083,56 +2083,6 @@ export default (function () {
   //     console.error(error);
   //   }
   // }
-
-
-  /**
-   * 路径分析路线详情监听
-   * @param handlers
-   */
-  function setOnlineNavigationListener(handlers){
-    try {
-      if (Platform.OS === 'ios' && handlers) {
-        if (typeof handlers.callback === 'function') {
-          return nativeEvt.addListener(EventConst.NAVIGATION_WAYS, function (e) {
-            handlers.callback(e);
-          });
-        }
-      } else if (Platform.OS === 'android' && handlers) {
-        if (typeof handlers.callback === "function") {
-          return DeviceEventEmitter.addListener(EventConst.NAVIGATION_WAYS, function (e) {
-            handlers.callback(e);
-          });
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  /**
-   * 路径分析路线距离监听
-   * @param handlers
-   */
-  function setOnlineNavigation2Listener(handlers){
-    try {
-      if (Platform.OS === 'ios' && handlers) {
-        if (typeof handlers.callback === 'function') {
-          return nativeEvt.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
-            handlers.callback(e);
-          });
-        }
-      } else if (Platform.OS === 'android' && handlers) {
-        if (typeof handlers.callback === "function") {
-          return DeviceEventEmitter.addListener(EventConst.NAVIGATION_LENGTH, function (e) {
-            handlers.callback(e);
-          });
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   /**
    * 导航结束监听
    * @param handlers
@@ -2158,15 +2108,14 @@ export default (function () {
   }
 
 
-
   /**
-   * 路径分析
-   * @param index
-   * @returns {*|void|Promise<void>}
+   * 绘制在线路径分析的路径
+   * @param pathPoints
+   * @returns {*}
    */
-  function routeAnalyst(x,y) {
+  function drawOnlinePath(pathPoints) {
     try {
-      return SMap.routeAnalyst(x,y)
+      return SMap.drawOnlinePath(pathPoints)
     } catch (e) {
       console.error(e)
     }
@@ -2190,9 +2139,9 @@ export default (function () {
    * 清除导航路线
    * @returns {*|void|Promise<void>}
    */
-  function clearTarckingLayer() {
+  function clearTrackingLayer() {
     try {
-      return SMap.clearTarckingLayer()
+      return SMap.clearTrackingLayer()
     } catch (e) {
       console.error(e)
     }
@@ -2823,6 +2772,18 @@ export default (function () {
 
 
   /**
+   * 打开数据源，用于室外导航
+   * @param params
+   * @returns {*}
+   */
+  function openNavDatasource(params) {
+    try {
+      return SMap.openNavDatasource(params)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  /**
    * 获取数据源中含有的所有网络数据集
    * @param udb
    * @returns {*}
@@ -2985,8 +2946,6 @@ export default (function () {
     getMapcenterPosition,
     toLocationPoint,
     //setPointSearchListener,
-    setOnlineNavigationListener,
-    setOnlineNavigation2Listener,
     // pointSearch,
     // initPointSearch,
     setIndustryNavigationListener,
@@ -3130,9 +3089,9 @@ export default (function () {
     removeLegendListener,
     addScaleChangeDelegate,
 
-    routeAnalyst,
+    drawOnlinePath,
     isPointsInMapBounds,
-    clearTarckingLayer,
+    clearTrackingLayer,
     startNavigation,
     startIndoorNavigation,
     beginNavigation,
@@ -3165,6 +3124,7 @@ export default (function () {
     isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
+    openNavDatasource,
     getNetworkDataset,
     getPathInfos,
     getNavPathLength,

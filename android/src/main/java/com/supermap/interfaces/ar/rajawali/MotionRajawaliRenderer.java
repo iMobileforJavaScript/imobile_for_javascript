@@ -238,8 +238,6 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
 
     public void clearPoseData(){
         mTrajectory.clearPoseData();
-
-
         totalLength = 0.0f;
     }
 

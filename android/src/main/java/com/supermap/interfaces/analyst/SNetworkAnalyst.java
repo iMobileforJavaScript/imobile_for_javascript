@@ -1,23 +1,10 @@
 package com.supermap.interfaces.analyst;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.supermap.analyst.networkanalyst.TransportationAnalyst;
-import com.supermap.analyst.networkanalyst.TransportationAnalystParameter;
-import com.supermap.analyst.networkanalyst.TransportationAnalystResult;
-import com.supermap.analyst.networkanalyst.TransportationAnalystSetting;
-import com.supermap.analyst.networkanalyst.WeightFieldInfo;
-import com.supermap.analyst.networkanalyst.WeightFieldInfos;
 import com.supermap.data.Color;
-import com.supermap.data.DatasetVector;
-import com.supermap.data.Datasource;
-import com.supermap.data.GeoLineM;
 import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.GeoText;
@@ -28,34 +15,111 @@ import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
 import com.supermap.data.TextPart;
 import com.supermap.data.TextStyle;
-import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
-import com.supermap.mapping.MapControl;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
-import com.supermap.smNative.Network_tool;
-import com.supermap.smNative.SMParameter;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+
+import de.javagl.obj.Obj;
+
+class History {
+    private int currentIndex;
+
+    private ArrayList<HashMap> history;
+
+    public History() {
+        history = new ArrayList<>();
+    }
+
+    public int getCount() {
+        return history.size();
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public ArrayList<HashMap> getAllHistory() {
+        return history;
+    }
+
+    public ArrayList<HashMap> getHistory() {
+        return (ArrayList<HashMap>)history.subList(0, currentIndex);
+    }
+
+    public HashMap get(int index) {
+        return history.get(index);
+    }
+
+    public void addHistory(HashMap obj) {
+        if (currentIndex < history.size() - 1) {
+            List list = history.subList(0, currentIndex + 1);
+            ArrayList<HashMap> temp = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                temp.add((HashMap) list.get(i));
+            }
+            history = temp;
+        }
+        history.add(obj);
+        currentIndex = history.size() - 1;
+    }
+
+    public void remove(int index) {
+        history.remove(index);
+        currentIndex -= 1;
+    }
+
+    public void remove(Object obj) {
+        history.remove(obj);
+        currentIndex -= 1;
+    }
+
+    public void clear() {
+        history.clear();
+        currentIndex = -1;
+    }
+
+    public int undo() {
+        int preIndex = currentIndex >= 0 ? currentIndex : -1;
+        if (currentIndex > -1) {
+            currentIndex--;
+        }
+        return preIndex;
+    }
+
+    public int redo() {
+        int preIndex = currentIndex < history.size() - 1 ? currentIndex : (history.size() - 1);
+        if (currentIndex < history.size() - 1) {
+            currentIndex++;
+        }
+        return preIndex;
+    }
+}
 
 public class SNetworkAnalyst extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SNetworkAnalyst";
     public Layer layer;
     public Layer nodeLayer;
     public Selection selection;
-    public  ArrayList<Integer> elementIDs;
+    public ArrayList<Integer> elementIDs;
     public int startNodeID;
     public int endNodeID;
     public Point2D startPoint;
     public Point2D endPoint;
-    public  ArrayList<Integer> middleNodeIDs;
+    public ArrayList<Integer> middleNodeIDs;
+    public History history;
     ReactContext mReactContext;
+
+    public static String routeTag = "route";
 
     public SNetworkAnalyst(ReactApplicationContext context) {
         super(context);
         mReactContext = context;
+        history = new History();
     }
 
     @Override
@@ -95,6 +159,18 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
         SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer().clear();
     }
 
+    public void clearRoutes() {
+        if (this.selection != null) {
+            this.selection.clear();
+        }
+        TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
+        int routeIndex = trackingLayer.indexOf(routeTag);
+        while (routeIndex >= 0) {
+            trackingLayer.remove(routeIndex);
+            routeIndex = trackingLayer.indexOf(routeTag);
+        }
+    }
+
     public int selectNode(ReadableMap point, Layer nodeLayer, GeoStyle geoStyle, String tag) {
         int ID = -1;
 
@@ -117,7 +193,17 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
 
             TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
             trackingLayer.add(geoPoint, tag);
-            SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
+
+            HashMap nodeMap = new HashMap();
+            HashMap node = new HashMap();
+            node.put("x", x);
+            node.put("y", y);
+            nodeMap.put("tag", tag);
+            nodeMap.put("node", node);
+            if (history == null) {
+                history = new History();
+            }
+            history.addHistory(nodeMap);
 
             geoPoint.dispose();
             rs.close();
@@ -128,6 +214,7 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
 
     public Point2D selectPoint(ReadableMap point, Layer nodeLayer, GeoStyle geoStyle, String tag) {
         Point2D point2D = null;
+        int ID = -1;
 
         double x = point.getDouble("x");
         double y = point.getDouble("y");
@@ -152,7 +239,6 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
 
             TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
             trackingLayer.add(geoPoint, tag);
-            SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
 
             geoPoint.dispose();
             rs.close();
@@ -174,7 +260,6 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
 
         TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
         int index = trackingLayer.add(geoText, tag);
-        SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
         return index;
     }
 
@@ -188,4 +273,14 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
             }
         }
     }
+
+//    public WritableMap undo() {
+//        int preIndex = history.undo();
+//        WritableMap node = history.get(preIndex);
+//        return node;
+//    }
+//
+//    public void redo() {
+//        history.redo();
+//    }
 }

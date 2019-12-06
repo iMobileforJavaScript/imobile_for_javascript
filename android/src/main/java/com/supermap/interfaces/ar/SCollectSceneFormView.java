@@ -7,12 +7,38 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.ar.highprecision.MeasureView;
-import com.supermap.component.MapWrapView;
-import com.supermap.data.*;
+import com.supermap.data.CursorType;
+import com.supermap.data.Dataset;
+import com.supermap.data.DatasetType;
+import com.supermap.data.DatasetVector;
+import com.supermap.data.DatasetVectorInfo;
+import com.supermap.data.Datasets;
+import com.supermap.data.Datasource;
+import com.supermap.data.DatasourceConnectionInfo;
+import com.supermap.data.EncodeType;
+import com.supermap.data.EngineType;
+import com.supermap.data.FieldInfo;
+import com.supermap.data.FieldInfos;
+import com.supermap.data.FieldType;
+import com.supermap.data.GeoLine3D;
+import com.supermap.data.GeoPoint3D;
+import com.supermap.data.Point3D;
+import com.supermap.data.Point3Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
+import com.supermap.data.Recordset;
+import com.supermap.data.Workspace;
 import com.supermap.interfaces.ai.CustomRelativeLayout;
 import com.supermap.interfaces.ar.rajawali.MotionRajawaliRenderer;
 import com.supermap.interfaces.ar.rajawali.ViewMode;
@@ -183,6 +209,20 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取轨迹状态
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void isShowTrace(Promise promise) {
+        try {
+            promise.resolve(isShowTrace);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 获取三维场景里的数据并保存
      *
      * @param promise
@@ -215,11 +255,11 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void deleteData(String name, boolean isLine, Promise promise) {
+    public void deleteData(int index, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------saveData--------RN--------");
 
-            deleteDataset(name, isLine);
+            deleteDataset(index);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -248,6 +288,28 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 判断数据集类型
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void isLineDataset(int index, Promise promise) {
+        try {
+            Datasource datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(this.mDatasourceAlias);
+            Datasets datasets = datasource.getDatasets();
+            Dataset dataset = datasets.get(index);
+            if(dataset.getType().equals(DatasetType.LINE3D)){
+                promise.resolve(true);
+            } else if(dataset.getType().equals(DatasetType.POINT3D)){
+                promise.resolve(false);
+            }
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 加载数据到三维场景里
      *
@@ -256,7 +318,19 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     @ReactMethod
     public void loadData(int index, boolean isLine, Promise promise) {
         try {
+            if (infoList == null) {
+                infoList = new ArrayList<>();
+            } else {
+                infoList.clear();
+            }
+            if (isLine) {
+                infoList = getDatasetAllGeometry(this.mDatasourceAlias, index);
+            } else {
+                infoList = getPointDatasetAllGeometry(this.mDatasourceAlias, index);
+            }
+
             Log.d(REACT_CLASS, "----------------loadData--------RN--------");
+
             if (mQueryData == null) {
                 mQueryData = new ArrayList<>();
             } else {
@@ -264,7 +338,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             }
             if (isLine) {
                 if (infoList != null && infoList.size() > 0) {
-                    SceneFormInfo info = infoList.get(index);
+                    SceneFormInfo info = infoList.get(0);
                     GeoLine3D geoLine3D = info.getGeoLine3D();
                     for (int i = 0; i < geoLine3D.getPartCount(); i++) {
                         Point3Ds part = geoLine3D.getPart(i);
@@ -283,7 +357,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                 }
             } else {
                 if (infoList != null && infoList.size() > 0) {
-                    SceneFormInfo info = infoList.get(index);
+                    SceneFormInfo info = infoList.get(0);
                     GeoPoint3D geoPoint3D = info.getGeoPoint3D();
                     Point3D point = geoPoint3D.getInnerPoint3D();
                     mQueryData.add(point);
@@ -303,7 +377,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 清空数据
+     * 清空当前数据
      *
      * @param promise
      */
@@ -318,7 +392,29 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             if (mPostData != null) {
                 mPostData.clear();
             }
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
+
+    /**
+     * 清空所有数据
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void clearAllData(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------clearData--------RN--------");
+            if (mRenderer != null) {
+                mRenderer.clearPoseData();
+//                mRenderer.clearCurrentRoute();
+            }
+            if (mPostData != null) {
+                mPostData.clear();
+            }
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -371,8 +467,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             this.UDBpath = UDBpath;
 
             createDatasource(mDatasourceAlias, this.UDBpath);
-            createDataset(mDatasourceAlias, mDatasetName);
-            createPointDataset(mDatasourceAlias, mPointDatasetName);
+//            createDataset(mDatasourceAlias, mDatasetName);
+//            createPointDataset(mDatasourceAlias, mPointDatasetName);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -381,38 +477,29 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getHistoryData(boolean isLine, Promise promise) {
+    public void getHistoryData(Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------getHistoryData--------RN--------");
-            if (infoList == null) {
-                infoList = new ArrayList<>();
-            } else {
-                infoList.clear();
-                ;
-            }
-            if (isLine) {
-                infoList = getDatasetAllGeometry(this.mDatasourceAlias, this.mDatasetName);
-            } else {
-                infoList = getPointDatasetAllGeometry(this.mDatasourceAlias, this.mPointDatasetName);
-            }
-            if (infoList != null && infoList.size() > 0) {
-                WritableArray arr = Arguments.createArray();
-                for (int i = 0; i < infoList.size(); i++) {
+
+            Datasource datasource = SMap.getInstance().getSmMapWC().getWorkspace().getDatasources().get(this.mDatasourceAlias);
+            Datasets datasets = datasource.getDatasets();
+            WritableArray arr = Arguments.createArray();
+            if(datasets.getCount()>0){
+                for (int i = 0; i < datasets.getCount(); i++){
                     WritableMap writeMap = Arguments.createMap();
-                    writeMap.putString("name", infoList.get(i).getName());
-                    writeMap.putString("time", infoList.get(i).getTime());
-                    writeMap.putString("description", infoList.get(i).getNotes());
+                    writeMap.putString("name", datasets.get(i).getName());
                     writeMap.putInt("index", i);
+                    writeMap.putBoolean("select",false);
                     arr.pushMap(writeMap);
                 }
-
                 WritableMap writableMap = Arguments.createMap();
                 writableMap.putArray("history", arr);
-
                 promise.resolve(writableMap);
             } else {
                 promise.resolve(false);
             }
+
+
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -578,6 +665,9 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
      */
     private void saveDataset(String name) {
         try {
+            mDatasetName = name;
+            createDataset(mDatasourceAlias, mDatasetName);
+
             DatasetVector datasetVector = null;
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
@@ -640,6 +730,9 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
      */
     private void saveDataset(String name, Point3D point3D) {
         try {
+            mPointDatasetName = name;
+            createPointDataset(mDatasourceAlias, mPointDatasetName);
+
             DatasetVector datasetVector = null;
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
@@ -688,42 +781,18 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
         }
-
     }
 
     /**
      * 删除数据
      */
-    private void deleteDataset(String name, boolean isLine) {
+    private void deleteDataset(int index) {
         try {
             DatasetVector datasetVector = null;
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(mDatasourceAlias);
-            if (isLine) {
-                datasetVector = (DatasetVector) datasource.getDatasets().get(mDatasetName);
-            } else {
-                datasetVector = (DatasetVector) datasource.getDatasets().get(mPointDatasetName);
-            }
-            Recordset recordset = datasetVector.getRecordset(false, CursorType.DYNAMIC);
-            recordset.moveFirst();
-            Object ob;
-            FieldInfos fieldInfos = recordset.getFieldInfos();
-
-
-            while (!recordset.isEOF()) {
-                if (fieldInfos.indexOf("NAME") != -1) {
-                    ob = recordset.getFieldValue("NAME");
-                    if (ob.toString().equals(name)) {
-                        recordset.edit();
-                        recordset.delete();
-                    }
-                }
-                recordset.moveNext();
-            }
-            recordset.update();
-            recordset.close();
-            recordset.dispose();
+            datasource.getDatasets().delete(index);
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
         }
@@ -746,14 +815,14 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     /**
      * 获取指定数据集中所有信息
      */
-    public List<SceneFormInfo> getDatasetAllGeometry(String UDBName, String DatasetName) {
+    public List<SceneFormInfo> getDatasetAllGeometry(String UDBName, int index) {
         DatasetVector datasetVector = null;
-        if (UDBName != null && DatasetName != null) {
+        if (UDBName != null) {
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(UDBName);
             if (datasource != null) {
-                datasetVector = (DatasetVector) datasource.getDatasets().get(DatasetName);
+                datasetVector = (DatasetVector) datasource.getDatasets().get(index);
                 datasetVector.open();
             }
         }
@@ -830,13 +899,13 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     /**
      * 获取指定数据集中所有信息
      */
-    public List<SceneFormInfo> getPointDatasetAllGeometry(String UDBName, String DatasetName) {
+    public List<SceneFormInfo> getPointDatasetAllGeometry(String UDBName, int index) {
         DatasetVector datasetVector = null;
-        if (UDBName != null && DatasetName != null) {
+        if (UDBName != null) {
             MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
             Workspace workspace = mapControl.getMap().getWorkspace();
             Datasource datasource = workspace.getDatasources().get(UDBName);
-            datasetVector = (DatasetVector) datasource.getDatasets().get(DatasetName);
+            datasetVector = (DatasetVector) datasource.getDatasets().get(index);
         }
 
         if (datasetVector == null) {

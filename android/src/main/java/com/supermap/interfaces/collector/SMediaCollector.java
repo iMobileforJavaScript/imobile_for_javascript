@@ -538,6 +538,33 @@ public class SMediaCollector extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void removeByIds(ReadableArray ids, String layerName, Promise promise) {
+        try {
+            SMap.getInstance().getActivity().runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    MapWrapView mapView = (MapWrapView)SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
+                    List<CallOut> callouts = mapView.getCallouts();
+
+                    if(callouts != null) {
+                        for (int i = 0; i < callouts.size(); i++) {
+                            InfoCallout callout = (InfoCallout) callouts.get(i);
+                            for(int n = 0; n < ids.size(); n++) {
+                                if (callout.getLayerName().equals(layerName) && callout.getGeoID() == ids.getInt(n)) {
+                                    mapView.removeCallOut(callout.getID());
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void showMedia(String layerName, Promise promise) {
         try {
             Layer layer = SMLayer.findLayerWithName(layerName);

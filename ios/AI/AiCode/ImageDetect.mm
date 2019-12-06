@@ -48,7 +48,6 @@
 }
 
 -(NSArray*)runModel:(CVPixelBufferRef)pixelBuffer{
-    int value = 300;
     OSType sourcePixelFormat = CVPixelBufferGetPixelFormatType(pixelBuffer);
     BOOL isRunable =   sourcePixelFormat == kCVPixelFormatType_32ARGB ||
     sourcePixelFormat == kCVPixelFormatType_32BGRA ||
@@ -65,17 +64,17 @@
     
     vImage_Buffer inputVImageBuffer;
     inputVImageBuffer.data = (Byte*)CVPixelBufferGetBaseAddress(pixelBuffer);;
-    inputVImageBuffer.height = imageWidth;
-    inputVImageBuffer.width = imageHeight;
+    inputVImageBuffer.height = imageHeight;
+    inputVImageBuffer.width = imageWidth;
     inputVImageBuffer.rowBytes = inputImageRowBytes;
     
-    int scaledImageRowBytes = value * imageChannels;
-    Byte* scaledImageBytes = (Byte*)malloc(value * scaledImageRowBytes);
+    int scaledImageRowBytes = 300 * imageChannels;
+    Byte* scaledImageBytes = (Byte*)malloc(300 * scaledImageRowBytes);
     
     vImage_Buffer scaledVImageBuffer;
     scaledVImageBuffer.data = scaledImageBytes;
-    scaledVImageBuffer.height = value;
-    scaledVImageBuffer.width = value;
+    scaledVImageBuffer.height = 300;
+    scaledVImageBuffer.width = 300;
     scaledVImageBuffer.rowBytes = scaledImageRowBytes;
     
     vImageScale_ARGB8888(&inputVImageBuffer, &scaledVImageBuffer, nil, 0);
@@ -83,7 +82,7 @@
     CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     
     CVPixelBufferRef scaledPixelBuffer;
-    CVReturn conversionStatus = CVPixelBufferCreateWithBytes(nil, value,value, sourcePixelFormat, scaledImageBytes, scaledImageRowBytes,releaseCallback, nil, nil, &scaledPixelBuffer);
+    CVReturn conversionStatus = CVPixelBufferCreateWithBytes(nil, 300,300, sourcePixelFormat, scaledImageBytes, scaledImageRowBytes,releaseCallback, nil, nil, &scaledPixelBuffer);
     if (conversionStatus!=kCVReturnSuccess) {
         free(scaledImageBytes);
         return nil;
@@ -96,7 +95,7 @@
     }
     
     //byteCount = batchSize * inputWidth * inputHeight * inputChannels
-    int byteCount = 1 * value * value * 3;
+    int byteCount = 1 * 300 * 300 * 3;
     BOOL isModelQuantized = (inputTensor.dataType==TFLTensorDataTypeUInt8);
     
     CVPixelBufferLockBaseAddress(scaledPixelBuffer,kCVPixelBufferLock_ReadOnly);
@@ -176,16 +175,16 @@
     
     NSMutableArray<AIRecognition*> *arr = [[NSMutableArray alloc]init];
     for (int i=0; i<nCount; i++) {
-        if (scores[i]<0.5) {
+        if (scores[i]<0.6) {
             continue;
         }
         int outputClassIndex = classes[i];
         NSString* outputClass = labels[outputClassIndex + 1];
         
-        CGRect rect = CGRectMake(boundingBox[4*i],
-                                 boundingBox[4*i+1],
-                                 boundingBox[4*i+2]-boundingBox[4*i],
-                                 boundingBox[4*i+3]-boundingBox[4*i+1]);
+        CGRect rect = CGRectMake(boundingBox[4*i+1],
+                                 boundingBox[4*i],
+                                 boundingBox[4*i+3]-boundingBox[4*i+1],
+                                 boundingBox[4*i+2]-boundingBox[4*i]);
         
         UIColor* colorToAssign = UIColor.redColor; //???
         AIRecognition* inferenceTemp = [[AIRecognition alloc]initWith:outputClass confidence:scores[i] rect:rect displayColor:colorToAssign];
