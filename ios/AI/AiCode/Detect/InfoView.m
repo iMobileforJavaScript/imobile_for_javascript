@@ -27,7 +27,7 @@
     if(self=[super initWithFrame:frame]){
         m_lable_color = [[NSMutableDictionary alloc] initWithCapacity:11];
         NSMutableArray* array=[[NSMutableArray alloc] init];
-        [array addObject:[UIColor grayColor]];
+//        [array addObject:[UIColor grayColor]];
         [array addObject:[UIColor redColor]];
         [array addObject:[UIColor greenColor]];
         [array addObject:[UIColor blueColor]];
@@ -37,7 +37,20 @@
         [array addObject:[UIColor orangeColor]];
         [array addObject:[UIColor purpleColor]];
         [array addObject:[UIColor brownColor]];
-        [array addObject:[UIColor blackColor]];
+        [array addObject:[[UIColor alloc]initWithRed:224/255.0 green:207/255.0 blue:226/255.0 alpha:1]];
+        [array addObject:[[UIColor alloc]initWithRed:151/255.0 green:191/255.0 blue:242/255.0 alpha:1]];
+        [array addObject:[[UIColor alloc]initWithRed:174/255.0 green:241/255.0 blue:176/255.0 alpha:1]];
+//        [fillColors addObject:[[Color alloc] initWithR:224 G:207 B:226]];
+//        [fillColors addObject:[[Color alloc] initWithR:151 G:191 B:242]];
+//        [fillColors addObject:[[Color alloc] initWithR:242 G:242 B:186]];
+//        [fillColors addObject:[[Color alloc] initWithR:190 G:255 B:232]];
+//        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:232]];
+//        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:190]];
+//        [fillColors addObject:[[Color alloc] initWithR:255 G:235 B:175]];
+//        [fillColors addObject:[[Color alloc] initWithR:233 G:255 B:190]];
+//        [fillColors addObject:[[Color alloc] initWithR:234 G:225 B:168]];
+//        [fillColors addObject:[[Color alloc] initWithR:174 G:241 B:176]];
+//        [array addObject:[UIColor blackColor]];
         m_colors = [[NSArray alloc]initWithArray:array];
         _aIDetectStyle = [[AIDetectStyle alloc]init];
         _aIDetectStyle.aiStrokeWidth = 2;
@@ -149,7 +162,7 @@
         }
         //绘制可信度
         if(_aIDetectStyle&&_aIDetectStyle.isDrawConfidence){
-            content=[content stringByAppendingFormat:@"%.2f",recognition.confidence*100];
+            content=[content stringByAppendingFormat:@" %.2f",recognition.confidence*100];
             content=[content stringByAppendingString:@"%"];
         }
         //文本属性

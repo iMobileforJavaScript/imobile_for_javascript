@@ -13,6 +13,7 @@
 #import "AIDetectStyle.h"
 #import "AIRecognition.h"
 #import "RCTViewManager.h"
+#import "SLanguage.h"
 
 typedef enum {
     ASSETS_FILE,
@@ -53,13 +54,16 @@ RCT_EXPORT_MODULE();
     AIDetectViewInfo* info=[[AIDetectViewInfo alloc] init];
     
     NSString* modelPath= [[NSBundle mainBundle] pathForResource:@"detect" ofType:@"tflite"];
-    NSString* labelsPath = [[NSBundle mainBundle] pathForResource:@"labelmap" ofType:@"txt"];
+    NSString* labelsPath = [[NSBundle mainBundle] pathForResource:@"labelmap_cn" ofType:@"txt"];
+    if([[SLanguage getLanguage] isEqualToString:@"EN"]){
+        labelsPath = [[NSBundle mainBundle] pathForResource:@"labelmap" ofType:@"txt"];
+    }
     info.modeFile=modelPath;
     info.lableFile=labelsPath;
     
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
-    mAIDetectView.detectInterval=1000;
+    mAIDetectView.detectInterval=500;
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];
