@@ -68,6 +68,8 @@ typedef enum{
 @property(nonatomic,assign) BOOL isViewPointDistanceLabelEnable;
 //当前线段长度文字显隐
 @property(nonatomic,assign) BOOL isCurrentLengthLabelEnable;
+//当前现在中英文状态
+@property(nonatomic,assign) NSString* language;
 //总长度
 -(double)totalLengthOfSides;
 //视点距离
@@ -77,6 +79,7 @@ typedef enum{
 //撤销 量算中可用
 -(void)undo;
 
+-(id)initWithFrame:(CGRect)frame withLanguage:(NSString*)language;
 @end
 
 

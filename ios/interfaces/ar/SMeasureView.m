@@ -11,6 +11,7 @@
 #import "SuperMap/LocationManagePlugin.h"
 #import "SMCollector.h"
 #import "LocationTransfer.h"
+
 static SMeasureView *sMeasureView = nil;
 static ARMeasureView* mARMeasureView = nil;
 
@@ -170,6 +171,12 @@ RCT_REMAP_METHOD(saveDataset, saveDataset:(RCTPromiseResolveBlock)resolve reject
         GeoStyle* geoStyle = [[GeoStyle alloc] init];
         
         NSArray* arr=[mARMeasureView endRanging];
+        
+        if(!arr){
+            resolve(@(NO));
+            return;
+        }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
 //        GPSData* gpsData = [NativeUtil getGPSData];
 //        Point2D* pt = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];

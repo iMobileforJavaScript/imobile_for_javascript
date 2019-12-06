@@ -14,6 +14,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
+#import "SLanguage.h"
 
 static ARMeasureView* mARMeasureView = nil;
 
@@ -43,8 +44,8 @@ RCT_EXPORT_MODULE(RCTMeasureView)
 
     @try {
         CGRect rt = [ UIScreen mainScreen ].bounds;
-        mARMeasureView = [[ARMeasureView alloc] initWithFrame:rt];
-        
+//        mARMeasureView = [[ARMeasureView alloc] initWithFrame:rt];
+        mARMeasureView = [[ARMeasureView alloc] initWithFrame:rt withLanguage:[SLanguage getLanguage]];
         [SMeasureView setInstance:mARMeasureView];
         [mARMeasureView startARSessionWithMode:AR_MODE_RANGING];
         

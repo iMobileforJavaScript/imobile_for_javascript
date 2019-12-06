@@ -61,6 +61,14 @@
     return self;
 }
 
+-(id)initWithFrame:(CGRect)frame withLanguage:(NSString*)language{
+    if (self = [super initWithFrame:frame]) {
+        [self initialise];
+    }
+    _language=language;
+    return self;
+}
+
 -(id)initWithCoder:(NSCoder *)aDecoder{
     if (self = [super initWithCoder:aDecoder]) {
         [self initialise];
@@ -72,6 +80,10 @@
     [super layoutSubviews];
     m_SpaceLab.frame = CGRectMake(self.frame.size.width*0.5-100,self.frame.size.height*0.5+15,200,30);
     [m_crossMark setCenter:self.center];
+}
+
+-(BOOL)isChinese{
+    return [_language isEqualToString:@"CN"];
 }
 
 -(void)initialise{
@@ -112,6 +124,7 @@
     m_endNode.hidden = true;
     
     self.scene = scene;
+    _language=@"CN";
     
     
     
@@ -120,7 +133,7 @@
     //[m_SpaceLab setBackgroundColor:[UIColor lightGrayColor]];
     [m_SpaceLab setTextColor:[UIColor whiteColor]];
     [m_SpaceLab setTextAlignment:NSTextAlignmentCenter];
-    [m_SpaceLab setText:@"初始化中"];
+    [m_SpaceLab setText:[self isChinese]?@"初始化中":@"init"];
     [m_SpaceLab.layer setBackgroundColor:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.2].CGColor];
     [m_SpaceLab.layer setCornerRadius:15];
     //[self.view addSubview:m_SpaceLab];
@@ -141,7 +154,8 @@
     m_TotalLab = [[UILabel alloc] initWithFrame:CGRectMake(50,150,200,30)];
     [m_TotalLab setTextColor:[UIColor whiteColor]];
     [m_TotalLab setTextAlignment:NSTextAlignmentLeft];
-    [m_TotalLab setText:[NSString stringWithFormat:@" 总长度： %.2f m",m_dTotalLineLen]];
+    NSString* totalLength=[self isChinese]?@"总长度":@"total length";
+    [m_TotalLab setText:[NSString stringWithFormat:@" %@： %.2f m",totalLength,m_dTotalLineLen]];
     [m_TotalLab.layer setBackgroundColor:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.2].CGColor];
     [m_TotalLab.layer setCornerRadius:5];
     //[self.view addSubview:m_SpaceLab];
@@ -151,7 +165,7 @@
     m_DistanceLab = [[UILabel alloc] initWithFrame:CGRectMake(50,150+30+15,200,30)];
     [m_DistanceLab setTextColor:[UIColor whiteColor]];
     [m_DistanceLab setTextAlignment:NSTextAlignmentLeft];
-    [m_DistanceLab setText:[NSString stringWithFormat:@" 视点距离： %.2f m",0.0]];
+    [m_DistanceLab setText:[NSString stringWithFormat:@" %@： %.2f m",[self isChinese]?@"视点距离":@"view distance",0.0]];
     [m_DistanceLab.layer setBackgroundColor:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.2].CGColor];
     [m_DistanceLab.layer setCornerRadius:5];
     //[self.view addSubview:m_SpaceLab];
@@ -240,7 +254,8 @@
 -(void)captureRangingNode{
     if (m_bSessionStart && m_SessionMode==AR_MODE_RANGING) {
         if (m_planeArr.count == 0) {
-            [m_SpaceLab setText:@"没有找到平面"];
+//            [m_SpaceLab setText:@"没有找到平面"];
+            [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
             return;
         }
         if (!m_isMeasuring) {
@@ -366,12 +381,12 @@
                 
             }
             if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
-                [m_SpaceLab setText:@"没有找到平面"];
+                [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
                 m_FocusNode.hidden=true;
                 return;
             }
             if (m_planeArr.count == 0) {
-                [m_SpaceLab setText:@"没有找到平面"];
+                [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
                 m_FocusNode.hidden=true;
                 return;
             }
@@ -391,11 +406,11 @@
                 }
                 if (!m_isMeasuring)
                 {
-                    [m_SpaceLab setText:@"可以开始测量"];
+                    [m_SpaceLab setText:[self isChinese]?@"可以开始测量":@"can start measure"];
                 }
                 //NSLog(@"worldPostion = %@", [NSValue valueWithSCNVector3:worldPostion]);
                 if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
-                    [m_SpaceLab setText:@"焦点不在平面内"];
+                    [m_SpaceLab setText:[self isChinese]?@"焦点不在平面内":@"focus not in plane"];
                     m_FocusNode.hidden=true;
                     return;
                 }
@@ -457,7 +472,7 @@
 -(void)setCurrent:(double)dLen{
     if (m_dCurrentLineLen!=dLen) {
         m_dCurrentLineLen = dLen;
-        [m_SpaceLab setText:[NSString stringWithFormat:@" 当前长度： %.2f m",m_dCurrentLineLen]];
+        [m_SpaceLab setText:[NSString stringWithFormat:@" %@： %.2f m",[self isChinese]?@"当前长度":@"current length",m_dCurrentLineLen]];
         if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onCurrentToLastPointDistanceChange:)]) {
             [arRangingDelegate onCurrentToLastPointDistanceChange:m_dCurrentLineLen];
         }
@@ -467,7 +482,7 @@
 -(void)setTotal:(double)dLen{
     if (m_dTotalLineLen!=dLen) {
         m_dTotalLineLen = dLen;
-        [m_TotalLab setText:[NSString stringWithFormat:@" 总长度： %.2f m",m_dTotalLineLen]];
+        [m_TotalLab setText:[NSString stringWithFormat:@" %@： %.2f m",[self isChinese]?@"总长度":@"total length",m_dTotalLineLen]];
         if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onTotalLengthOfSidesChange:)]) {
             [arRangingDelegate onTotalLengthOfSidesChange:m_dTotalLineLen];
         }
@@ -477,7 +492,7 @@
 -(void)setDistance:(double)dLen{
     if (m_dDistance!=dLen) {
         m_dDistance = dLen;
-        [m_DistanceLab setText:[NSString stringWithFormat:@" 视点距离： %.2f m",m_dDistance]];
+        [m_DistanceLab setText:[NSString stringWithFormat:@" %@： %.2f m",[self isChinese]?@"视点距离":@"view distance",m_dDistance]];
         if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onViewPointDistanceToSurfaceChange:)]) {
             [arRangingDelegate onViewPointDistanceToSurfaceChange:m_dDistance];
         }
@@ -587,7 +602,9 @@
 
 - (void)session:(ARSession *)session didFailWithError:(NSError *)error {
     NSLog(@"Present an error message to the user error = %@",error);
-    [m_SpaceLab setText:@"didFailWithError 错误"];
+//    [m_SpaceLab setText:@"didFailWithError 错误"];
+    [m_SpaceLab setText:[NSString stringWithFormat:@"didFailWithError %@",[self isChinese]?@"错误":@"error"]];
+    
     if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onARRuntimeStatusChange:)]) {
         [arRangingDelegate onARRuntimeStatusChange:AR_INITIAL_FAILED];
     }
@@ -595,7 +612,8 @@
 
 - (void)sessionWasInterrupted:(ARSession *)session {
     NSLog(@"Inform the user that the session has been interrupted, for example, by presenting an overlay");
-    [m_SpaceLab setText:@"sessionWasInterrupted 中断"];
+//    [m_SpaceLab setText:@"sessionWasInterrupted 中断"];
+    [m_SpaceLab setText:[NSString stringWithFormat:@"sessionWasInterrupted %@",[self isChinese]?@"中断":@"interrupt"]];
     if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onARRuntimeStatusChange:)]) {
         [arRangingDelegate onARRuntimeStatusChange:AR_RUNTIME_TRACKING_PAUSED];
     }
@@ -603,7 +621,8 @@
 
 - (void)sessionInterruptionEnded:(ARSession *)session {
     NSLog(@"Reset tracking and/or remove existing anchors if consistent tracking is required");
-    [m_SpaceLab setText:@"sessionInterruptionEnded 结束"];
+//    [m_SpaceLab setText:@"sessionInterruptionEnded 结束"];
+    [m_SpaceLab setText:[NSString stringWithFormat:@"sessionInterruptionEnded %@",[self isChinese]?@"结束":@"end"]];
     if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onARRuntimeStatusChange:)]) {
         [arRangingDelegate onARRuntimeStatusChange:AR_RUNTIME_TRACKING_STOPPED];
     }
