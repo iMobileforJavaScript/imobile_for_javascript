@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE();
     
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
-    mAIDetectView.detectInterval=200;
+    mAIDetectView.detectInterval=1000;
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];
@@ -88,95 +88,29 @@ RCT_EXPORT_MODULE();
      mAIDetectView.delegate=self;
 }
 
--(void)onclickAIObject:(AIRecognition*)aIRecognition{
-//    mCurrentArObject = arrayList.get(0);
-//    Log.d(REACT_CLASS, "onClickArObject: " + mCurrentArObject.getName());
-//
-//    //移除其他的Arobject
-//    List<ArObjectList> arObjectLists = mWorld.getArObjectLists();
-//    for (int i = 0; i < arObjectLists .size(); i++) {
-//        ArObjectList arObjects = arObjectLists.get(i);
-//        for (int j = 0; j < arObjects.size(); j++) {
-//            ArObject arObject = arObjects.get(j);
-//            if (mCurrentArObject.getId() != arObject.getId()) {
-//                mWorld.remove(arObject);
-//            }
-//        }
-//    }
-//
-//    //向JS传递ArObject的点击事件
-//    WritableMap info = Arguments.createMap();
-//    info.putInt("id", ((int) mCurrentArObject.getId()));
-//    info.putString("name", mCurrentArObject.getName());
-//    info.putString("info", mCurrentArObject.getInfo());
-//    mReactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-//                                                                  mCustomRelativeLayout.getId(),
-//                                                                  "onArObjectClick",
-//                                                                  info
-//                                                                  );
-    
-//    @try {
-//        
-//        NSMutableDictionary* info=[[NSMutableDictionary alloc] init];
-//        
-//        [info setValue:0 forKey:@"id"];
-//        [info setValue:aIRecognition.label forKey:@"name"];
-//        
-//        NSMutableDictionary* arInfo=[[NSMutableDictionary alloc] init];
-//        [arInfo setValue:aIRecognition.label forKey:@"mediaName"];
-//        [info setValue:aIRecognition.label forKey:@"info"];
-//        
-////        [self sendEventWithName:onArObjectClick body:info];
-//        
-//        self.onArObjectClick(info);
-//    } @catch (NSException *exception) {
-//        NSString* reason=exception.reason;
-//    }
-    
-    
-}
-
 +(void)saveArPreviewBitmap:(NSString*)folderPath name:(NSString*)name{
-    
-//    CGSize s = mAIDetectView.bounds.size;
-//    UIGraphicsBeginImageContextWithOptions(s, NO, [UIScreen mainScreen].scale);
-//    [mAIDetectView.layer renderInContext:UIGraphicsGetCurrentContext()];
-//    UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-//    UIGraphicsEndImageContext();
-    
-    UIImage* aIImage=[self makeImageWithView:mAIDetectView];
-    
-    if(!aIImage){
-        return;
-    }
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL isDir = NO;
-    BOOL dataIsDir = NO;
-    // fileExistsAtPath 判断一个文件或目录是否有效，isDirectory判断是否一个目录
-    BOOL existed = [fileManager fileExistsAtPath:folderPath isDirectory:&isDir];
-    
-    if ( !(isDir == YES && existed == YES) ) {//如果文件夹不存在
-        [fileManager createDirectoryAtPath:folderPath withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    NSString* imagePath=[folderPath stringByAppendingFormat:@"%@.jpg",name];
-    // 保存图片到指定的路径
-    NSData *data = UIImagePNGRepresentation(aIImage);
-    [data writeToFile:imagePath atomically:YES];
-    if(aIImage){
-        aIImage=nil;
-    }
+    [mAIDetectView outputImage:^(UIImage *aIImage, NSError *error) {
+        if(!aIImage){
+            return;
+        }
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        BOOL isDir = NO;
+        BOOL dataIsDir = NO;
+        // fileExistsAtPath 判断一个文件或目录是否有效，isDirectory判断是否一个目录
+        BOOL existed = [fileManager fileExistsAtPath:folderPath isDirectory:&isDir];
+        
+        if ( !(isDir == YES && existed == YES) ) {//如果文件夹不存在
+            [fileManager createDirectoryAtPath:folderPath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        NSString* imagePath=[folderPath stringByAppendingFormat:@"%@.jpg",name];
+        // 保存图片到指定的路径
+        NSData *data = UIImageJPEGRepresentation(aIImage,1);
+        [data writeToFile:imagePath atomically:NO];
+//        if(aIImage){
+//            aIImage=nil;
+//        }
+    } withInfo:YES];
 }
-
-+ (UIImage *)makeImageWithView:(UIView *)view{
-    CGSize s = view.bounds.size;
-    UIGraphicsBeginImageContextWithOptions(s, NO, [UIScreen mainScreen].scale);
-    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage*image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-    
-}
-
 
 #pragma mark ARView系统版本是否支持
 RCT_REMAP_METHOD(checkIfAvailable, checkIfAvailable:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

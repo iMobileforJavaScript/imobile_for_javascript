@@ -11,7 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "AIDetectStyle.h"
 @class AIDetectViewInfo;
-@class AIRecognition;
+@class AIRecognition,AVCaptureVideoPreviewLayer;
 
 @protocol AIDetectTouchDelegate <NSObject>
 
@@ -19,12 +19,13 @@
 
 @end
 
+typedef void(^getImageCallBackBlock)(UIImage *image,NSError* error);
 
 @interface AIDetectView : UIView
 
 @property (nonatomic,assign) long detectInterval;
 @property(nonatomic,assign) id<AIDetectTouchDelegate> delegate;
-
+@property(nonatomic,strong)AVCaptureVideoPreviewLayer *previewLayer;
 -(void)initData;
 /** 设置数据 **/
 -(void) setDetectInfo:(AIDetectViewInfo*) detectViewInfo;
@@ -40,4 +41,7 @@
 -(void) pauseDetect;
 /** 设置识别框显示样式 **/
 -(void) setAIDetectStyle:(AIDetectStyle*) aIDetectStyle;
+
+//截图拍照
+-(void)outputImage:(getImageCallBackBlock)getImageCallback withInfo:(BOOL)bInfo;
 @end

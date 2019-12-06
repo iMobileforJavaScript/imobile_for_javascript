@@ -83,17 +83,6 @@
                                      recognition.rect.origin.y*ySize+yOffset,
                                      recognition.rect.size.width*xSize,
                                      recognition.rect.size.height*ySize);
-        
-//        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height;
-//        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width;
-//        tempCGRect.size.width=recognition.rect.size.height*rx.size.height;
-//        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
-        
-        
-//        tempCGRect.size.width=recognition.rect.size.height*rx.size.height;
-//        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
-//        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height+tempCGRect.size.width/2;
-//        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width-tempCGRect.size.height/2;
         if(tempCGRect.origin.x<0){
             tempCGRect.origin.x=2;
             tempCGRect.size.width=tempCGRect.size.width-(2-tempCGRect.origin.x);
@@ -181,43 +170,10 @@
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    // 获得当前点
     UITouch *touch = [touches anyObject];
     // 初始化起始点和结束点
     self.startPoint = [touch locationInView:self];
-    self.isTouchEvent=YES;
-//    self.endPoint = [touch locationInView:self];
-    // 触发绘制
-//    [self setNeedsDisplay];
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-
-    UITouch *aTouch = [touches anyObject];
-    CGPoint currentTouchPosition = [aTouch locationInView:self];
-    //  判断水平滑动的距离是否达到了设置的最小距离，并且是否是在接近直线的路线上滑动（y轴偏移量）
-    if (fabsf(self.startPoint.x - currentTouchPosition.x) >= HORIZ_SWIPE_DRAG_MIN ||
-        fabsf(self.startPoint.y - currentTouchPosition.y) >= VERT_SWIPE_DRAG_MAX)
-    {
-       self.isTouchEvent=NO;
-        //重置开始点坐标值
-        self.startPoint = CGPointZero;
-    }
-    
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    UITouch *aTouch = [touches anyObject];
-    CGPoint currentTouchPosition = [aTouch locationInView:self];
-    //  判断水平滑动的距离是否达到了设置的最小距离，并且是否是在接近直线的路线上滑动（y轴偏移量）
-    if (self.isTouchEvent && fabsf(self.startPoint.x - currentTouchPosition.x) <= HORIZ_SWIPE_DRAG_MIN &&
-        fabsf(self.startPoint.y - currentTouchPosition.y) <= VERT_SWIPE_DRAG_MAX )
-    {
-        [self touchPoint:self.startPoint];
-        self.isTouchEvent=NO;
-        //重置开始点坐标值
-        self.startPoint = CGPointZero;
-    }
+    [self touchPoint:self.startPoint];
 }
 
 -(AIRecognition*)touchPoint:(CGPoint)touchPoint{
@@ -237,7 +193,9 @@
             }
         }
     }
+//     NSLog(@"++ touch %@",@"2");
     if(index!=-1&&index<[self.aIRectArr count]){
+//         NSLog(@"++ touch %@",@"3");
         AIRecognition *aIRecognition=[self.aIRecognitionArray objectAtIndex:index];
         self.callBackBlock(aIRecognition);
         return [self.aIRecognitionArray objectAtIndex:index];

@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CameraManager : NSObject
 
 @property(nonatomic,assign) id<CameraManagerDelegate> delegate;
+-(void)outputImage:(id) takePictureSuccess;
 -(id)initWithView:(AIDetectView*)view;
 //开启相机
 -(void)checkCameraConfigurationAndStartSession;
