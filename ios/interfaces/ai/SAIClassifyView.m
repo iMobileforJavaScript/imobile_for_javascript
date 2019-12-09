@@ -43,7 +43,6 @@ static NSArray* mListENClassifyNames;
 static ModelType mModelType = ASSETS_FILE;
 static UIImage * classifyImg;
 
-
 @implementation SAIClassifyView
 
 
@@ -78,6 +77,25 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
         NSData *data = [NSData dataWithContentsOfFile:imgUri];
         classifyImg = [UIImage imageWithData:data];
         
+        //获取全局队列
+        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+        self.timer = timer;
+        //设置触发的间隔时间
+        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        __block int index=0;
+        //设置定时器的触发事件
+        dispatch_source_set_event_handler(timer, ^{
+            if(index==1){
+                resolve(@(NO));
+                dispatch_source_cancel(self.timer);
+                self.timer=nil;
+            }
+            index++;
+        });
+        dispatch_resume(timer);
+        
         NSArray* results=[mImageClassification recognizeImage:classifyImg];
         NSMutableArray* arr=[[NSMutableArray alloc] init];
         for(int i=0;i<results.count;i++){
@@ -102,12 +120,17 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
         
         
         [self sendEventWithName:recognizeImage body:allResults];
-        
+
+        //识别结束取消计时器
+        dispatch_source_cancel(self.timer);
+        self.timer=nil;
+
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"loadImageUri", exception.reason, nil);
     }
 }
+
 
 #pragma mark 识别选中的的图片
 RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -116,7 +139,24 @@ RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromis
         NSArray *array = [imgUri componentsSeparatedByString:@"?id="]; //从字符A中分隔成2个元素的数组
         NSString *usePath=[((NSString*)array[1]) componentsSeparatedByString:@"&"][0];
         
-        
+        //获取全局队列
+        dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
+        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, global);
+        self.timer = timer;
+        //设置触发的间隔时间
+        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+        __block int index=0;
+        //设置定时器的触发事件
+        dispatch_source_set_event_handler(timer, ^{
+            if(index==1){
+                resolve(@(NO));
+                dispatch_source_cancel(self.timer);
+                self.timer=nil;
+            }
+            index++;
+        });
+        dispatch_resume(timer);
         // 这里是原本的图片url
 //        NSString * path = @"assets-library://asset/asset.JPG?id=9581C151-4582-4ABD-A581-1F34E037E1A0&ext=JPG";
         // 取出要使用的 LocalIdentifiers
@@ -152,10 +192,11 @@ RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromis
                 
                 
                 [self sendEventWithName:recognizeImage body:allResults];
-                
+                //识别结束取消计时器
+                dispatch_source_cancel(self.timer);
+                self.timer=nil;
+
                 resolve(@(YES));
-                
-                
             }];
         }];
         
@@ -226,11 +267,11 @@ RCT_REMAP_METHOD(getCurrentModel, getCurrentModel:(RCTPromiseResolveBlock)resolv
         
         NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
         if(mModelType==ABSOLUTE_FILE_PATH){
-            [dic setObject:@"ModelPath" forKey:MODEL_PATH];
-            [dic setObject:@"LabelPath" forKey:LABEL_PATH];
-            [dic setObject:@"ModelType" forKey:@"ABSOLUTE_FILE_PATH"];
+            [dic setObject:MODEL_PATH forKey:@"ModelPath"];
+            [dic setObject:LABEL_PATH forKey:@"LabelPath"];
+            [dic setObject:@"ABSOLUTE_FILE_PATH" forKey:@"ModelType"];
         }else{
-            [dic setObject:@"ModelType" forKey:@"ASSETS_FILE"];
+            [dic setObject:@"ASSETS_FILE" forKey:@"ModelType"];
         }
         
         resolve(dic);
