@@ -45,7 +45,8 @@ RCT_EXPORT_MODULE(RCTMeasureView)
     @try {
         CGRect rt = [ UIScreen mainScreen ].bounds;
 //        mARMeasureView = [[ARMeasureView alloc] initWithFrame:rt];
-        mARMeasureView = [[ARMeasureView alloc] initWithFrame:rt withLanguage:[SLanguage getLanguage]];
+        NSString* language=[SLanguage getLanguage];
+        mARMeasureView = [[ARMeasureView alloc] initWithFrame:rt withLanguage:language];
         [SMeasureView setInstance:mARMeasureView];
         [mARMeasureView startARSessionWithMode:AR_MODE_RANGING];
         

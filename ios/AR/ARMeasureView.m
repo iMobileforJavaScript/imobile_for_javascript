@@ -39,6 +39,8 @@
     UIImageView *m_crossMark;
     
     ARFlagType m_flagType;
+    
+    NSString* m_language;
 }
 
 
@@ -65,7 +67,7 @@
     if (self = [super initWithFrame:frame]) {
         [self initialise];
     }
-    _language=language;
+    m_language=language;
     return self;
 }
 
@@ -83,7 +85,10 @@
 }
 
 -(BOOL)isChinese{
-    return [_language isEqualToString:@"CN"];
+    if(!m_language){
+        return true;
+    }
+    return [m_language isEqualToString:@"CN"];
 }
 
 -(void)initialise{
@@ -124,7 +129,6 @@
     m_endNode.hidden = true;
     
     self.scene = scene;
-    _language=@"CN";
     
     
     
@@ -160,6 +164,7 @@
     [m_TotalLab.layer setCornerRadius:5];
     //[self.view addSubview:m_SpaceLab];
     [self addSubview:m_TotalLab];
+    [m_TotalLab setHidden:YES];
     
 //    m_DistanceLab = [[UILabel alloc] initWithFrame:CGRectMake(50,30+30+15,200,30)];
     m_DistanceLab = [[UILabel alloc] initWithFrame:CGRectMake(50,150+30+15,200,30)];
@@ -170,7 +175,7 @@
     [m_DistanceLab.layer setCornerRadius:5];
     //[self.view addSubview:m_SpaceLab];
     [self addSubview:m_DistanceLab];
-    
+    [m_DistanceLab setHidden:YES];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSingleTap:)];
     [self addGestureRecognizer:tap];
@@ -486,6 +491,7 @@
         if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onTotalLengthOfSidesChange:)]) {
             [arRangingDelegate onTotalLengthOfSidesChange:m_dTotalLineLen];
         }
+        [m_TotalLab setHidden:NO];
     }
 }
 
@@ -496,6 +502,7 @@
         if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onViewPointDistanceToSurfaceChange:)]) {
             [arRangingDelegate onViewPointDistanceToSurfaceChange:m_dDistance];
         }
+        [m_DistanceLab setHidden:NO];
     }
 }
 
