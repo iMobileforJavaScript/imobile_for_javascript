@@ -824,7 +824,7 @@ RCT_REMAP_METHOD(getNavPathLength, getNavPathLengthWithBool:(BOOL)isIndoor resol
         if(isIndoor){
             naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
         }else{
-            naviPath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+            naviPath = [sMap.sNavigation2.m_navigation getNaviPath];
         }
         int length =  0;
         for(int i = 0; i < naviPath.count; i++){
@@ -845,7 +845,7 @@ RCT_REMAP_METHOD(getPathInfos, getPathInfosWithBool:(BOOL)isIndoor resolver: (RC
         if(isIndoor){
             navipath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
         }else{
-            navipath = [[sMap.smMapWC.mapControl getNavigation2] getNaviPath];
+            navipath = [sMap.sNavigation2.m_navigation getNaviPath];
         }
         NSMutableArray *array = [[NSMutableArray alloc] init];
         for(int i = 0; i < navipath.count; i++){
@@ -914,14 +914,16 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
         
         if(dataset != nil){
             DatasetVector *networkDataset = (DatasetVector *)dataset;
-            Navigation2 *navigation2 = [sMap.smMapWC.mapControl getNavigation2];
+            if(sMap.sNavigation2 == nil){
+                sMap.sNavigation2 = [[SNavigation2 alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            }
+            SNavigation2 *navigation2 = sMap.sNavigation2;
             GeoStyle *style = [[GeoStyle alloc] init];
             [style setLineSymbolID:964882];
             [navigation2 setRouteStyle:style];
             [navigation2 setNetworkDataset:networkDataset];
             [navigation2 loadModel:netModelPath];
-            navigation2.navi2Delegate = self;
-            [networkDataset close];
+            navigation2.m_navigation.navi2Delegate = self;
             resolve(@(YES));
         }else{
             resolve(@(NO));
@@ -956,7 +958,7 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         BOOL isIndoorGuiding = [[mapControl getNavigation3] isGuiding];
-        BOOL isOutdoorGuiding = [[mapControl getNavigation2] isGuiding];
+        BOOL isOutdoorGuiding = [sMap.sNavigation2.m_navigation isGuiding];
         resolve(@(isIndoorGuiding || isOutdoorGuiding));
     } @catch (NSException *exception) {
         reject(@"isGuiding",exception.reason,nil);
@@ -965,27 +967,38 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
 #pragma mark 行业导航路径分析
 RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
-        MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        Navigation2 *navigation2 = [mapControl getNavigation2];
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        SNavigation2 *navigation2 = sMap.sNavigation2;
         [navigation2 setStartPoint:x sPointY:y];
         [navigation2 setDestinationPoint:x2 dPointY:y2];
-        [navigation2 setPathVisible:YES];
-        BOOL isFind = [navigation2 routeAnalyst];
-        [mapControl.map refresh];
+        [navigation2.m_navigation setPathVisible:YES];
+        BOOL isFind = [navigation2.m_navigation routeAnalyst];
+        if(!isFind){
+            isFind = [navigation2 reAnalyst];
+            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+        }else{
+            [map refresh];
+        }
         resolve(@(isFind));
     } @catch (NSException *exception) {
-        reject(@"beginNavigation",exception.reason, nil);
+        sMap = [SMap singletonInstance];
+        Map *map = sMap.smMapWC.mapControl.map;
+        SNavigation2 *navigation2 = sMap.sNavigation2;
+        BOOL isFind = [navigation2 reAnalyst];
+        [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];;
+        resolve(@(isFind));
     }
 }
 
 #pragma mark 进行行业导航
 RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try {
-        MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
+        sMap = [SMap singletonInstance];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[mapControl getNavigation2] enablePanOnGuide:YES];
-            [[mapControl getNavigation2] startGuide:naviType];
-            [[mapControl getNavigation2] setIsCarUpFront:NO];
+            [sMap.sNavigation2.m_navigation enablePanOnGuide:YES];
+            [sMap.sNavigation2.m_navigation startGuide:naviType];
+            [sMap.sNavigation2.m_navigation setIsCarUpFront:NO];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
@@ -1446,7 +1459,8 @@ RCT_REMAP_METHOD(clearPoint, clearPointWithResolver: (RCTPromiseResolveBlock) re
     @try{
         sMap = [SMap singletonInstance];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[sMap.smMapWC.mapControl getNavigation2] cleanPath];
+            [sMap.sNavigation2.m_navigation cleanPath];
+            [sMap.smMapWC.mapControl.map.trackingLayer clear];
             [[sMap.smMapWC.mapControl getNavigation3] cleanPath];
             [SMap clearOutdoorPoint];
         });
@@ -1461,7 +1475,7 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
     @try {
         sMap = [SMap singletonInstance];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [[sMap.smMapWC.mapControl getNavigation2] stopGuide];
+            [sMap.sNavigation2.m_navigation stopGuide];
             [[sMap.smMapWC.mapControl getNavigation3] stopGuide];
         });
         resolve(@(YES));

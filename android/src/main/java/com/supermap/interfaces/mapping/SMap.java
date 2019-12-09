@@ -135,6 +135,7 @@ import com.supermap.data.Color;
 import com.supermap.smNative.components.InfoCallout;
 import com.supermap.interfaces.utils.StrokeTextView;
 import com.supermap.services.LogInfoService;
+import com.supermap.smNative.components.SNavigation2;
 
 import org.apache.http.cookie.SM;
 import org.json.JSONArray;
@@ -182,6 +183,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
+    private SNavigation2 sNavigation2;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
     private SpeakPlugin speakPlugin;
@@ -5665,7 +5667,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isIndoor) {
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
             } else {
-                naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+                naviPath = sMap.sNavigation2.getNavigation().getNaviPath();
             }
             WritableMap map = Arguments.createMap();
             map.putInt("length", (int) naviPath.getLength());
@@ -5689,7 +5691,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isIndoor) {
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
             } else {
-                naviPath = sMap.getSmMapWC().getMapControl().getNavigation2().getNaviPath();
+                naviPath = sMap.sNavigation2.getNavigation().getNaviPath();
             }
             ArrayList<NaviStep> naviStep = naviPath.getStep();
             WritableArray array = Arguments.createArray();
@@ -5770,13 +5772,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (dataset != null) {
                 // 初始化行业导航对象
                 DatasetVector networkDataset = (DatasetVector) dataset;
-                Navigation2 m_Navigation2 = sMap.getSmMapWC().getMapControl().getNavigation2();      // 获取行业导航控件，只能通过此方法初始化m_Navigation2
+                if(sMap.sNavigation2 == null){
+                    sMap.sNavigation2 = new SNavigation2(sMap.smMapWC.getMapControl());
+                }
+                SNavigation2 navigation2 = sMap.sNavigation2;
                 GeoStyle style = new GeoStyle();
                 style.setLineSymbolID(964882);
-                m_Navigation2.setRouteStyle(style);
-                m_Navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
-                m_Navigation2.loadModel(netModelPath);  // 加载网络模型
-                m_Navigation2.addNaviInfoListener(new NaviListener() {
+                navigation2.setRouteStyle(style);
+                navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
+                navigation2.loadModel(netModelPath);  // 加载网络模型
+                navigation2.getNavigation().addNaviInfoListener(new NaviListener() {
                     @Override
                     public void onStopNavi() {
                         clearOutdoorPoint();
@@ -5820,7 +5825,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         Log.e("+++++++++++++", "-------------****************");
                     }
                     });
-                m_Navigation2.enablePanOnGuide(true);
+                navigation2.getNavigation().enablePanOnGuide(true);
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -5847,7 +5852,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
             boolean isIndoorGuiding = mapControl.getNavigation3().isGuiding();
-            boolean isOutdoorGuiding = mapControl.getNavigation2().isGuiding();
+            boolean isOutdoorGuiding = sMap.sNavigation2.getNavigation().isGuiding();
             promise.resolve(isIndoorGuiding || isOutdoorGuiding);
         } catch (Exception e) {
             promise.reject(e);
@@ -5863,14 +5868,27 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void beginNavigation(double x, double y, double x2, double y2, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            sMap.getSmMapWC().getMapControl().getNavigation2().setStartPoint(x, y);        // 设置起点
-            sMap.getSmMapWC().getMapControl().getNavigation2().setDestinationPoint(x2, y2);     // 设置终点
-            sMap.getSmMapWC().getMapControl().getNavigation2().setPathVisible(true);                                       // 设置路径可见
-            boolean isfind = sMap.getSmMapWC().getMapControl().getNavigation2().routeAnalyst();
-            sMap.smMapWC.getMapControl().getMap().refresh();
-            promise.resolve(isfind);
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            SNavigation2 navigation2 = sMap.sNavigation2;
+            navigation2.setStartPoint(x,y);
+            navigation2.setDestinationPoint(x2,y2);
+            navigation2.getNavigation().setPathVisible(true);
+
+            boolean isFind = navigation2.getNavigation().routeAnalyst();
+            if(!isFind){
+                isFind = navigation2.reAnalyst();
+                navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+            }else{
+                map.refresh();
+            }
+            promise.resolve(isFind);
         } catch (Exception e) {
-            promise.reject(e);
+            sMap = SMap.getInstance();
+            com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
+            SNavigation2 navigation2 = sMap.sNavigation2;
+            boolean isFind = navigation2.reAnalyst();
+            navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+            promise.resolve(isFind);
         }
     }
 
@@ -5886,9 +5904,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation2().startGuide(naviType);
-                    sMap.getSmMapWC().getMapControl().getMap().setFullScreenDrawModel(true);        // 设置整屏绘制
-                    sMap.getSmMapWC().getMapControl().getNavigation2().setCarUpFront(false);          // 设置车头向上
+                    sMap.sNavigation2.getNavigation().enablePanOnGuide(true);
+                    sMap.sNavigation2.getNavigation().startGuide(naviType);
+                    sMap.sNavigation2.getNavigation().setCarUpFront(false);
                 }
             });
             promise.resolve(true);
@@ -6504,7 +6522,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation2().cleanPath();
+                    sMap.sNavigation2.getNavigation().cleanPath();
+                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
                     sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
                     clearOutdoorPoint();
                 }
@@ -6528,7 +6547,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().getNavigation2().stopGuide();
+                    sMap.sNavigation2.getNavigation().stopGuide();
                     sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
                 }
             });
