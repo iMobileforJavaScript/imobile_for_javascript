@@ -39,6 +39,8 @@
     UIImageView *m_crossMark;
     
     ARFlagType m_flagType;
+    
+    NSString* m_language;
 }
 
 
@@ -65,7 +67,7 @@
     if (self = [super initWithFrame:frame]) {
         [self initialise];
     }
-    _language=language;
+    m_language=language;
     return self;
 }
 
@@ -83,7 +85,10 @@
 }
 
 -(BOOL)isChinese{
-    return [_language isEqualToString:@"CN"];
+    if(!m_language){
+        return true;
+    }
+    return [m_language isEqualToString:@"CN"];
 }
 
 -(void)initialise{
@@ -124,7 +129,7 @@
     m_endNode.hidden = true;
     
     self.scene = scene;
-    _language=@"CN";
+//    _language=@"CN";
     
     
     
