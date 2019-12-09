@@ -16,7 +16,7 @@
 #import "SuperMap/Workspace.h"
 #import "SuperMap/Datasource.h"
 #import "SMap.h"
-
+#import "SLanguage.h"
 
 typedef enum {
     ASSETS_FILE,
@@ -38,7 +38,7 @@ static ImageClassification* mImageClassification=nil;
 
 static NSArray* mListCNClassifyNames;
 static NSArray* mListENClassifyNames;
-static NSString* mLanguage=@"CN";
+//static NSString* mLanguage=@"CN";
 
 static ModelType mModelType = ASSETS_FILE;
 static UIImage * classifyImg;
@@ -63,7 +63,7 @@ RCT_REMAP_METHOD(initAIClassify, initAIClassify:(NSString*)datasourceAlias datas
         mDatasetName=datasetName;
         
         [self initTensorFlowAndLoadModel];
-        mLanguage=language;
+//        mLanguage=language;
         [self initData];
         
         resolve(@(YES));
@@ -84,7 +84,7 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
             Recognition* recognition=results[i];
             NSMutableDictionary* recognitionDic=[[NSMutableDictionary alloc] init];
             NSString* label=recognition.label;
-            if([mLanguage isEqualToString:@"CN"]){
+            if([[SLanguage getLanguage] isEqualToString:@"CN"]){
                 if([mListENClassifyNames containsObject:label]){
                     NSInteger index=[mListENClassifyNames indexOfObject:label];
                     label=mListCNClassifyNames[index];
@@ -134,7 +134,7 @@ RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromis
                     Recognition* recognition=results[i];
                     NSMutableDictionary* recognitionDic=[[NSMutableDictionary alloc] init];
                     NSString* label=recognition.label;
-                    if([mLanguage isEqualToString:@"CN"]){
+                    if([[SLanguage getLanguage] isEqualToString:@"CN"]){
                         if([mListENClassifyNames containsObject:label]){
                             NSInteger index=[mListENClassifyNames indexOfObject:label];
                             label=mListCNClassifyNames[index];

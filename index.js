@@ -19,6 +19,7 @@ let Layer3DType = NativeModules.JSLayer3DType
 let ImageFormatType = NativeModules.JSImageFormatType
 let FixColorMode = NativeModules.FixColorMode
 let StatisticMode = NativeModules.StatisticMode
+let SLanguage = NativeModules.SLanguage
 
 import BufferAnalyst from './NativeModule/BufferAnalyst.js'
 import BufferAnalystGeometry from './NativeModule/BufferAnalystGeometry.js'
@@ -191,6 +192,7 @@ import {
 let SMCollectorType = NativeModules.SCollectorType
 
 export {
+  SLanguage,
   SMMapView,
   SMCallOut,
   SMLayerListView,

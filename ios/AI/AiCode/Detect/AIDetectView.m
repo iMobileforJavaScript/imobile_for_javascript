@@ -15,7 +15,9 @@
 #import "InfoView.h"
 
 @interface AIDetectView()<CameraManagerDelegate>
-
+{
+    UIImage* m_image;
+}
 
 //@property (nonatomic,assign) long detectInterval;
 @property (nonatomic,assign) NSTimeInterval previousInferenceTimeMs;
@@ -25,12 +27,7 @@
 
 @property (nonatomic,assign) BOOL isDetecting;
 @property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
-
-@property (nonatomic,strong) NSMutableArray *lables;
-@property (nonatomic,strong) NSMutableArray *aIRecognitionArray;
-
 @property (nonatomic,strong) InfoView *infoView;
-
 @end
 
 @implementation AIDetectView
@@ -44,7 +41,9 @@
     
     _infoView=[[InfoView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     _infoView.backgroundColor = [UIColor clearColor];
+//    _infoView.opaque = NO;
     _infoView.callBackBlock = ^(AIRecognition *aIRecognition) {
+        NSLog(@"++ touch %@",aIRecognition.label);
         if (self.delegate!=nil && [self.delegate respondsToSelector:@selector(touchAIRecognition:)]) {
             [self.delegate touchAIRecognition:aIRecognition];
         }
@@ -52,15 +51,39 @@
     if(_aIDetectStyle){
         _infoView.aIDetectStyle=_aIDetectStyle;
     }
+//    _infoView.userInteractionEnabled = NO;
     [self addSubview:_infoView];
     
 }
 
+-(void)outputImage:(getImageCallBackBlock)getImageCallback withInfo:(BOOL)bInfo{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIImageView* uiimage = [[UIImageView alloc]initWithImage:m_image];
+        uiimage.backgroundColor = [UIColor clearColor];
+        uiimage.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+        if(bInfo){
+            [uiimage addSubview:_infoView];
+        }
+         CGSize s = uiimage.bounds.size;
+         UIGraphicsBeginImageContextWithOptions(s, NO, 1);
+         [uiimage.layer renderInContext:UIGraphicsGetCurrentContext()];
+         UIImage* imageRes = UIGraphicsGetImageFromCurrentImageContext();
+         UIGraphicsEndImageContext();
+         getImageCallback(imageRes,nil);
+    });
+
+}
+
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+//
+//    [self outputImage:^(UIImage *image, NSError *error) {
+//
+//    } withInfo:YES];
+//}
+
 //刷新布局
 -(void)setaIRecognitionArrayAndUpdateView:(NSArray *)aIRecognitionArray withSize:(CGSize)size{
 
-    self.aIRecognitionArray=aIRecognitionArray;
-    
     _infoView.sizeCamera = size;
     _infoView.aIRecognitionArray=aIRecognitionArray;
     [_infoView refresh];
@@ -112,10 +135,12 @@
         //更新所有子view
         [self setaIRecognitionArrayAndUpdateView:result withSize:CGSizeMake(CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer))];
       
-        for (int i=0; i<result.count; i++) {
-            AIRecognition *inference = result[i];
-            NSLog(@"%i __%.3f__%.3f__%.3f__%.3f",result.count,inference.rect.origin.x,inference.rect.origin.y,inference.rect.size.width,inference.rect.size.height);
-        }
+        m_image = [[UIImage alloc] initWithCIImage:[CIImage imageWithCVPixelBuffer:pixelBuffer]];
+//        m_pixelBuffer = pixelBuffer;
+//        for (int i=0; i<result.count; i++) {
+//            AIRecognition *inference = result[i];
+//            NSLog(@"%i __%.3f__%.3f__%.3f__%.3f",result.count,inference.rect.origin.x,inference.rect.origin.y,inference.rect.size.width,inference.rect.size.height);
+//        }
     } @catch (NSException *exception) {
         
     } @finally {

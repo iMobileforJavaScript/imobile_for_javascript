@@ -14,16 +14,32 @@
     AIDetectView* aiDetectView;
     //图像预览层，实时显示捕获的图像
     AVCaptureVideoPreviewLayer *previewLayer;
+    AVCaptureStillImageOutput* _imageOutput;
 }
 
 @end
 
 @implementation CameraManager
 
+-(void)outputImage:(id) takePictureSuccess{
+    AVCaptureStillImageOutput *imageOutput = [[AVCaptureStillImageOutput alloc] init];
+    imageOutput.outputSettings = @{AVVideoCodecKey:AVVideoCodecJPEG};
+    if ([session canAddOutput:imageOutput]) {
+        [session addOutput:imageOutput];
+        _imageOutput = imageOutput;
+    }
+
+    // 输出图片
+    AVCaptureConnection *connection = [_imageOutput connectionWithMediaType:AVMediaTypeVideo];
+    if (connection.isVideoOrientationSupported) {
+        connection.videoOrientation = UIInterfaceOrientationPortrait;
+    }
+//    static UIImage *image = nil;
+    
+    [_imageOutput captureStillImageAsynchronouslyFromConnection:connection completionHandler:takePictureSuccess];
+}
 -(id)initWithView:(AIDetectView*)view{
     if (self = [super init]) {
-        
-
         aiDetectView = view;
         session = [[AVCaptureSession alloc]init];
         session.sessionPreset = AVCaptureSessionPresetHigh;
@@ -33,7 +49,7 @@
         previewLayer.frame = view.bounds;
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
         [aiDetectView.layer insertSublayer:previewLayer atIndex:0];
-        
+        view.previewLayer = previewLayer;
         previewLayer.connection.videoOrientation =  UIInterfaceOrientationPortrait;
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
         

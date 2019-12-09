@@ -202,6 +202,12 @@
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
 		18A3DC6823693DD60013B66D /* SSpeechRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */; };
+		2A15228123965B9900CBC452 /* SMeasureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A15228023965B9900CBC452 /* SMeasureView.m */; };
+		2A15228B2396652700CBC452 /* ARMeasureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1522842396652600CBC452 /* ARMeasureView.m */; };
+		2A15228C2396652700CBC452 /* LineController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1522862396652600CBC452 /* LineController.m */; };
+		2A15228D2396652700CBC452 /* PlaneNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1522882396652600CBC452 /* PlaneNode.m */; };
+		2A15228E2396652700CBC452 /* SCNVector3Tool.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A15228A2396652600CBC452 /* SCNVector3Tool.m */; };
+		2A152291239676FE00CBC452 /* MeasureViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A152290239676FE00CBC452 /* MeasureViewManager.m */; };
 		2A5299552386814A0071AD06 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299542386814A0071AD06 /* Accelerate.framework */; };
 		2A5299BD2386A5460071AD06 /* tfOC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BB2386A5460071AD06 /* tfOC.a */; };
 		2A5299BE2386A5460071AD06 /* libTensorFlowLiteObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */; };
@@ -219,6 +225,7 @@
 		4AE32D4921BA0C4800555A5A /* SThemeCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE32D4821BA0C4800555A5A /* SThemeCartography.m */; };
 		4AF967A421B50EC000105B74 /* SMCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A321B50EC000105B74 /* SMCartography.m */; };
 		4AF967A721B5283A00105B74 /* SCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A621B5283A00105B74 /* SCartography.m */; };
+		4EE4616C239A3F5900775A76 /* SLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EE4616B239A3F5900775A76 /* SLanguage.m */; };
 		611AE55923177F96009A0B9A /* SMMapFixColors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 611AE55823177F96009A0B9A /* SMMapFixColors.mm */; };
 		B7B9A5FB2399F67500718E4F /* SNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B9A5FA2399F67500718E4F /* SNavigation2.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
@@ -635,6 +642,18 @@
 		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
 		18A3DC6623693DA30013B66D /* SSpeechRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSpeechRecognizer.h; sourceTree = "<group>"; };
 		18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSpeechRecognizer.m; sourceTree = "<group>"; };
+		2A15227F23965B9900CBC452 /* SMeasureView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMeasureView.h; sourceTree = "<group>"; };
+		2A15228023965B9900CBC452 /* SMeasureView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMeasureView.m; sourceTree = "<group>"; };
+		2A1522832396652600CBC452 /* ARMeasureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARMeasureView.h; sourceTree = "<group>"; };
+		2A1522842396652600CBC452 /* ARMeasureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARMeasureView.m; sourceTree = "<group>"; };
+		2A1522852396652600CBC452 /* LineController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineController.h; sourceTree = "<group>"; };
+		2A1522862396652600CBC452 /* LineController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineController.m; sourceTree = "<group>"; };
+		2A1522872396652600CBC452 /* PlaneNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneNode.h; sourceTree = "<group>"; };
+		2A1522882396652600CBC452 /* PlaneNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaneNode.m; sourceTree = "<group>"; };
+		2A1522892396652600CBC452 /* SCNVector3Tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCNVector3Tool.h; sourceTree = "<group>"; };
+		2A15228A2396652600CBC452 /* SCNVector3Tool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCNVector3Tool.m; sourceTree = "<group>"; };
+		2A15228F239676FD00CBC452 /* MeasureViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MeasureViewManager.h; sourceTree = "<group>"; };
+		2A152290239676FE00CBC452 /* MeasureViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MeasureViewManager.m; sourceTree = "<group>"; };
 		2A5299542386814A0071AD06 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		2A5299BB2386A5460071AD06 /* tfOC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = tfOC.a; path = AI/tfOC.a; sourceTree = SOURCE_ROOT; };
 		2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTensorFlowLiteObjC.a; path = AI/libTensorFlowLiteObjC.a; sourceTree = SOURCE_ROOT; };
@@ -665,6 +684,8 @@
 		4AF967A321B50EC000105B74 /* SMCartography.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMCartography.m; sourceTree = "<group>"; };
 		4AF967A521B5283A00105B74 /* SCartography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCartography.h; path = interfaces/SCartography.h; sourceTree = SOURCE_ROOT; };
 		4AF967A621B5283A00105B74 /* SCartography.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCartography.m; path = interfaces/SCartography.m; sourceTree = SOURCE_ROOT; };
+		4EE4616A239A3F5900775A76 /* SLanguage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SLanguage.h; sourceTree = "<group>"; };
+		4EE4616B239A3F5900775A76 /* SLanguage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SLanguage.m; sourceTree = "<group>"; };
 		610C41C42314F852001EC84A /* libpython2.7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpython2.7.a; path = "python/starcore_for_ios/python-2.7/libpython2.7.a"; sourceTree = "<group>"; };
 		611AE55723177F96009A0B9A /* SMMapFixColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapFixColors.h; sourceTree = "<group>"; };
 		611AE55823177F96009A0B9A /* SMMapFixColors.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SMMapFixColors.mm; sourceTree = "<group>"; };
@@ -954,6 +975,32 @@
 			path = speech;
 			sourceTree = "<group>";
 		};
+		2A15227E23965AE600CBC452 /* ar */ = {
+			isa = PBXGroup;
+			children = (
+				2A15227F23965B9900CBC452 /* SMeasureView.h */,
+				2A15228023965B9900CBC452 /* SMeasureView.m */,
+				2A15228F239676FD00CBC452 /* MeasureViewManager.h */,
+				2A152290239676FE00CBC452 /* MeasureViewManager.m */,
+			);
+			path = ar;
+			sourceTree = "<group>";
+		};
+		2A1522822396652600CBC452 /* AR */ = {
+			isa = PBXGroup;
+			children = (
+				2A1522832396652600CBC452 /* ARMeasureView.h */,
+				2A1522842396652600CBC452 /* ARMeasureView.m */,
+				2A1522852396652600CBC452 /* LineController.h */,
+				2A1522862396652600CBC452 /* LineController.m */,
+				2A1522872396652600CBC452 /* PlaneNode.h */,
+				2A1522882396652600CBC452 /* PlaneNode.m */,
+				2A1522892396652600CBC452 /* SCNVector3Tool.h */,
+				2A15228A2396652600CBC452 /* SCNVector3Tool.m */,
+			);
+			path = AR;
+			sourceTree = "<group>";
+		};
 		2A529950238680330071AD06 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -999,6 +1046,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				2A1522822396652600CBC452 /* AR */,
 				2A5299712386979E0071AD06 /* AI */,
 				617D9BD1230FE17300ADCCCA /* Libraries */,
 				2AAEE194230E68CD00902D1D /* GDataXMLNode */,
@@ -1046,6 +1094,8 @@
 				0049743A22A4BD9900267482 /* ScaleViewHelper.m */,
 				0015B97F22F2C5E70084A880 /* POISearchHelper2D.h */,
 				0015B98022F2C5E70084A880 /* POISearchHelper2D.m */,
+				4EE4616A239A3F5900775A76 /* SLanguage.h */,
+				4EE4616B239A3F5900775A76 /* SLanguage.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1081,6 +1131,7 @@
 		D854D867218310720075B5F8 /* interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				2A15227E23965AE600CBC452 /* ar */,
 				2ABCA9C4238621700052EB6B /* ai */,
 				1806196623691F6E006487D2 /* speech */,
 				0AF3486522700175004D6D09 /* analyst */,
@@ -1603,6 +1654,8 @@
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
+				2A15228123965B9900CBC452 /* SMeasureView.m in Sources */,
+				2A15228E2396652700CBC452 /* SCNVector3Tool.m in Sources */,
 				0A84DED621BA44C9007995FC /* SMDatasource.m in Sources */,
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A27E3812288FFF600227B8C /* InfoCallout.m in Sources */,
@@ -1648,6 +1701,7 @@
 				0A92A4B322FA83E800FA8873 /* SMMap.m in Sources */,
 				0A332E60211D623E00F56F26 /* JSThemeType.m in Sources */,
 				0A332DFE211D623E00F56F26 /* JSCollectorLine.m in Sources */,
+				2A15228C2396652700CBC452 /* LineController.m in Sources */,
 				0A332E29211D623E00F56F26 /* JSLineChartViewManager.m in Sources */,
 				D85975FB214BA46700E39A7E /* JSLayerGroup.m in Sources */,
 				0A332E40211D623E00F56F26 /* JSPrjCoordSysType.m in Sources */,
@@ -1657,6 +1711,7 @@
 				2A5299DF2387C6290071AD06 /* SAIClassifyView.m in Sources */,
 				0A332E19211D623E00F56F26 /* JSGeoPoint.m in Sources */,
 				0A332E3A211D623E00F56F26 /* JSPoint.m in Sources */,
+				4EE4616C239A3F5900775A76 /* SLanguage.m in Sources */,
 				0A332E13211D623E00F56F26 /* JSFacilityAnalystSetting.m in Sources */,
 				D8DD4209217471EF009D80E9 /* JSSymbol.m in Sources */,
 				D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */,
@@ -1664,6 +1719,7 @@
 				0A03BDE12395F4D400A90044 /* ImageUtil.m in Sources */,
 				0A332E71211D623E00F56F26 /* RCTConvert+EncodeType.m in Sources */,
 				D8DD422D21758371009D80E9 /* JSSymbolMarker.m in Sources */,
+				2A15228B2396652700CBC452 /* ARMeasureView.m in Sources */,
 				0A6F014E231E0AAC004D5290 /* FixColorMode.m in Sources */,
 				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
 				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
@@ -1674,6 +1730,7 @@
 				0A332E41211D623E00F56F26 /* JSProjectionType.m in Sources */,
 				2ABCA9D0238634930052EB6B /* AIDetectViewManager.m in Sources */,
 				0A332E05211D623E00F56F26 /* JSDataset.m in Sources */,
+				2A152291239676FE00CBC452 /* MeasureViewManager.m in Sources */,
 				0AB00D5621A6C8F800C35E4B /* SMSymbol.m in Sources */,
 				0A22981222BB1762001B2356 /* SMParameter.m in Sources */,
 				0A03BDDD2395F4D400A90044 /* AIRecognition.m in Sources */,
@@ -1682,6 +1739,7 @@
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
+				2A15228D2396652700CBC452 /* PlaneNode.m in Sources */,
 				0AE28DE9238CF4EE001C58C0 /* SMStatisticMode.m in Sources */,
 				0A51674F21AD42B0003C77BE /* TouchUtil3D.m in Sources */,
 				0A332E3C211D623E00F56F26 /* JSPointDensityChart.m in Sources */,

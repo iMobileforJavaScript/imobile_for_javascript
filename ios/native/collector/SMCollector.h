@@ -14,4 +14,5 @@
 + (BOOL)setCollector:(Collector *)collector mapControl:(MapControl *)mapControl type:(int)type;
 + (void)openGPS:(Collector *)collector;
 + (void)closeGPS:(Collector *)collector;
++ (GPSData*) getGPSPoint;
 @end
