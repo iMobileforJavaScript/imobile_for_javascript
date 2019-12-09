@@ -135,6 +135,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                     startPoint = tempPoint;
 
                     TextStyle textStyle = new TextStyle();
+                    textStyle.setOutline(true);
                     textStyle.setForeColor(new Color(255, 105, 0));
                     this.setText(text, startPoint, textStyle, textTag);
 
@@ -196,6 +197,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
                     endPoint = tempPoint;
 
                     TextStyle textStyle = new TextStyle();
+                    textStyle.setOutline(true);
                     textStyle.setForeColor(new Color(105, 255, 0));
                     this.setText(text, endPoint, textStyle, textTag);
 
@@ -252,6 +254,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
 
                     String label = text+barrierPoints.getCount();
                     TextStyle textStyle = new TextStyle();
+                    textStyle.setOutline(true);
 //                    textStyle.setFontWidth(6);
 //                    textStyle.setFontHeight(8);
                     textStyle.setForeColor(new Color(255, 0, 0));
@@ -311,6 +314,7 @@ public class STransportationAnalyst extends SNetworkAnalyst {
 
                     String label = text + points.getCount();
                     TextStyle textStyle = new TextStyle();
+                    textStyle.setOutline(true);
 //                    textStyle.setFontWidth(6);
 //                    textStyle.setFontHeight(8);
                     textStyle.setForeColor(new Color(212, 161, 70));
