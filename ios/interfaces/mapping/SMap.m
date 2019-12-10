@@ -920,6 +920,8 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
             SNavigation2 *navigation2 = sMap.sNavigation2;
             GeoStyle *style = [[GeoStyle alloc] init];
             [style setLineSymbolID:964882];
+            //defaultMap 加数据集 导航线符号拿不到 需要设置线的颜色
+            [style setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
             [navigation2 setRouteStyle:style];
             [navigation2 setNetworkDataset:networkDataset];
             [navigation2 loadModel:netModelPath];
