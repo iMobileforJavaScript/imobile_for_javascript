@@ -14,5 +14,8 @@
 @interface SAIClassifyView : RCTEventEmitter<RCTBridgeModule>
 //@interface SAIClassifyView : NSObject<RCTBridgeModule>
 
+///定时器
+@property (nonatomic,strong) dispatch_source_t timer;
+
 +(void)saveClassifyBitmapAsFile:(NSString*)folderPath name:(NSString*)name;
 @end
