@@ -5667,7 +5667,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isIndoor) {
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
             } else {
-                naviPath = sMap.sNavigation2.getNavigation().getNaviPath();
+                SNavigation2 sNavigation2 = sMap.sNavigation2;
+                if(sNavigation2 != null){
+                    naviPath = sNavigation2.getNavigation().getNaviPath();
+                }else {
+                    naviPath = sMap.smMapWC.getMapControl().getNavigation2().getNaviPath();
+                }
             }
             WritableMap map = Arguments.createMap();
             map.putInt("length", (int) naviPath.getLength());
@@ -5691,7 +5696,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (isIndoor) {
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
             } else {
-                naviPath = sMap.sNavigation2.getNavigation().getNaviPath();
+                SNavigation2 sNavigation2 = sMap.sNavigation2;
+                if(sNavigation2 != null){
+                    naviPath = sNavigation2.getNavigation().getNaviPath();
+                }else {
+                    naviPath = sMap.smMapWC.getMapControl().getNavigation2().getNaviPath();
+                }
             }
             ArrayList<NaviStep> naviStep = naviPath.getStep();
             WritableArray array = Arguments.createArray();
@@ -5853,7 +5863,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
             boolean isIndoorGuiding = mapControl.getNavigation3().isGuiding();
-            boolean isOutdoorGuiding = sMap.sNavigation2.getNavigation().isGuiding();
+            SNavigation2 sNavigation2 = sMap.sNavigation2;
+            boolean isOutdoorGuiding = false;
+            if(sNavigation2 != null){
+                isOutdoorGuiding = sNavigation2.getNavigation().isGuiding();
+            }
             promise.resolve(isIndoorGuiding || isOutdoorGuiding);
         } catch (Exception e) {
             promise.reject(e);
@@ -5905,9 +5919,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.sNavigation2.getNavigation().enablePanOnGuide(true);
-                    sMap.sNavigation2.getNavigation().startGuide(naviType);
-                    sMap.sNavigation2.getNavigation().setCarUpFront(false);
+                    SNavigation2 sNavigation2 = sMap.sNavigation2;
+                    if(sNavigation2 != null){
+                        sNavigation2.getNavigation().enablePanOnGuide(true);
+                        sNavigation2.getNavigation().startGuide(naviType);
+                        sNavigation2.getNavigation().setCarUpFront(false);
+                    }
                 }
             });
             promise.resolve(true);
@@ -6523,7 +6540,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.sNavigation2.getNavigation().cleanPath();
+                    SNavigation2 sNavigation2 = sMap.sNavigation2;
+                    if(sNavigation2 != null){
+                        sNavigation2.getNavigation().cleanPath();
+                    }
                     sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
                     sMap.getSmMapWC().getMapControl().getNavigation3().cleanPath();
                     clearOutdoorPoint();
@@ -6548,7 +6568,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             context.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.sNavigation2.getNavigation().stopGuide();
+                    SNavigation2 snavigation2 = sMap.sNavigation2;
+                    if(sNavigation2 != null){
+                        sNavigation2.getNavigation().stopGuide();
+                    }
                     sMap.getSmMapWC().getMapControl().getNavigation3().stopGuide();
                 }
             });
