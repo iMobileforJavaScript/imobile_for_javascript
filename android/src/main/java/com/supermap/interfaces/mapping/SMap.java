@@ -5778,6 +5778,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 SNavigation2 navigation2 = sMap.sNavigation2;
                 GeoStyle style = new GeoStyle();
                 style.setLineSymbolID(964882);
+                style.setLineColor(new Color(82,198,233));
                 navigation2.setRouteStyle(style);
                 navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
                 navigation2.loadModel(netModelPath);  // 加载网络模型
@@ -6702,7 +6703,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 getCurrentActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
                 double density = dm.density;
 
-                int markerSize = 40;
+                int markerSize = 50;
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (markerSize * density), (int) (markerSize * density));
                 m_callout.setCustomize(true);
                 m_callout.setLayoutParams(params);

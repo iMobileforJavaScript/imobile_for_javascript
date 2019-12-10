@@ -59,6 +59,7 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point text:(NSStri
                 startPoint = tempPoint;
                 Color* labelColor = [[Color alloc] initWithR:255 G:105 B:0];
                 TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setOutline:YES];
                 [textStyle setFontWidth:6];
                 [textStyle setFontHeight:8];
                 [textStyle setForeColor:labelColor];
@@ -121,6 +122,7 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point text:(NSString *
             if (nodeLayer) {
                 endPoint = tempPoint;
                 TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setOutline:YES];
                 [textStyle setFontWidth:6];
                 [textStyle setFontHeight:8];
                 [textStyle setForeColor:[[Color alloc] initWithR:105 G:255 B:0]];
@@ -170,6 +172,7 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point text:(NSSt
                 [self addBarrierPoints:p2D];
                 
                 TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setOutline:YES];
                 [textStyle setFontWidth:6];
                 [textStyle setFontHeight:8];
                 [textStyle setForeColor:[[Color alloc] initWithR:255 G:0 B:0]];
@@ -219,6 +222,7 @@ RCT_REMAP_METHOD(addNode, addNode:(NSDictionary *)point text:(NSString *)text re
                 [self addPoint:p2D];
                 
                 TextStyle* textStyle = [[TextStyle alloc]init];
+                [textStyle setOutline:YES];
                 [textStyle setFontWidth:6];
                 [textStyle setFontHeight:8];
                 [textStyle setForeColor:[[Color alloc] initWithR:212 G:161 B:70]];

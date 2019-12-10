@@ -195,10 +195,14 @@ RCT_EXPORT_MODULE();
     GeoText* geoText = [[GeoText alloc] initWithTextPart:textPart];
     if (textStyle == nil) {
         textStyle = [[TextStyle alloc]init];
+        [textStyle setOutline:YES];
         [textStyle setFontWidth:6];
         [textStyle setFontHeight:8];
         [textStyle setForeColor:[[Color alloc]initWithR:0 G:0 B:0]];
     }
+    [textStyle setOutline:YES];
+    [textStyle setBackColor:[[Color alloc] initWithR:255 G:255 B:255]];
+    [textStyle setBold:YES];
     [geoText setTextStyle:textStyle];
     
     TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
