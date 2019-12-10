@@ -3172,48 +3172,50 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
         try {
             sMap = SMap.getInstance();
-            com.supermap.mapping.Map map = sMap.getSmMapWC().getMapControl().getMap();
+            Rectangle2D bounds = null;
+            for(int i=0;i<sMap.getSmMapWC().getMapControl().getMap().getLayers().getCount();i++){
+                Layer layer = sMap.getSmMapWC().getMapControl().getMap().getLayers().get(i);
+                if( (!(layer instanceof  LayerGroup) && layer.getDataset().getDatasource().getConnectionInfo().getEngineType() != EngineType.UDB) || !layer.isVisible() ){
+                    continue;
+                }
+                Rectangle2D boundsTmp = null;
+                if (layer instanceof  LayerGroup){
+                    boundsTmp = getLayerGroupBounds((LayerGroup)layer);
+                }else{
+                    boundsTmp = getLayerBounds(layer);
+                }
 
-            Layer layerWeb = null;
-            int nLayerCount = map.getLayers().getCount();
-            if (nLayerCount > 1) {
-                Layer layerTemp = map.getLayers().get(nLayerCount - 1);
-                if (layerTemp.isVisible() && layerTemp.getDataset() != null && layerTemp.getDataset().getDatasource() != null) {
-                    EngineType engineType = layerTemp.getDataset().getDatasource().getConnectionInfo().getEngineType();
-                    if (engineType == EngineType.OGC ||
-                            engineType == EngineType.SuperMapCloud ||
-                            engineType == EngineType.GoogleMaps ||
-                            engineType == EngineType.Rest ||
-                            engineType == EngineType.BaiDu ||
-                            engineType == EngineType.BingMaps ||
-                            engineType == EngineType.OpenStreetMaps
-                            ) {
-                        layerWeb = layerTemp;
-                    }
+                if(bounds == null){
+                    bounds = new Rectangle2D(boundsTmp);
+                }else{
+                    bounds.union(boundsTmp);
                 }
             }
 
-            if (layerWeb != null) {
-                layerWeb.setVisible(false);
-                map.viewEntire();
-                layerWeb.setVisible(true);
-            } else {
-                map.viewEntire();
+            if(bounds == null){
+                sMap.getSmMapWC().getMapControl().getMap().viewEntire();
+            }else{
+                if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
+                    sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
+                } else {
+                    sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+                }
             }
 
 
-            map.refresh();
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.8, 100);
+                    sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 100);
                 }
             }, 100);//3秒后执行Runnable中的run方法
 
+            sMap.getSmMapWC().getMapControl().getMap().refresh();
+
             promise.resolve(true);
-        } catch (Exception e) {
+        }catch (Exception e) {
             promise.reject(e);
         }
     }
@@ -3742,6 +3744,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         Rectangle2D bounds = null;
         for(int i=0;i<layer.getCount();i++){
             Layer tmpLayer = layer.get(i);
+            if(!tmpLayer.isVisible()){
+                continue;
+            }
             if (LayerGroup.class.isInstance(tmpLayer)){
                 try {
                     bounds = getLayerGroupBounds((LayerGroup)tmpLayer);

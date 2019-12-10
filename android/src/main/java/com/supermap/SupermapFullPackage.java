@@ -20,6 +20,7 @@ import com.supermap.interfaces.collector.SMediaCollector;
 import com.supermap.interfaces.mapping.SDatasource;
 import com.supermap.interfaces.mapping.SLayerManager;
 import com.supermap.interfaces.mapping.SMap;
+import com.supermap.interfaces.utils.SLanguage;
 import com.supermap.interfaces.SScene;
 import com.supermap.interfaces.*;
 import com.supermap.interfaces.iServer.SOnlineService;
@@ -241,6 +242,9 @@ public class SupermapFullPackage implements ReactPackage {
 
         //视频地图ar地图窗
         modules.add(new SMapSuspension(reactContext));
+
+        //
+        modules.add(new SLanguage(reactContext));
 
         return modules;
     }
