@@ -300,8 +300,9 @@
 }
 
 -(void)undo{
-    if (m_bSessionStart && m_SessionMode==AR_MODE_RANGING && m_isMeasuring && m_arrLines.count>0) {
+    if (m_bSessionStart && m_SessionMode==AR_MODE_RANGING && m_isMeasuring ) {
         
+        if(m_arrLines.count>0){
         NSArray*arrVector = [m_arrPlanePoint lastObject];
         
         SCNVector3 vectorTemp;
@@ -320,8 +321,10 @@
         m_VectorStart = vectorTemp;
         
         [self setCurrent:[m_lineCon updateLineContentWithVector:m_VectorEnd]];
-        
-        
+        }else if(m_arrLines.count==0){
+            [self endRanging];
+            [self clearARSession];
+        }
     }
 }
 
@@ -371,74 +374,78 @@
 
 - (void)scanWorld
 {
-    if (m_bSessionStart) {
-        m_VectorCamera = [SCNVector3Tool positionTranform: self.session.currentFrame.camera.transform];
-        if( m_SessionMode==AR_MODE_RANGING){
-            SCNVector3 worldPostion = SCNVector3Zero;
-            //中心点和平面交点 和特征点相交
-            //worldPostion = [self.sceneView worldVectorFromPosition:self.view.center];
-            {
-                NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeFeaturePoint];
-                if (planeHitTestResult.count != 0 && planeHitTestResult.firstObject) {
-                    ARHitTestResult *result = planeHitTestResult.firstObject;
-                    worldPostion = [SCNVector3Tool positionTranform:result.worldTransform];
-                }
-                
-            }
-            if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
-                [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
-                m_FocusNode.hidden=true;
-                return;
-            }
-            if (m_planeArr.count == 0) {
-                [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
-                m_FocusNode.hidden=true;
-                return;
-            }
-            else
-            {
-                //中心点和平面交点 和带范围平面相交
-                //worldPostion = [self.sceneView planeExtentFromPosition:self.view.center];
+    @try {
+        if (m_bSessionStart) {
+            m_VectorCamera = [SCNVector3Tool positionTranform: self.session.currentFrame.camera.transform];
+            if( m_SessionMode==AR_MODE_RANGING){
+                SCNVector3 worldPostion = SCNVector3Zero;
+                //中心点和平面交点 和特征点相交
+                //worldPostion = [self.sceneView worldVectorFromPosition:self.view.center];
                 {
-                    NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeExistingPlaneUsingExtent];
+                    NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeFeaturePoint];
                     if (planeHitTestResult.count != 0 && planeHitTestResult.firstObject) {
                         ARHitTestResult *result = planeHitTestResult.firstObject;
                         worldPostion = [SCNVector3Tool positionTranform:result.worldTransform];
-                    }else{
-                        worldPostion = SCNVector3Zero;
                     }
                     
                 }
-                if (!m_isMeasuring)
-                {
-                    [m_SpaceLab setText:[self isChinese]?@"可以开始测量":@"can start measure"];
-                }
-                //NSLog(@"worldPostion = %@", [NSValue valueWithSCNVector3:worldPostion]);
                 if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
-                    [m_SpaceLab setText:[self isChinese]?@"焦点不在平面内":@"focus not in plane"];
+                    [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
                     m_FocusNode.hidden=true;
                     return;
                 }
-            }
-            m_FocusNode.hidden = false;
-            [m_FocusNode setPosition:SCNVector3Make(worldPostion.x, worldPostion.y, worldPostion.z)];
-            if (m_isMeasuring)
-            {
-                if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:m_VectorStart Right:SCNVector3Zero]) {
-                    //设置第一个起始量算点
-                    m_VectorStart = worldPostion;
-                    m_lineCon = [[LineController alloc] initWithSceneView:self StartVector:m_VectorStart LengthUnit:Enum_LengthUnit_meter];
-                    m_startNode.hidden=false;
-                    m_startNode.position = SCNVector3Make(m_VectorStart.x, m_VectorStart.y, m_VectorStart.z);
-                    [self.scene.rootNode addChildNode:m_startNode];
+                if (m_planeArr.count == 0) {
+                    [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
+                    m_FocusNode.hidden=true;
+                    return;
                 }
-                m_VectorEnd = worldPostion;
-                [self setCurrent: [m_lineCon updateLineContentWithVector:m_VectorEnd]];
+                else
+                {
+                    //中心点和平面交点 和带范围平面相交
+                    //worldPostion = [self.sceneView planeExtentFromPosition:self.view.center];
+                    {
+                        NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeExistingPlaneUsingExtent];
+                        if (planeHitTestResult.count != 0 && planeHitTestResult.firstObject) {
+                            ARHitTestResult *result = planeHitTestResult.firstObject;
+                            worldPostion = [SCNVector3Tool positionTranform:result.worldTransform];
+                        }else{
+                            worldPostion = SCNVector3Zero;
+                        }
+                        
+                    }
+                    if (!m_isMeasuring)
+                    {
+                        [m_SpaceLab setText:[self isChinese]?@"可以开始测量":@"can start measure"];
+                    }
+                    //NSLog(@"worldPostion = %@", [NSValue valueWithSCNVector3:worldPostion]);
+                    if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
+                        [m_SpaceLab setText:[self isChinese]?@"焦点不在平面内":@"focus not in plane"];
+                        m_FocusNode.hidden=true;
+                        return;
+                    }
+                }
+                m_FocusNode.hidden = false;
+                [m_FocusNode setPosition:SCNVector3Make(worldPostion.x, worldPostion.y, worldPostion.z)];
+                if (m_isMeasuring)
+                {
+                    if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:m_VectorStart Right:SCNVector3Zero]) {
+                        //设置第一个起始量算点
+                        m_VectorStart = worldPostion;
+                        m_lineCon = [[LineController alloc] initWithSceneView:self StartVector:m_VectorStart LengthUnit:Enum_LengthUnit_meter];
+                        m_startNode.hidden=false;
+                        m_startNode.position = SCNVector3Make(m_VectorStart.x, m_VectorStart.y, m_VectorStart.z);
+                        [self.scene.rootNode addChildNode:m_startNode];
+                    }
+                    m_VectorEnd = worldPostion;
+                    [self setCurrent: [m_lineCon updateLineContentWithVector:m_VectorEnd]];
+                }
+                
+                double distance = [SCNVector3Tool distanceWithVector:worldPostion StartVector:m_VectorCamera];
+                [self setDistance:distance];
             }
-            
-            double distance = [SCNVector3Tool distanceWithVector:worldPostion StartVector:m_VectorCamera];
-            [self setDistance:distance];
         }
+    } @catch (NSException *exception) {
+        
     }
 }
 
