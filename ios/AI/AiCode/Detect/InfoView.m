@@ -13,49 +13,66 @@
 #define VERT_SWIPE_DRAG_MAX    4    //垂直方向最大偏移量
 
 @interface InfoView()
-
+{
+    NSArray* m_colors;
+    NSMutableDictionary* m_lable_color;
+}
 
 @end
 
 @implementation InfoView
 
 
+-(id)initWithFrame:(CGRect)frame{
+    if(self=[super initWithFrame:frame]){
+        m_lable_color = [[NSMutableDictionary alloc] initWithCapacity:11];
+        NSMutableArray* array=[[NSMutableArray alloc] init];
+//        [array addObject:[UIColor grayColor]];
+        [array addObject:[UIColor redColor]];
+        [array addObject:[UIColor greenColor]];
+        [array addObject:[UIColor blueColor]];
+        [array addObject:[UIColor cyanColor]];
+        [array addObject:[UIColor yellowColor]];
+        [array addObject:[UIColor magentaColor]];
+        [array addObject:[UIColor orangeColor]];
+        [array addObject:[UIColor purpleColor]];
+        [array addObject:[UIColor brownColor]];
+        [array addObject:[[UIColor alloc]initWithRed:224/255.0 green:207/255.0 blue:226/255.0 alpha:1]];
+        [array addObject:[[UIColor alloc]initWithRed:151/255.0 green:191/255.0 blue:242/255.0 alpha:1]];
+        [array addObject:[[UIColor alloc]initWithRed:174/255.0 green:241/255.0 blue:176/255.0 alpha:1]];
+//        [fillColors addObject:[[Color alloc] initWithR:224 G:207 B:226]];
+//        [fillColors addObject:[[Color alloc] initWithR:151 G:191 B:242]];
+//        [fillColors addObject:[[Color alloc] initWithR:242 G:242 B:186]];
+//        [fillColors addObject:[[Color alloc] initWithR:190 G:255 B:232]];
+//        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:232]];
+//        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:190]];
+//        [fillColors addObject:[[Color alloc] initWithR:255 G:235 B:175]];
+//        [fillColors addObject:[[Color alloc] initWithR:233 G:255 B:190]];
+//        [fillColors addObject:[[Color alloc] initWithR:234 G:225 B:168]];
+//        [fillColors addObject:[[Color alloc] initWithR:174 G:241 B:176]];
+//        [array addObject:[UIColor blackColor]];
+        m_colors = [[NSArray alloc]initWithArray:array];
+        _aIDetectStyle = [[AIDetectStyle alloc]init];
+        _aIDetectStyle.aiStrokeWidth = 2;
+        _aIDetectStyle.isSameColor = false;
+        _aIDetectStyle.isDrawConfidence = true;
+        _aIDetectStyle.isDrawTitle = true;
+    }
+    return self;
+}
 -(void)refresh{
 //    [self setNeedsDisplay];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setNeedsDisplay];
     });
 }
--(NSArray*)colors{
-    
-    NSMutableArray* array=[[NSMutableArray alloc] init];
-//    [array addObject:[UIColor grayColor]];
-    [array addObject:[UIColor redColor]];
-    [array addObject:[UIColor greenColor]];
-    [array addObject:[UIColor blueColor]];
-    [array addObject:[UIColor cyanColor]];
-    [array addObject:[UIColor yellowColor]];
-    [array addObject:[UIColor magentaColor]];
-    [array addObject:[UIColor orangeColor]];
-    [array addObject:[UIColor purpleColor]];
-    [array addObject:[UIColor purpleColor]];
-    
-    return array;
-}
 
 -(void)drawRect:(CGRect)rx//UIView绘制入口，系统回调
 {
-    NSArray *drawColors=[self colors];
     UIColor* color=nil;
     
     // 获得上下文
     CGContextRef context =UIGraphicsGetCurrentContext();
-    // 设置线宽
-    if(_aIDetectStyle){
-        CGContextSetLineWidth(context, _aIDetectStyle.aiStrokeWidth);
-    }else{
-        CGContextSetLineWidth(context, 2);
-    }
     //清空所有rect对象
     self.aIRectArr=[[NSMutableArray alloc] init];
     [self.aIRectArr removeAllObjects];
@@ -83,17 +100,6 @@
                                      recognition.rect.origin.y*ySize+yOffset,
                                      recognition.rect.size.width*xSize,
                                      recognition.rect.size.height*ySize);
-        
-//        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height;
-//        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width;
-//        tempCGRect.size.width=recognition.rect.size.height*rx.size.height;
-//        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
-        
-        
-//        tempCGRect.size.width=recognition.rect.size.height*rx.size.height;
-//        tempCGRect.size.height=recognition.rect.size.width*rx.size.width;
-//        tempCGRect.origin.x=recognition.rect.origin.y*rx.size.height+tempCGRect.size.width/2;
-//        tempCGRect.origin.y=recognition.rect.origin.x*rx.size.width-tempCGRect.size.height/2;
         if(tempCGRect.origin.x<0){
             tempCGRect.origin.x=2;
             tempCGRect.size.width=tempCGRect.size.width-(2-tempCGRect.origin.x);
@@ -114,30 +120,25 @@
 //        NSValue* value;
 //        value.CGRectValue
         //设置识别框颜色
-        if(_aIDetectStyle&&_aIDetectStyle.isSameColor){
+        if(_aIDetectStyle&&_aIDetectStyle.isSameColor && _aIDetectStyle.aiColor!=nil){
             if(_aIDetectStyle.aiColor){
                 color=_aIDetectStyle.aiColor;
-            }else if(!color){
-                int x = arc4random() % drawColors.count;
-                color=drawColors[x];
             }
         }else{
-            int x = arc4random() % drawColors.count;
-            color=drawColors[x];
+            if(m_lable_color[recognition.label] == nil){
+                int n = arc4random() % m_colors.count;
+                m_lable_color[recognition.label] = m_colors[n];
+            }
+            color = m_lable_color[recognition.label];
         }
         
-        //获取一个随机整数范围在：颜色数组的长度内
-//        if(!color||(_aIDetectStyle&&!_aIDetectStyle.isSameColor)){
-//            int x = arc4random() % drawColors.count;
-//            color=drawColors[x];
-//        }
         
         // 设置绘制颜色
         CGContextSetStrokeColorWithColor(context, color.CGColor);
         //设置线条样式
         CGContextSetLineCap(context, kCGLineCapSquare);
         //设置线条粗细宽度
-        CGContextSetLineWidth(context, 2.0);
+        CGContextSetLineWidth(context, _aIDetectStyle.aiStrokeWidth);
         //开始一个起始路径
         CGContextBeginPath(context);
         //起始点设置为(0,0):注意这是上下文对应区域中的相对坐标，
@@ -161,7 +162,7 @@
         }
         //绘制可信度
         if(_aIDetectStyle&&_aIDetectStyle.isDrawConfidence){
-            content=[content stringByAppendingFormat:@"%.2f",recognition.confidence*100];
+            content=[content stringByAppendingFormat:@" %.2f",recognition.confidence*100];
             content=[content stringByAppendingString:@"%"];
         }
         //文本属性
@@ -181,43 +182,10 @@
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    // 获得当前点
     UITouch *touch = [touches anyObject];
     // 初始化起始点和结束点
     self.startPoint = [touch locationInView:self];
-    self.isTouchEvent=YES;
-//    self.endPoint = [touch locationInView:self];
-    // 触发绘制
-//    [self setNeedsDisplay];
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-
-    UITouch *aTouch = [touches anyObject];
-    CGPoint currentTouchPosition = [aTouch locationInView:self];
-    //  判断水平滑动的距离是否达到了设置的最小距离，并且是否是在接近直线的路线上滑动（y轴偏移量）
-    if (fabsf(self.startPoint.x - currentTouchPosition.x) >= HORIZ_SWIPE_DRAG_MIN ||
-        fabsf(self.startPoint.y - currentTouchPosition.y) >= VERT_SWIPE_DRAG_MAX)
-    {
-       self.isTouchEvent=NO;
-        //重置开始点坐标值
-        self.startPoint = CGPointZero;
-    }
-    
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    UITouch *aTouch = [touches anyObject];
-    CGPoint currentTouchPosition = [aTouch locationInView:self];
-    //  判断水平滑动的距离是否达到了设置的最小距离，并且是否是在接近直线的路线上滑动（y轴偏移量）
-    if (self.isTouchEvent && fabsf(self.startPoint.x - currentTouchPosition.x) <= HORIZ_SWIPE_DRAG_MIN &&
-        fabsf(self.startPoint.y - currentTouchPosition.y) <= VERT_SWIPE_DRAG_MAX )
-    {
-        [self touchPoint:self.startPoint];
-        self.isTouchEvent=NO;
-        //重置开始点坐标值
-        self.startPoint = CGPointZero;
-    }
+    [self touchPoint:self.startPoint];
 }
 
 -(AIRecognition*)touchPoint:(CGPoint)touchPoint{
@@ -237,7 +205,9 @@
             }
         }
     }
+//     NSLog(@"++ touch %@",@"2");
     if(index!=-1&&index<[self.aIRectArr count]){
+//         NSLog(@"++ touch %@",@"3");
         AIRecognition *aIRecognition=[self.aIRecognitionArray objectAtIndex:index];
         self.callBackBlock(aIRecognition);
         return [self.aIRecognitionArray objectAtIndex:index];

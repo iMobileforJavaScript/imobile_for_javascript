@@ -146,7 +146,7 @@ RCT_REMAP_METHOD(updateMedia, updateMedia:(NSString *)layerName geoIDs:(NSArray 
 }
 
 
-#pragma mark 把AI分类的结果添加到数据集中(图片直接保存在Media文件夹中)
+#pragma mark 把AR分类的结果添加到数据集中(图片直接保存在Media文件夹中)
 RCT_REMAP_METHOD(addArMedia, addArMedia:(NSDictionary *)info addToMap:(BOOL)addToMap resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         BOOL result = NO;

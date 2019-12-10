@@ -65,7 +65,7 @@ RCT_EXPORT_VIEW_PROPERTY(onArObjectClick, RCTBubblingEventBlock)
         
         AIDetectView* aIDetectView=[[AIDetectView alloc] initWithFrame:uiView.frame];
 //        SAIDetectView* sAIDetectView=[[SAIDetectView alloc] init];
-        _sAIDetectView=[[SAIDetectView alloc] init];
+//        _sAIDetectView=[[SAIDetectView alloc] init];
         [SAIDetectView setInstance:aIDetectView];
         aIDetectView.delegate=self;
 //        [sAIDetectView initDelegate];

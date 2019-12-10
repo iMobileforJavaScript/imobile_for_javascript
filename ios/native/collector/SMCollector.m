@@ -12,6 +12,8 @@
 #import "SuperMap/Action.h"
 #import "SuperMap/MapControl.h"
 #import "SuperMap/SnapSetting.h"
+#import "SuperMap/LocationManagePlugin.h"
+#import "NativeUtil.h"
 
 @implementation SMCollector
 static SnapSetting *snapSeting = nil;
@@ -111,5 +113,9 @@ static SnapSetting *snapSeting = nil;
     [collector closeGPS];
 }
 
++ (GPSData*) getGPSPoint {
+    [NativeUtil openGPS];
+    return [NativeUtil getGPSData];
+}
 
 @end

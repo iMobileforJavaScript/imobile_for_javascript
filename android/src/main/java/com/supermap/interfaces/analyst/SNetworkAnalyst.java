@@ -122,6 +122,21 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
         history = new History();
     }
 
+    public void close() {
+        layer = null;
+        nodeLayer = null;
+        selection.clear();
+        selection = null;
+        elementIDs.clear();
+        elementIDs = null;
+        startPoint = null;
+        endPoint = null;
+        middleNodeIDs.clear();
+        middleNodeIDs = null;
+        history.clear();
+        history = null;
+    }
+
     @Override
     public String getName() {
         return REACT_CLASS;
@@ -252,10 +267,14 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
         GeoText geoText = new GeoText(textPart);
         if (textStyle == null) {
             textStyle = new TextStyle();
+            textStyle.setOutline(true);
             textStyle.setFontWidth(6);
             textStyle.setFontHeight(8);
             textStyle.setForeColor(new Color(0, 0, 0));
         }
+        textStyle.setOutline(true);
+        textStyle.setBackColor(new Color(255, 255, 255));
+        textStyle.setBold(true);
         geoText.setTextStyle(textStyle);
 
         TrackingLayer trackingLayer = SMap.getInstance().getSmMapWC().getMapControl().getMap().getTrackingLayer();
