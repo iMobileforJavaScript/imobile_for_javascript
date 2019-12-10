@@ -2742,7 +2742,7 @@ RCT_REMAP_METHOD(closeMap, closeMapWithResolver:(RCTPromiseResolveBlock)resolve 
         if (mapControl) {
             [[mapControl map] close];
         }
-        
+        [NativeUtil closeGPS];
         defaultMapCenter = nil;
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
