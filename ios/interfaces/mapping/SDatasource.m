@@ -288,19 +288,47 @@ RCT_REMAP_METHOD(deleteDataset, deleteDatasetIn:(NSString*)datasourceAlias datas
     }
 }
 
-RCT_REMAP_METHOD(importTIF, tifPath:(NSString*) tifPath
-                 datasourceParams:(NSDictionary *)params
+RCT_REMAP_METHOD(importDataset,
+                 type:(NSString *) type
+                 filePath:(NSString*) filePath
+                 datasourceParams:(NSDictionary *)datasourceParams
+                 importParams:(NSDictionary *)importParams
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     @try {
         Workspace* workspace = [SMap singletonInstance].smMapWC.workspace;
         Datasource* datasource = nil;
-        DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:params];
+        DatasourceConnectionInfo* info = [SMDatasource convertDicToInfo:datasourceParams];
         
         datasource = [workspace.datasources open:info];
         BOOL result = NO;
         if(datasource != nil) {
-            result = [DataConversion importTIFFile:tifPath toDatasource:datasource];
+            if([type isEqualToString:@"tif"]) {
+                result = [DataConversion importTIFFile:filePath toDatasource:datasource];
+            } else if([type isEqualToString:@"shp"]) {
+                result = [DataConversion importSHPFile:filePath toDatasource:datasource];
+            } else if([type isEqualToString:@"mif"]) {
+                result = [DataConversion importMIFFile:filePath toDatasource:datasource];
+            } else if([type isEqualToString:@"kml"]) {
+                NSString *datasetName = importParams[@"datasetName"];
+                BOOL isCad = [importParams[@"importAsCAD"] boolValue];
+                result = [DataConversion importKML:filePath toDatasource:datasource targetDatasetName:datasetName isCad:isCad];
+            } else if([type isEqualToString:@"kmz"]) {
+                NSString *datasetName = importParams[@"datasetName"];
+                BOOL isCad = [importParams[@"importAsCAD"] boolValue];
+                result = [DataConversion importKMZ:filePath toDatasource:datasource targetDatasetName:datasetName isCad:isCad];
+            } else if([type isEqualToString:@"dwg"]) {
+                BOOL isBlack = [importParams[@"inverseBlackWhite"] boolValue];
+                BOOL isCad = [importParams[@"importAsCAD"] boolValue];
+                result = [DataConversion importDWG:filePath toDatasource:datasource bIsBlack:isBlack isCad:isCad];
+            } else if([type isEqualToString:@"dxf"]) {
+                BOOL isBlack = [importParams[@"inverseBlackWhite"] boolValue];
+                BOOL isCad = [importParams[@"importAsCAD"] boolValue];
+                result = [DataConversion importDXF:filePath toDatasource:datasource bIsBlack:isBlack isCad:isCad];
+            } else if([type isEqualToString:@"gpx"]) {
+                NSString *datasetName = importParams[@"datasetName"];
+                result = [DataConversion importGPX:filePath toDatasource:datasource targetDatasetName:datasetName];
+            }
         }
         resolve([NSNumber numberWithBool:result]);
     } @catch(NSException *exception){

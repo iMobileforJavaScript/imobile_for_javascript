@@ -29,7 +29,7 @@ function createDatasource(info = {}) {
 function createDatasourceOfLabel(info={}){
   try {
     return SDatasource.createDatasourceOfLabel(info)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -121,15 +121,15 @@ function isAvailableDatasetName(datasourceAlias, datasetName) {
 function removeDatasetByName(path,name){
   try {
     return SDatasource.removeDatasetByName(path,name)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
 
-function importTIF(tifPath, datasourceParams) {
+function importDataset(type, filePath, datasourceParams, importParams = {}) {
   try {
-    return SDatasource.importTIF(tifPath, datasourceParams)
-  } catch (error) {
+    return SDatasource.importDataset(type, filePath, datasourceParams, importParams)
+  } catch (e) {
     console.error(e)
   }
 }
@@ -137,7 +137,7 @@ function importTIF(tifPath, datasourceParams) {
 function copyDataset(datasoucePath,toDatasourcePath,datasets){
   try {
     return SDatasource.copyDataset(datasoucePath,toDatasourcePath,datasets)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -149,7 +149,7 @@ function copyDataset(datasoucePath,toDatasourcePath,datasets){
 function getDatasources(){
   try {
     return SDatasource.getDatasources()
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -162,7 +162,7 @@ function getDatasources(){
 function getDatasetsByDatasource(info, autoOpen = false){
   try {
     return SDatasource.getDatasetsByDatasource(info, autoOpen)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -175,7 +175,7 @@ function getDatasetsByDatasource(info, autoOpen = false){
 function getDatasetsByExternalDatasource(info){
   try {
     return SDatasource.getDatasetsByExternalDatasource(info)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -183,7 +183,7 @@ function getDatasetsByExternalDatasource(info){
 function getDatasetToGeoJson(datasourceAlias, datasetName, path){
   try {
     return SDatasource.getDatasetToGeoJson(datasourceAlias, datasetName, path)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -210,7 +210,7 @@ function getFieldInfos(data, filter, autoOpen = true) {
 function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType, properties){
   try {
     return SDatasource.importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetType, properties)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -223,7 +223,7 @@ function importDatasetFromGeoJson(datasourceAlias, datasetName, path, DatasetTyp
 function getDatasetBounds(sourceData){
   try {
     return SDatasource.getDatasetBounds(sourceData)
-  } catch (error) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -238,7 +238,7 @@ export {
   deleteDatasource,
   createDataset,
   deleteDataset,
-  importTIF,
+  importDataset,
   isAvailableDatasetName,
   removeDatasetByName,
   copyDataset,

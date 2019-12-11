@@ -272,19 +272,44 @@ public class SDatasource extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void importTIF(String tifPath, ReadableMap params, Promise promise) {
+    public void importDataset(String type, String filePath, ReadableMap datasourceParams, ReadableMap importParams, Promise promise) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     Workspace workspace = SMap.getSMWorkspace().getWorkspace();
                     Datasource datasource = null;
-                    DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(params.toHashMap());
+                    DatasourceConnectionInfo info = SMDatasource.convertDicToInfo(datasourceParams.toHashMap());
 
                     datasource = workspace.getDatasources().open(info);
                     boolean result = false;
                     if(datasource != null) {
-                        result = DataConversion.importTIF(tifPath, datasource);
+                        switch (type){
+                            case "tif":
+                                result = DataConversion.importTIF(filePath, datasource);
+                                break;
+                            case "shp":
+                                result = DataConversion.importSHP(filePath, datasource);
+                                break;
+                            case "mif":
+                                result = DataConversion.importMIF(filePath, datasource);
+                                break;
+                            case "kml":
+                                result = DataConversion.importKML(filePath, datasource, importParams.getString("datasetName"), importParams.getBoolean("importAsCAD"));
+                                break;
+                            case "kmz":
+                                result = DataConversion.importKMZ(filePath, datasource, importParams.getString("datasetName"), importParams.getBoolean("importAsCAD"));
+                                break;
+                            case "dwg":
+                                result = DataConversion.importDWG(filePath, datasource, importParams.getBoolean("inverseBlackWhite"), importParams.getBoolean("importAsCAD"));
+                                break;
+                            case "dxf":
+                                result = DataConversion.importDXF(filePath, datasource, importParams.getBoolean("inverseBlackWhite"), importParams.getBoolean("importAsCAD"));
+                                break;
+                            case "gpx":
+                                result = DataConversion.importGPX(filePath, datasource, importParams.getString("datasetName"));
+                                break;
+                        }
                     }
                     promise.resolve(result);
                 } catch (Exception e) {
