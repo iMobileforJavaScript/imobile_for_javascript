@@ -1050,13 +1050,13 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     sMap.smMapWC.getMapControl().setAction(Action.PAN);
                     map.setVisibleScalesEnabled(false);
                     map.refresh();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.9, 100);
-                        }
-                    }, 100);//3秒后执行Runnable中的run方法
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.9, 100);
+//                        }
+//                    }, 100);//3秒后执行Runnable中的run方法
                 }
             }
 
@@ -3411,7 +3411,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         }
                     }
                 }
-                promise.resolve(true);
+
             } else {
                 Datasets datasets = opendatasource.getDatasets();
                 com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
@@ -3431,8 +3431,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                         layer.setVisible(false);
                     }
                 }
-                promise.resolve(true);
+
             }
+            sMap.smMapWC.getMapControl().getMap().refresh();
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
