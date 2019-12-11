@@ -1672,6 +1672,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 //            wsSaved = true;
 
+            map.refresh();
             if (mapSaved && (!saveWorkspace || wsSaved)) {
                 promise.resolve(_name);
             } else {
