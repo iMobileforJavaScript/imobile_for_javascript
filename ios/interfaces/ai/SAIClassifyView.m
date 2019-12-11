@@ -136,9 +136,6 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
 RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
-        NSArray *array = [imgUri componentsSeparatedByString:@"?id="]; //从字符A中分隔成2个元素的数组
-        NSString *usePath=[((NSString*)array[1]) componentsSeparatedByString:@"&"][0];
-        
         //获取全局队列
         dispatch_queue_t global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         //创建一个定时器，并将定时器的任务交给全局队列执行(并行，不会造成主线程阻塞)
@@ -157,10 +154,23 @@ RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromis
             index++;
         });
         dispatch_resume(timer);
+        
         // 这里是原本的图片url
 //        NSString * path = @"assets-library://asset/asset.JPG?id=9581C151-4582-4ABD-A581-1F34E037E1A0&ext=JPG";
         // 取出要使用的 LocalIdentifiers
 //        NSString * usePath = @"9581C151-4582-4ABD-A581-1F34E037E1A0";
+        NSArray *array = [imgUri componentsSeparatedByString:@"?id="]; //从字符A中分隔成2个元素的数组
+        //如果是文件夹的图片,否则是相册的图片
+        if([array count]==1){
+            NSData *data = [NSData dataWithContentsOfFile:imgUri];
+            UIImage * classifyImg = [UIImage imageWithData:data];
+            NSArray* results=[mImageClassification recognizeImage:classifyImg];
+            [self recognizeImageResultAnalyze:results];
+            resolve(@(YES));
+            return;
+        }
+        NSString *usePath=[((NSString*)array[1]) componentsSeparatedByString:@"&"][0];
+        
         PHFetchResult * re = [PHAsset fetchAssetsWithLocalIdentifiers:@[usePath] options:nil];
         [re enumerateObjectsUsingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSLog(@"%@", obj.localIdentifier);
@@ -169,97 +179,45 @@ RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromis
                 classifyImg =  [UIImage imageWithData:imageData];
                 
                 NSArray* results=[mImageClassification recognizeImage:classifyImg];
-                NSMutableArray* arr=[[NSMutableArray alloc] init];
-                for(int i=0;i<results.count;i++){
-                    Recognition* recognition=results[i];
-                    NSMutableDictionary* recognitionDic=[[NSMutableDictionary alloc] init];
-                    NSString* label=recognition.label;
-                    if([[SLanguage getLanguage] isEqualToString:@"CN"]){
-                        if([mListENClassifyNames containsObject:label]){
-                            NSInteger index=[mListENClassifyNames indexOfObject:label];
-                            label=mListCNClassifyNames[index];
-                        }
-                    }
-                    [recognitionDic setObject:label forKey:@"Title"];
-                    NSString* confidence=[NSString stringWithFormat:@"%.2f",recognition.confidence*100];
-                    confidence=[confidence stringByAppendingString:@"%"];
-                    [recognitionDic setObject:confidence forKey:@"Confidence"];
-                    [recognitionDic setObject:[self getCurrentTime] forKey:@"Time"];
-                    [arr addObject:recognitionDic];
-                }
-                NSMutableDictionary* allResults=[[NSMutableDictionary alloc] init];
-                [allResults setObject:arr forKey:@"results"];
                 
-                
-                [self sendEventWithName:recognizeImage body:allResults];
-                //识别结束取消计时器
-                dispatch_source_cancel(self.timer);
-                self.timer=nil;
+                [self recognizeImageResultAnalyze:results];
 
                 resolve(@(YES));
             }];
         }];
-        
-//        ALAssetsLibrary *assetslibrary = [[ALAssetsLibrary alloc] init];
-//        [assetslibrary assetForURL:imgUri resultBlock:^(ALAsset *asset) {
-//            ALAssetRepresentation *rep = [asset defaultRepresentation];
-//            CGImageRef iref = [rep fullScreenImage];
-//
-//        } failureBlock:nil];
-        
-        
-        
-//        UIImage * classifyImg = [UIImage imageWithData:data];
-//
-//        NSArray* results=[mImageClassification recognizeImage:classifyImg];
-//        NSMutableArray* arr=[[NSMutableArray alloc] init];
-//        for(int i=0;i<results.count;i++){
-//            Recognition* recognition=results[i];
-//            NSMutableDictionary* recognitionDic=[[NSMutableDictionary alloc] init];
-//            NSString* label=recognition.label;
-//            if([mLanguage isEqualToString:@"CN"]){
-//                if([mListENClassifyNames containsObject:label]){
-//                    NSInteger index=[mListENClassifyNames indexOfObject:label];
-//                    label=mListCNClassifyNames[index];
-//                }
-//            }
-//            [recognitionDic setObject:label forKey:@"Title"];
-//            NSString* confidence=[NSString stringWithFormat:@"%.2f",recognition.confidence*100];
-//            confidence=[confidence stringByAppendingString:@"%"];
-//            [recognitionDic setObject:confidence forKey:@"Confidence"];
-//            [recognitionDic setObject:[self getCurrentTime] forKey:@"Time"];
-//            [arr addObject:recognitionDic];
-//        }
-//        NSMutableDictionary* allResults=[[NSMutableDictionary alloc] init];
-//        [allResults setObject:arr forKey:@"results"];
-//
-//
-//        [self sendEventWithName:recognizeImage body:allResults];
-//
-//        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"initAIClassify", exception.reason, nil);
     }
 }
-
-
-//@ReactMethod
-//public void getCurrentModel(Promise promise) {
-//    try {
-//        Log.d(REACT_CLASS, "----------------getCurrentModel--------RN--------");
-//        WritableMap writableMap = Arguments.createMap();
-//        String modelType = mModelType.toString();
-//        writableMap.putString("ModelType", modelType);
-//        if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
-//            writableMap.putString("ModelPath", MODEL_PATH);
-//            writableMap.putString("LabelPath", LABEL_PATH);
-//        }
-//
-//        promise.resolve(writableMap);
-//    } catch (Exception e) {
-//        promise.reject(e);
-//    }
-//}
+//处理分类识别返回的结果
+-(void)recognizeImageResultAnalyze:(NSArray*)results{
+    NSMutableArray* arr=[[NSMutableArray alloc] init];
+    for(int i=0;i<results.count;i++){
+        Recognition* recognition=results[i];
+        NSMutableDictionary* recognitionDic=[[NSMutableDictionary alloc] init];
+        NSString* label=recognition.label;
+        if([[SLanguage getLanguage] isEqualToString:@"CN"]){
+            if([mListENClassifyNames containsObject:label]){
+                NSInteger index=[mListENClassifyNames indexOfObject:label];
+                label=mListCNClassifyNames[index];
+            }
+        }
+        [recognitionDic setObject:label forKey:@"Title"];
+        NSString* confidence=[NSString stringWithFormat:@"%.2f",recognition.confidence*100];
+        confidence=[confidence stringByAppendingString:@"%"];
+        [recognitionDic setObject:confidence forKey:@"Confidence"];
+        [recognitionDic setObject:[self getCurrentTime] forKey:@"Time"];
+        [arr addObject:recognitionDic];
+    }
+    NSMutableDictionary* allResults=[[NSMutableDictionary alloc] init];
+    [allResults setObject:arr forKey:@"results"];
+    
+    
+    [self sendEventWithName:recognizeImage body:allResults];
+    //识别结束取消计时器
+    dispatch_source_cancel(self.timer);
+    self.timer=nil;
+}
 
 #pragma mark 获取当前模型
 RCT_REMAP_METHOD(getCurrentModel, getCurrentModel:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
