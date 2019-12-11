@@ -227,6 +227,28 @@ function getDatasetBounds(sourceData){
     console.error(e)
   }
 }
+/**
+ *
+ * @param datasourceAlias
+ * @param datasetName
+ * @returns {*}
+ */
+async function getAvailableDatasetName(datasourceAlias, datasetName){
+  try {
+    let result = false
+    let name = datasetName
+    let index = 1
+    while(!result) {
+      result = await SDatasource.isAvailableDatasetName(datasourceAlias, name)
+      if (!result) {
+        name = datasetName + '_' + (index++)
+      }
+    }
+    return name
+  } catch (error) {
+    console.error(e)
+  }
+}
 
 
 export {
@@ -249,4 +271,5 @@ export {
   getFieldInfos,
   importDatasetFromGeoJson,
   getDatasetBounds,
+  getAvailableDatasetName,
 }
