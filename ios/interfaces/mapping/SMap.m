@@ -2531,10 +2531,10 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
                 
                 [map refresh];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                    [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
-                    [sMap.smMapWC.mapControl.map refresh];
-                });
+//                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+////                    [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
+//                    [sMap.smMapWC.mapControl.map refresh];
+//                });
             }
         }
         
@@ -3192,6 +3192,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
             wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
         }
         
+        [map refresh];
         if (mapSaved && (!saveWorkspace || wsSaved)) {
             resolve(_name);
         } else {
@@ -4244,7 +4245,6 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
                     }
                 }
             }
-            resolve(@(YES));
         }else {
             Datasets *datasets = opendatasource.datasets;
             Map *map = sMap.smMapWC.mapControl.map;
@@ -4264,8 +4264,9 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
                     layer.visible = false;//(false);
                 }
             }
-            resolve(@(YES));
         }
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"openTaggingDataset",exception.reason,nil);
     }
