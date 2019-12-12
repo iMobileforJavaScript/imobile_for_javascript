@@ -5900,7 +5900,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean isFind = navigation2.getNavigation().routeAnalyst();
             if(!isFind){
                 isFind = navigation2.reAnalyst();
-                navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+                if(isFind){
+                    navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+                }
             }else{
                 map.refresh();
             }
@@ -5910,7 +5912,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             SNavigation2 navigation2 = sMap.sNavigation2;
             boolean isFind = navigation2.reAnalyst();
-            navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+            if(isFind){
+                navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+            }
             promise.resolve(isFind);
         }
     }
