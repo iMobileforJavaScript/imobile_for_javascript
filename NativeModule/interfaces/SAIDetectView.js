@@ -325,7 +325,13 @@ getDetectInfo = () => {
   }
 }
 
-
+startCamera = () => {
+  try {
+    return SAIDetectView.startCamera()
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 export default {
   initAIDetect,
@@ -364,4 +370,5 @@ export default {
   checkIfCameraAvailable,
   checkIfAvailable,
   getDetectInfo,
+  startCamera,
 }

@@ -978,7 +978,9 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
         BOOL isFind = [navigation2.m_navigation routeAnalyst];
         if(!isFind){
             isFind = [navigation2 reAnalyst];
-            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+            if(isFind){
+                [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+            }
         }else{
             [map refresh];
         }
@@ -988,7 +990,9 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
         Map *map = sMap.smMapWC.mapControl.map;
         SNavigation2 *navigation2 = sMap.sNavigation2;
         BOOL isFind = [navigation2 reAnalyst];
-        [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];;
+        if(isFind){
+            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+        }
         resolve(@(isFind));
     }
 }
@@ -1107,7 +1111,7 @@ RCT_REMAP_METHOD(hasLineDataset, hasLineDatasetWithResolver: (RCTPromiseResolveB
 }
 
 #pragma mark 设置当前楼层ID
-RCT_REMAP_METHOD(setCurrentFloorID, methodgetCurrentFloorIdWithId:(NSString *)floorID Resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setCurrentFloorID, setCurrentFloorIDWithId:(NSString *)floorID Resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         sMap.smMapWC.floorListView.currentFloorId = floorID;
@@ -1119,10 +1123,14 @@ RCT_REMAP_METHOD(setCurrentFloorID, methodgetCurrentFloorIdWithId:(NSString *)fl
 }
 
 #pragma mark 获取当前楼层ID
-RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getCurrentFloorID, getCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        NSString *floorID = sMap.smMapWC.floorListView.currentFloorId;
+        NSString *floorID = @"";
+        FloorListView *floorListView = sMap.smMapWC.floorListView;
+        if(floorListView != nil && !floorListView.isHidden){
+            floorID = sMap.smMapWC.floorListView.currentFloorId;
+        }
         resolve(floorID);
     }@catch(NSException *exception){
         reject(@"getCurrentFloorID", exception.reason, nil);

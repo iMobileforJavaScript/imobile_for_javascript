@@ -14,8 +14,8 @@
 
 @interface InfoView()
 {
-    NSArray* m_colors;
-    NSMutableDictionary* m_lable_color;
+   //NSArray* m_colors;
+   // NSMutableDictionary* m_lable_color;
 }
 
 @end
@@ -25,33 +25,33 @@
 
 -(id)initWithFrame:(CGRect)frame{
     if(self=[super initWithFrame:frame]){
-        m_lable_color = [[NSMutableDictionary alloc] initWithCapacity:11];
-        NSMutableArray* array=[[NSMutableArray alloc] init];
-//        [array addObject:[UIColor grayColor]];
-        [array addObject:[UIColor redColor]];
-        [array addObject:[UIColor greenColor]];
-        [array addObject:[UIColor blueColor]];
-        [array addObject:[UIColor cyanColor]];
-        [array addObject:[UIColor yellowColor]];
-        [array addObject:[UIColor magentaColor]];
-        [array addObject:[UIColor orangeColor]];
-        [array addObject:[UIColor purpleColor]];
-        [array addObject:[UIColor brownColor]];
-        [array addObject:[[UIColor alloc]initWithRed:224/255.0 green:207/255.0 blue:226/255.0 alpha:1]];
-        [array addObject:[[UIColor alloc]initWithRed:151/255.0 green:191/255.0 blue:242/255.0 alpha:1]];
-        [array addObject:[[UIColor alloc]initWithRed:174/255.0 green:241/255.0 blue:176/255.0 alpha:1]];
-//        [fillColors addObject:[[Color alloc] initWithR:224 G:207 B:226]];
-//        [fillColors addObject:[[Color alloc] initWithR:151 G:191 B:242]];
-//        [fillColors addObject:[[Color alloc] initWithR:242 G:242 B:186]];
-//        [fillColors addObject:[[Color alloc] initWithR:190 G:255 B:232]];
-//        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:232]];
-//        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:190]];
-//        [fillColors addObject:[[Color alloc] initWithR:255 G:235 B:175]];
-//        [fillColors addObject:[[Color alloc] initWithR:233 G:255 B:190]];
-//        [fillColors addObject:[[Color alloc] initWithR:234 G:225 B:168]];
-//        [fillColors addObject:[[Color alloc] initWithR:174 G:241 B:176]];
-//        [array addObject:[UIColor blackColor]];
-        m_colors = [[NSArray alloc]initWithArray:array];
+//        m_lable_color = [[NSMutableDictionary alloc] initWithCapacity:11];
+//        NSMutableArray* array=[[NSMutableArray alloc] init];
+////        [array addObject:[UIColor grayColor]];
+//        [array addObject:[UIColor redColor]];
+//        [array addObject:[UIColor greenColor]];
+//        [array addObject:[UIColor blueColor]];
+//        [array addObject:[UIColor cyanColor]];
+//        [array addObject:[UIColor yellowColor]];
+//        [array addObject:[UIColor magentaColor]];
+//        [array addObject:[UIColor orangeColor]];
+//        [array addObject:[UIColor purpleColor]];
+//        [array addObject:[UIColor brownColor]];
+//        [array addObject:[[UIColor alloc]initWithRed:224/255.0 green:207/255.0 blue:226/255.0 alpha:1]];
+//        [array addObject:[[UIColor alloc]initWithRed:151/255.0 green:191/255.0 blue:242/255.0 alpha:1]];
+//        [array addObject:[[UIColor alloc]initWithRed:174/255.0 green:241/255.0 blue:176/255.0 alpha:1]];
+////        [fillColors addObject:[[Color alloc] initWithR:224 G:207 B:226]];
+////        [fillColors addObject:[[Color alloc] initWithR:151 G:191 B:242]];
+////        [fillColors addObject:[[Color alloc] initWithR:242 G:242 B:186]];
+////        [fillColors addObject:[[Color alloc] initWithR:190 G:255 B:232]];
+////        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:232]];
+////        [fillColors addObject:[[Color alloc] initWithR:255 G:190 B:190]];
+////        [fillColors addObject:[[Color alloc] initWithR:255 G:235 B:175]];
+////        [fillColors addObject:[[Color alloc] initWithR:233 G:255 B:190]];
+////        [fillColors addObject:[[Color alloc] initWithR:234 G:225 B:168]];
+////        [fillColors addObject:[[Color alloc] initWithR:174 G:241 B:176]];
+////        [array addObject:[UIColor blackColor]];
+//        m_colors = [[NSArray alloc]initWithArray:array];
         _aIDetectStyle = [[AIDetectStyle alloc]init];
         _aIDetectStyle.aiStrokeWidth = 2;
         _aIDetectStyle.isSameColor = false;
@@ -120,16 +120,19 @@
 //        NSValue* value;
 //        value.CGRectValue
         //设置识别框颜色
-        if(_aIDetectStyle&&_aIDetectStyle.isSameColor && _aIDetectStyle.aiColor!=nil){
+        if(_aIDetectStyle&&_aIDetectStyle.isSameColor ){
             if(_aIDetectStyle.aiColor){
                 color=_aIDetectStyle.aiColor;
+            }else{
+                color=[UIColor redColor];
             }
         }else{
-            if(m_lable_color[recognition.label] == nil){
-                int n = arc4random() % m_colors.count;
-                m_lable_color[recognition.label] = m_colors[n];
-            }
-            color = m_lable_color[recognition.label];
+//            if(m_lable_color[recognition.label] == nil){
+//                int n = arc4random() % m_colors.count;
+//                m_lable_color[recognition.label] = m_colors[n];
+//            }
+//            color = m_lable_color[recognition.label];
+            color = recognition.displayColor;
         }
         
         
@@ -177,6 +180,11 @@
         //颜色
         [textAttributes setValue:[UIColor whiteColor] forKey:NSForegroundColorAttributeName];
         [content drawAtPoint:tempCGRect.origin withAttributes:textAttributes];
+        
+        if (_aIDetectStyle&&_aIDetectStyle.isDrawCount) {
+            NSString* strCount = [NSString stringWithFormat:@"%d",recognition.count];
+            [strCount drawAtPoint:CGPointMake(tempCGRect.origin.x, tempCGRect.origin.y-20) withAttributes:textAttributes];
+        }
 
     }
 }

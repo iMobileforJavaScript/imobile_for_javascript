@@ -3,7 +3,8 @@ import {
   requireNativeComponent,
   ViewPropTypes,
   StyleSheet,
-  View, InteractionManager, Platform
+  View, InteractionManager, Platform,
+  AppState,
 } from "react-native";
 import PropTypes from 'prop-types'
 import { scaleSize } from "../../../../src/utils";
@@ -22,6 +23,8 @@ class SMMeasureView extends React.Component {
       viewId: 0,
       visible: false,
     }
+    AppState.addEventListener('change', this.handleStateChange)
+    this.stateChangeCount = 0
   }
 
   static propTypes = {
@@ -44,6 +47,34 @@ class SMMeasureView extends React.Component {
   }
 
   componentWillUnmount() {
+    AppState.removeEventListener('change', this.handleStateChange)
+  }
+
+  /************************** 处理状态变更 ***********************************/
+
+  handleStateChange = async appState => {
+    if (Platform.OS === 'android') {
+      return
+    }
+    if (appState === 'inactive') {
+      return
+    }
+    let count = this.stateChangeCount + 1
+    this.stateChangeCount = count
+    if (this.stateChangeCount !== count) {
+      return
+    } else if (this.prevAppstate === appState) {
+      return
+    } else {
+      this.prevAppstate = appState
+      this.stateChangeCount = 0
+      if (appState === 'active') {
+        SMeasureView.startARSession()
+      } else if (appState === 'background') {
+        // this.disconnectService()
+        SMeasureView.endARSession()
+      }
+    }
   }
 
   setVisible = (visible) => {

@@ -187,7 +187,7 @@
                                  boundingBox[4*i+2]-boundingBox[4*i]);
         
         UIColor* colorToAssign = UIColor.redColor; //???
-        AIRecognition* inferenceTemp = [[AIRecognition alloc]initWith:outputClass confidence:scores[i] rect:rect displayColor:colorToAssign];
+        AIRecognition* inferenceTemp = [[AIRecognition alloc]initWith:outputClass confidence:scores[i] rect:rect displayColor:colorToAssign count:0];
         [arr addObject:inferenceTemp];
     }
     

@@ -182,6 +182,9 @@
 		0A51675621AF7EF7003C77BE /* MapTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A51675521AF7EF7003C77BE /* MapTool.m */; };
 		0A56919121B7E58300F46C9B /* SMFileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A56919021B7E58300F46C9B /* SMFileUtil.m */; };
 		0A6F014E231E0AAC004D5290 /* FixColorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A6F014D231E0AAC004D5290 /* FixColorMode.m */; };
+		0A6F7CB923A22D53002BDBE7 /* ObjectTracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A6F7CB623A22D52002BDBE7 /* ObjectTracker.mm */; };
+		0A6F7CBA23A22D53002BDBE7 /* MultiBoxTracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A6F7CB823A22D53002BDBE7 /* MultiBoxTracker.mm */; };
+		0A6F7CBD23A23039002BDBE7 /* libtensorflow_tracking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6F7CBC23A23039002BDBE7 /* libtensorflow_tracking.a */; };
 		0A7196AC228C0873009C2C50 /* SMMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7196AB228C0873009C2C50 /* SMMedia.m */; };
 		0A84DED321BA403B007995FC /* SDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED221BA403B007995FC /* SDatasource.m */; };
 		0A84DED621BA44C9007995FC /* SMDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DED521BA44C9007995FC /* SMDatasource.m */; };
@@ -608,6 +611,12 @@
 		0A6DE64121A2CC4000CD27EA /* SMSceneWC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSceneWC.h; sourceTree = "<group>"; };
 		0A6F014C231E0AAC004D5290 /* FixColorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FixColorMode.h; sourceTree = "<group>"; };
 		0A6F014D231E0AAC004D5290 /* FixColorMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FixColorMode.m; sourceTree = "<group>"; };
+		0A6F7CB523A22D51002BDBE7 /* MultiBoxTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiBoxTracker.h; sourceTree = "<group>"; };
+		0A6F7CB623A22D52002BDBE7 /* ObjectTracker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ObjectTracker.mm; sourceTree = "<group>"; };
+		0A6F7CB723A22D52002BDBE7 /* ObjectTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectTracker.h; sourceTree = "<group>"; };
+		0A6F7CB823A22D53002BDBE7 /* MultiBoxTracker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MultiBoxTracker.mm; sourceTree = "<group>"; };
+		0A6F7CBB23A23019002BDBE7 /* TensorflowTrackNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TensorflowTrackNative.h; sourceTree = "<group>"; };
+		0A6F7CBC23A23039002BDBE7 /* libtensorflow_tracking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtensorflow_tracking.a; path = AI/libtensorflow_tracking.a; sourceTree = SOURCE_ROOT; };
 		0A7196AA228C0873009C2C50 /* SMMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMedia.h; sourceTree = "<group>"; };
 		0A7196AB228C0873009C2C50 /* SMMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SMMedia.m; sourceTree = "<group>"; };
 		0A84DED121BA403B007995FC /* SDatasource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDatasource.h; sourceTree = "<group>"; };
@@ -761,6 +770,7 @@
 				0AEFC1EB2316867B006FEDD8 /* _imagingft.a in Frameworks */,
 				0A4BFCEF22A666D1001563DF /* AMapFoundationKit in Frameworks */,
 				0AEFC1ED2316867B006FEDD8 /* _imagingmorph.a in Frameworks */,
+				0A6F7CBD23A23039002BDBE7 /* libtensorflow_tracking.a in Frameworks */,
 				0AEFC1EE2316867B006FEDD8 /* _imagingtk.a in Frameworks */,
 				2A5299BE2386A5460071AD06 /* libTensorFlowLiteObjC.a in Frameworks */,
 				0AEFC1EA2316867B006FEDD8 /* _imaging.a in Frameworks */,
@@ -806,6 +816,7 @@
 		0A03BDBE2395F4D400A90044 /* Detect */ = {
 			isa = PBXGroup;
 			children = (
+				0A6F7CBB23A23019002BDBE7 /* TensorflowTrackNative.h */,
 				0A03BDC42395F4D400A90044 /* AIDetectStyle.h */,
 				0A03BDC22395F4D400A90044 /* AIDetectStyle.m */,
 				0A03BDC02395F4D400A90044 /* AIDetectView.h */,
@@ -816,6 +827,10 @@
 				0A03BDC32395F4D400A90044 /* AIRecognition.m */,
 				0A03BDC12395F4D400A90044 /* InfoView.h */,
 				0A03BDC52395F4D400A90044 /* InfoView.m */,
+				0A6F7CB523A22D51002BDBE7 /* MultiBoxTracker.h */,
+				0A6F7CB823A22D53002BDBE7 /* MultiBoxTracker.mm */,
+				0A6F7CB723A22D52002BDBE7 /* ObjectTracker.h */,
+				0A6F7CB623A22D52002BDBE7 /* ObjectTracker.mm */,
 			);
 			path = Detect;
 			sourceTree = "<group>";
@@ -1015,6 +1030,7 @@
 				0A03BDBD2395F4D400A90044 /* AiCode */,
 				2A5299C12386A5560071AD06 /* TensorFlowLiteC */,
 				2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */,
+				0A6F7CBC23A23039002BDBE7 /* libtensorflow_tracking.a */,
 				2A5299BB2386A5460071AD06 /* tfOC.a */,
 			);
 			name = AI;
@@ -1651,6 +1667,7 @@
 				0A332E1A211D623E00F56F26 /* JSGeoRegion.m in Sources */,
 				0A332E3F211D623E00F56F26 /* JSPrjCoordSys.m in Sources */,
 				D8FB9D40219AB0B800597AE5 /* SMSymbolTable.m in Sources */,
+				0A6F7CBA23A22D53002BDBE7 /* MultiBoxTracker.mm in Sources */,
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
@@ -1660,6 +1677,7 @@
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A27E3812288FFF600227B8C /* InfoCallout.m in Sources */,
 				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
+				0A6F7CB923A22D53002BDBE7 /* ObjectTracker.mm in Sources */,
 				0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */,
 				005693BA2191696C00AEC46E /* SOnlineService.m in Sources */,
 				0A332E08211D623E00F56F26 /* JSDatasetVector.m in Sources */,

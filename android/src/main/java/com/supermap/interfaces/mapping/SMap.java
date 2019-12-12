@@ -1672,6 +1672,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
 //            wsSaved = true;
 
+            map.refresh();
             if (mapSaved && (!saveWorkspace || wsSaved)) {
                 promise.resolve(_name);
             } else {
@@ -5803,6 +5804,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     @Override
                     public void onStopNavi() {
                         clearOutdoorPoint();
+                        sMap.speakPlugin.stopPlay();
                         // TODO Auto-generated method stub
                         Log.e("+++++++++++++", "-------------****************");
                         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -5899,7 +5901,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             boolean isFind = navigation2.getNavigation().routeAnalyst();
             if(!isFind){
                 isFind = navigation2.reAnalyst();
-                navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+                if(isFind){
+                    navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+                }
             }else{
                 map.refresh();
             }
@@ -5909,7 +5913,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             SNavigation2 navigation2 = sMap.sNavigation2;
             boolean isFind = navigation2.reAnalyst();
-            navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+            if(isFind){
+                navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+            }
             promise.resolve(isFind);
         }
     }
@@ -5973,6 +5979,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 mNavigation3.addNaviInfoListener(new NaviListener() {
                     @Override
                     public void onStopNavi() {
+                        sMap.speakPlugin.stopPlay();
                         // TODO Auto-generated method stub
                         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit(EventConst.INDUSTRYNAVIAGTION, true);
@@ -6115,7 +6122,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             sMap = SMap.getInstance();
             String floorID = "";
             FloorListView floorListView = sMap.smMapWC.getFloorListView();
-            if(floorListView != null){
+            if(floorListView != null && floorListView.getVisibility() == View.VISIBLE){
                 floorID = floorListView.getCurrentFloorId();
             }
             promise.resolve(floorID);
