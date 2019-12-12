@@ -1274,16 +1274,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置统一标签专题图的字体
+     * 设置统一/分段标签专题图的字体
      *
      * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void setUniformLabelFontName(ReadableMap readableMap, Promise promise) {
+    public void setLabelFontName(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
+            String type = "uniform"; // uniform | range
             String layerName = null;
             int layerIndex = -1;
             String fontName = null;
@@ -1297,6 +1298,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             }
             if (data.containsKey("FontName")){
                 fontName = data.get("FontName").toString();
+            }
+            if (data.containsKey("type")){
+                type = data.get("type").toString();
             }
 
             Layer layer;
@@ -1312,7 +1316,12 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    int count = themeLabel.getUniqueItems().getCount();
+                    int count;
+                    if (type.equals("range")) {
+                        count = themeLabel.getRangeItems().getCount();
+                    } else {
+                        count = themeLabel.getUniqueItems().getCount();
+                    }
                     if(count == 0){
                         TextStyle uniformStyle = themeLabel.getUniformStyle();
                         if(fontName.equals("BOLD")){
@@ -1353,51 +1362,54 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                             }else{
                                 uniformStyle.setOutline(true);
                                 uniformStyle.setBackColor(new Color(255,255,255));
-//                            uniformStyle.set
                             }
                         }
                     }else{
                         for (int i = 0; i < count; i++) {
-                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            TextStyle style;
+                            if (type.equals("range")) {
+                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                            } else {
+                                style = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            }
                             if(fontName.equals("BOLD")){
-                                if(uniformStyle.isBold()){
-                                    uniformStyle.setBold(false);
+                                if(style.isBold()){
+                                    style.setBold(false);
                                 }
                                 else{
-                                    uniformStyle.setBold(true);
+                                    style.setBold(true);
                                 }
                             }else if(fontName.equals("ITALIC")){
-                                if(uniformStyle.getItalic()){
-                                    uniformStyle.setItalic(false);
+                                if(style.getItalic()){
+                                    style.setItalic(false);
                                 }else{
-                                    uniformStyle.setItalic(true);
+                                    style.setItalic(true);
                                 }
 
                             }else if(fontName.equals("UNDERLINE")){
-                                if(uniformStyle.getUnderline()){
-                                    uniformStyle.setUnderline(false);
+                                if(style.getUnderline()){
+                                    style.setUnderline(false);
                                 }else{
-                                    uniformStyle.setUnderline(true);
+                                    style.setUnderline(true);
                                 }
                             }else if(fontName.equals("STRIKEOUT")){
-                                if(uniformStyle.getStrikeout()){
-                                    uniformStyle.setStrikeout(false);
+                                if(style.getStrikeout()){
+                                    style.setStrikeout(false);
                                 }else{
-                                    uniformStyle.setStrikeout(true);
+                                    style.setStrikeout(true);
                                 }
                             }else if(fontName.equals("SHADOW")){
-                                if(uniformStyle.getShadow()){
-                                    uniformStyle.setShadow(false);
+                                if(style.getShadow()){
+                                    style.setShadow(false);
                                 }else{
-                                    uniformStyle.setShadow(true);
+                                    style.setShadow(true);
                                 }
                             }else if(fontName.equals("OUTLINE")){
-                                if(uniformStyle.getOutline()){
-                                    uniformStyle.setOutline(false);
+                                if(style.getOutline()){
+                                    style.setOutline(false);
                                 }else{
-                                    uniformStyle.setOutline(true);
-                                    uniformStyle.setBackColor(new Color(255,255,255));
-//                            uniformStyle.set
+                                    style.setOutline(true);
+                                    style.setBackColor(new Color(255,255,255));
                                 }
                             }
                         }
@@ -1418,13 +1430,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取统一标签专题图的字体
+     * 获取统一/分段标签专题图的字体
      *
      * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void getUniformLabelFontName(ReadableMap readableMap, Promise promise) {
+    public void getLabelFontName(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
@@ -1465,16 +1477,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置统一标签专题图的字号
+     * 设置统一/分段标签专题图的字号
      *
      * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void setUniformLabelFontSize(ReadableMap readableMap, Promise promise) {
+    public void setLabelFontSize(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
+            String type = "uniform"; // uniform | range
             String layerName = null;
             int layerIndex = -1;
             double fontSize = -1;
@@ -1490,6 +1503,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String size = data.get("FontSize").toString();
                 fontSize = Double.parseDouble(size);
             }
+            if (data.containsKey("type")){
+                type = data.get("type").toString();
+            }
 
             Layer layer;
             if (layerName != null) {
@@ -1504,14 +1520,24 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    int count = themeLabel.getUniqueItems().getCount();
+                    int count;
+                    if (type.equals("range")) {
+                        count = themeLabel.getRangeItems().getCount();
+                    } else {
+                        count = themeLabel.getUniqueItems().getCount();
+                    }
                     if(count == 0) {
                         TextStyle uniformStyle = themeLabel.getUniformStyle();
                         uniformStyle.setFontHeight(fontSize);
                     }else{
                         for (int i = 0; i < count; i++) {
-                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
-                            uniformStyle.setFontHeight(fontSize);
+                            TextStyle style;
+                            if (type.equals("range")) {
+                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                            } else {
+                                style = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            }
+                            style.setFontHeight(fontSize);
                         }
                     }
 
@@ -1531,16 +1557,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取统一标签专题图的字号
+     * 获取统一/分段标签专题图的字号
      *
      * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void getUniformLabelFontSize(ReadableMap readableMap, Promise promise) {
+    public void getLabelFontSize(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
+            String type = "uniform"; // uniform | range
             String layerName = null;
             int layerIndex = -1;
 
@@ -1550,6 +1577,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("LayerIndex")){
                 String index = data.get("LayerIndex").toString();
                 layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("type")){
+                type = data.get("type").toString();
             }
 
             Layer layer;
@@ -1562,7 +1592,12 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (layer != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    int count = themeLabel.getUniqueItems().getCount();
+                    int count;
+                    if (type.equals("range")) {
+                        count = themeLabel.getRangeItems().getCount();
+                    } else {
+                        count = themeLabel.getUniqueItems().getCount();
+                    }
                     if(count == 0) {
                         TextStyle uniformStyle = themeLabel.getUniformStyle();
                         double fontHeight = uniformStyle.getFontHeight();
@@ -1570,8 +1605,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         promise.resolve(fontHeight);
                     }else{
                         for (int i = 0; i < count; i++) {
-                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
-                            double fontHeight = uniformStyle.getFontHeight();
+                            TextStyle style;
+                            if (type.equals("range")) {
+                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                            } else {
+                                style = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            }
+                            double fontHeight = style.getFontHeight();
 
                             promise.resolve(fontHeight);
                             return;
@@ -1590,16 +1630,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置统一标签专题图的旋转角度
+     * 设置统一/分段标签专题图的旋转角度
      *
      * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void setUniformLabelRotaion(ReadableMap readableMap, Promise promise) {
+    public void setLabelRotation(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
+            String type = "uniform"; // uniform | range
             String layerName = null;
             int layerIndex = -1;
             double rotation = -1;
@@ -1615,6 +1656,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String rt = data.get("Rotaion").toString();
                 rotation = Double.parseDouble(rt);
             }
+            if (data.containsKey("type")){
+                type = data.get("type").toString();
+            }
 
             Layer layer;
             if (layerName != null) {
@@ -1629,7 +1673,12 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    int count = themeLabel.getUniqueItems().getCount();
+                    int count;
+                    if (type.equals("range")) {
+                        count = themeLabel.getRangeItems().getCount();
+                    } else {
+                        count = themeLabel.getUniqueItems().getCount();
+                    }
                     if(count == 0) {
                         TextStyle uniformStyle = themeLabel.getUniformStyle();
                         double lastRotation = uniformStyle.getRotation();
@@ -1641,18 +1690,21 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         uniformStyle.setRotation(lastRotation + rotation);
                     }else{
                         for (int i = 0; i < count; i++) {
-                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
-                            double lastRotation = uniformStyle.getRotation();
+                            TextStyle style;
+                            if (type.equals("range")) {
+                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                            } else {
+                                style = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            }
+                            double lastRotation = style.getRotation();
                             if (lastRotation == 360.0) {
                                 lastRotation = 0.0;
                             } else if (lastRotation == 0.0) {
                                 lastRotation = 360.0;
                             }
-                            uniformStyle.setRotation(lastRotation + rotation);
+                            style.setRotation(lastRotation + rotation);
                         }
                     }
-
-
 
                     mapControl.getMap().refresh();
 
@@ -1669,16 +1721,17 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取统一标签专题图的旋转角度
+     * 获取统一/分段标签专题图的旋转角度
      *
      * @param readableMap
      * @param promise
      */
     @ReactMethod
-    public void getUniformLabelRotaion(ReadableMap readableMap, Promise promise) {
+    public void ThemeType(ReadableMap readableMap, Promise promise) {
         try {
             HashMap<String, Object> data = readableMap.toHashMap();
 
+            String type = "uniform";
             String layerName = null;
             int layerIndex = -1;
 
@@ -1688,6 +1741,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("LayerIndex")){
                 String index = data.get("LayerIndex").toString();
                 layerIndex = Integer.parseInt(index);
+            }
+            if (data.containsKey("type")){
+                type = data.get("type").toString();
             }
 
             Layer layer;
@@ -1700,7 +1756,12 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (layer != null && layer.getTheme() != null) {
                 if (layer.getTheme().getType() == ThemeType.LABEL) {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
-                    int count = themeLabel.getUniqueItems().getCount();
+                    int count;
+                    if (type.equals("range")) {
+                        count = themeLabel.getRangeItems().getCount();
+                    } else {
+                        count = themeLabel.getUniqueItems().getCount();
+                    }
                     if(count == 0) {
                         TextStyle uniformStyle = themeLabel.getUniformStyle();
                         double rotation = uniformStyle.getRotation();
@@ -1708,9 +1769,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         promise.resolve(rotation);
                     }else{
                         for (int i = 0; i < count; i++) {
-                            TextStyle uniformStyle = themeLabel.getUniqueItems().getItem(i).getStyle();
-
-                            double rotation = uniformStyle.getRotation();
+                            TextStyle style;
+                            if (type.equals("range")) {
+                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                            } else {
+                                style = themeLabel.getUniqueItems().getItem(i).getStyle();
+                            }
+                            double rotation = style.getRotation();
 
                             promise.resolve(rotation);
                             return;
@@ -2088,6 +2153,105 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void modifyThemeLabelRangeMap(ReadableMap readableMap, Promise promise) {
+        try {
+            HashMap<String, Object> data = readableMap.toHashMap();
+
+            String rangeExpression = null;//分段字段表达式
+            RangeMode rangeMode = null;//分段模式
+            double rangeParameter = -1;//分段参数--当分段方法为标准差时，此参数无效，因为标准差分段方法所得的“段数”由计算结果决定，用户不可控制。
+            ColorGradientType colorGradientType = null;
+            String layerName = null;
+
+            if (data.containsKey("LayerName")) {
+                layerName = data.get("LayerName").toString();
+            }
+            Layer themeLayer = SMThemeCartography.getLayerByName(layerName);
+            Dataset dataset = null;
+            if (themeLayer != null) {
+                dataset = themeLayer.getDataset();
+            }
+
+            ThemeLabel themelabel = null;
+            if (themeLayer != null && themeLayer.getTheme() != null && themeLayer.getTheme().getType() == ThemeType.LABEL) {
+                themelabel = (ThemeLabel) themeLayer.getTheme();
+                if (themelabel.getRangeExpression().isEmpty() || themelabel.getRangeItems().getCount() == 0) {
+                    themelabel = null;
+                }
+            }
+
+            if (data.containsKey("RangeExpression")){
+                rangeExpression  = data.get("RangeExpression").toString();
+            } else {
+                if (themelabel != null) {
+                    rangeExpression = themelabel.getRangeExpression();
+                }
+            }
+
+            if (data.containsKey("RangeMode")){
+                String mode = data.get("RangeMode").toString();
+                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            } else {
+                if (themelabel != null) {
+                    rangeMode = themelabel.getRangeMode();
+                }
+            }
+
+            if (data.containsKey("RangeParameter")){
+                String rangParam = data.get("RangeParameter").toString();
+                rangeParameter  = Double.parseDouble(rangParam) <= 0 ? 1: Double.parseDouble(rangParam);
+            } else {
+                if (themelabel != null) {
+                    rangeParameter = themelabel.getCount();
+                }
+            }
+
+            if (data.containsKey("ColorGradientType")){
+                String type = data.get("ColorGradientType").toString();
+                colorGradientType = SMThemeCartography.getColorGradientType(type);
+            } else {
+                colorGradientType = ColorGradientType.GREENWHITE;
+            }
+
+            boolean result = false;
+            if (dataset != null && themeLayer.getTheme() != null && rangeExpression != null && rangeMode != null && rangeParameter != -1 && colorGradientType != null) {
+                MapControl mapControl = SMap.getSMWorkspace().getMapControl();
+                mapControl.getEditHistory().addMapHistory();
+
+                ThemeLabel tr = ThemeLabel.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
+                if (tr != null){
+                    if (!data.containsKey("ColorGradientType")) {
+                        Color[] colors = SMThemeCartography.getLastThemeColors(themeLayer);
+                        if(colors == null){
+                            colors = new Color[themelabel.getCount()];
+                            for (int i = 0; i < themelabel.getCount(); i++) {
+                                Color c = themelabel.getItem(i).getStyle().getForeColor();
+                                colors[i] = c;
+                            }
+
+                        }
+                        if (colors != null) {
+                            int rangeCount = tr.getCount();
+                            Colors selectedColors = Colors.makeGradient(rangeCount, colors);
+                            for (int i = 0; i < rangeCount; i++) {
+                                SMThemeCartography.setItemTextStyleColor(tr.getItem(i).getStyle(), selectedColors.get(i));
+                            }
+                        }
+                    }
+                    themeLayer.getTheme().fromXML(tr.toXML());
+                    mapControl.getMap().refresh();
+
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
     /**
      * 设置单值专题图颜色方案
      *
@@ -2391,6 +2555,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeRange themeRange = (ThemeRange) layer.getTheme();
 
                     promise.resolve(themeRange.getCount());
+                } else if (layer.getTheme().getType() == ThemeType.LABEL) {
+                    ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
+
+                    promise.resolve(themeLabel.getRangeItems().getCount());
                 }
             } else {
                 promise.resolve(false);
