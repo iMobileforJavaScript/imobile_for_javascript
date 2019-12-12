@@ -63,13 +63,14 @@ RCT_EXPORT_MODULE();
     
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
-    mAIDetectView.detectInterval=500;
+    mAIDetectView.detectInterval=200;
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];
         mAIDetectStyle.isDrawTitle=mIsDrawTitle;
         mAIDetectStyle.isDrawConfidence=mIsDrawConfidence;
         mAIDetectStyle.aiStrokeWidth=3;
+        mAIDetectStyle.isDrawCount = YES;
     }
     [mAIDetectView setAIDetectStyle:mAIDetectStyle];
 //    mAIDetectView.delegate=self;

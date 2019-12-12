@@ -13,10 +13,16 @@
 #import "AIDetectViewInfo.h"
 #import "AIRecognition.h"
 #import "InfoView.h"
+#import "TensorflowTrackNative.h"
+#import "MultiBoxTracker.h"
+#import <Accelerate/Accelerate.h>
 
 @interface AIDetectView()<CameraManagerDelegate>
 {
     UIImage* m_image;
+
+    MultiBoxTracker *_tracker;
+    Byte* _yuvFrame;
 }
 
 //@property (nonatomic,assign) long detectInterval;
@@ -31,7 +37,6 @@
 @end
 
 @implementation AIDetectView
-
 
 
 -(void)initData{
@@ -54,6 +59,9 @@
 //    _infoView.userInteractionEnabled = NO;
     [self addSubview:_infoView];
     
+//    self.detectInterval = 100;
+
+    _tracker = [[MultiBoxTracker alloc]init];
 }
 
 -(void)outputImage:(getImageCallBackBlock)getImageCallback withInfo:(BOOL)bInfo{
@@ -129,8 +137,9 @@
     _previousInferenceTimeMs = currentTimeMs;
     
     @try {
-        NSArray *result = [self.imageDetect runModel:pixelBuffer];
+        NSArray *resultOriginal = [self.imageDetect runModel:pixelBuffer];
         
+        NSArray *result = [_tracker track:resultOriginal with:pixelBuffer];
        
         //更新所有子view
         [self setaIRecognitionArrayAndUpdateView:result withSize:CGSizeMake(CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer))];

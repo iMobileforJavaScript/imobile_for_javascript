@@ -13,6 +13,7 @@
 
 @property(nonatomic,assign)  BOOL isDrawTitle;
 @property(nonatomic,assign)  BOOL isDrawConfidence;
+@property(nonatomic,assign)  BOOL isDrawCount;
 @property(nonatomic,assign)  BOOL isSameColor;
 @property(nonatomic,assign)  UIColor* aiColor;
 @property(nonatomic,assign)  float aiStrokeWidth;

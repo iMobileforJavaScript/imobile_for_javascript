@@ -11,8 +11,9 @@
 @interface AIRecognition : NSObject
 @property(nonatomic,strong)  NSString* label;
 @property(nonatomic,assign)  float confidence;
+@property(nonatomic,assign)  int count;
 @property(nonatomic,strong)  UIColor* displayColor;
 @property(nonatomic,assign)  CGRect rect;
 
--(id)initWith:(NSString*)name confidence:(float)value rect:(CGRect)bounds displayColor:(UIColor*)color;
+-(id)initWith:(NSString*)name confidence:(float)value rect:(CGRect)bounds displayColor:(UIColor*)color count:(int)nCount;
 @end
