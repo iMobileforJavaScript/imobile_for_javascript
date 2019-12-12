@@ -4,6 +4,7 @@ import {
   ViewPropTypes,
   StyleSheet,
   View, InteractionManager, Platform,
+  AppState,
   PanResponder,
 } from "react-native";
 import PropTypes from 'prop-types'
@@ -26,6 +27,8 @@ class SMAIDetectView extends React.Component {
       onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
       onPanResponderGrant: this._handleMoveShouldSetPanResponder,
     })
+    AppState.addEventListener('change', this.handleStateChange)
+    this.stateChangeCount = 0
   }
 
   _handleStartShouldSetPanResponder = (evt, gestureState) => {
@@ -68,6 +71,33 @@ class SMAIDetectView extends React.Component {
 
   componentWillUnmount() {
     SAIDetectView.dispose()
+    AppState.removeEventListener('change', this.handleStateChange)
+  }
+  
+  /************************** 处理状态变更 ***********************************/
+
+  handleStateChange = async appState => {
+    if (Platform.OS === 'android') {
+      return
+    }
+    if (appState === 'inactive') {
+      return
+    }
+    let count = this.stateChangeCount + 1
+    this.stateChangeCount = count
+    if (this.stateChangeCount !== count) {
+      return
+    } else if (this.prevAppstate === appState) {
+      return
+    } else {
+      this.prevAppstate = appState
+      this.stateChangeCount = 0
+      if (appState === 'active') {
+        SAIDetectView.startCamera()
+      } else if (appState === 'background') {
+        // this.disconnectService()
+      }
+    }
   }
 
   _onArObjectClick = ({nativeEvent}) => {

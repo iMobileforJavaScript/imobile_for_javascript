@@ -294,14 +294,20 @@
             m_VectorStart = m_VectorEnd;
             m_lineCon = [[LineController alloc] initWithSceneView:self StartVector:m_VectorStart LengthUnit:Enum_LengthUnit_meter];
             
+            SCNNode* node = [[SCNNode alloc]init];
+            [node addChildNode:[self flagNode]];
+            [self.scene.rootNode addChildNode:node];
+            node.hidden = false;
+            [node setPosition:SCNVector3Make(m_VectorStart.x, m_VectorStart.y, m_VectorStart.z)];
         }
     }
     
 }
 
 -(void)undo{
-    if (m_bSessionStart && m_SessionMode==AR_MODE_RANGING && m_isMeasuring && m_arrLines.count>0) {
+    if (m_bSessionStart && m_SessionMode==AR_MODE_RANGING && m_isMeasuring ) {
         
+        if(m_arrLines.count>0){
         NSArray*arrVector = [m_arrPlanePoint lastObject];
         
         SCNVector3 vectorTemp;
@@ -321,7 +327,17 @@
         
         [self setCurrent:[m_lineCon updateLineContentWithVector:m_VectorEnd]];
         
+            NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+            if([childNodes count]>7){
+                for(int i=(int)[childNodes count]-3;i<[childNodes count];i++){
+                    [childNodes[i] removeFromParentNode];
+                }
+            }
         
+        }else if(m_arrLines.count==0){
+            [self endRanging];
+            [self clearARSession];
+        }
     }
 }
 
@@ -341,6 +357,13 @@
 
     m_startNode.hidden=true;
     m_endNode.hidden=true;
+    
+    NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+    if([childNodes count]>7){
+        for(int i=7;i<[childNodes count];i++){
+            [childNodes[i] removeFromParentNode];
+        }
+    }
 }
 
 -(NSArray*)endRanging{
@@ -364,6 +387,13 @@
         m_lineCon = nil;
         
         arrRes= [NSArray arrayWithArray:m_arrPlanePoint];
+        
+        NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+        if([childNodes count]>7){
+            for(int i=7;i<[childNodes count];i++){
+                [childNodes[i] removeFromParentNode];
+            }
+        }
     }
     
     return arrRes;
@@ -371,74 +401,78 @@
 
 - (void)scanWorld
 {
-    if (m_bSessionStart) {
-        m_VectorCamera = [SCNVector3Tool positionTranform: self.session.currentFrame.camera.transform];
-        if( m_SessionMode==AR_MODE_RANGING){
-            SCNVector3 worldPostion = SCNVector3Zero;
-            //中心点和平面交点 和特征点相交
-            //worldPostion = [self.sceneView worldVectorFromPosition:self.view.center];
-            {
-                NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeFeaturePoint];
-                if (planeHitTestResult.count != 0 && planeHitTestResult.firstObject) {
-                    ARHitTestResult *result = planeHitTestResult.firstObject;
-                    worldPostion = [SCNVector3Tool positionTranform:result.worldTransform];
-                }
-                
-            }
-            if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
-                [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
-                m_FocusNode.hidden=true;
-                return;
-            }
-            if (m_planeArr.count == 0) {
-                [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
-                m_FocusNode.hidden=true;
-                return;
-            }
-            else
-            {
-                //中心点和平面交点 和带范围平面相交
-                //worldPostion = [self.sceneView planeExtentFromPosition:self.view.center];
+    @try {
+        if (m_bSessionStart) {
+            m_VectorCamera = [SCNVector3Tool positionTranform: self.session.currentFrame.camera.transform];
+            if( m_SessionMode==AR_MODE_RANGING){
+                SCNVector3 worldPostion = SCNVector3Zero;
+                //中心点和平面交点 和特征点相交
+                //worldPostion = [self.sceneView worldVectorFromPosition:self.view.center];
                 {
-                    NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeExistingPlaneUsingExtent];
+                    NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeFeaturePoint];
                     if (planeHitTestResult.count != 0 && planeHitTestResult.firstObject) {
                         ARHitTestResult *result = planeHitTestResult.firstObject;
                         worldPostion = [SCNVector3Tool positionTranform:result.worldTransform];
-                    }else{
-                        worldPostion = SCNVector3Zero;
                     }
                     
                 }
-                if (!m_isMeasuring)
-                {
-                    [m_SpaceLab setText:[self isChinese]?@"可以开始测量":@"can start measure"];
-                }
-                //NSLog(@"worldPostion = %@", [NSValue valueWithSCNVector3:worldPostion]);
                 if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
-                    [m_SpaceLab setText:[self isChinese]?@"焦点不在平面内":@"focus not in plane"];
+                    [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
                     m_FocusNode.hidden=true;
                     return;
                 }
-            }
-            m_FocusNode.hidden = false;
-            [m_FocusNode setPosition:SCNVector3Make(worldPostion.x, worldPostion.y, worldPostion.z)];
-            if (m_isMeasuring)
-            {
-                if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:m_VectorStart Right:SCNVector3Zero]) {
-                    //设置第一个起始量算点
-                    m_VectorStart = worldPostion;
-                    m_lineCon = [[LineController alloc] initWithSceneView:self StartVector:m_VectorStart LengthUnit:Enum_LengthUnit_meter];
-                    m_startNode.hidden=false;
-                    m_startNode.position = SCNVector3Make(m_VectorStart.x, m_VectorStart.y, m_VectorStart.z);
-                    [self.scene.rootNode addChildNode:m_startNode];
+                if (m_planeArr.count == 0) {
+                    [m_SpaceLab setText:[self isChinese]?@"没有找到平面":@"not find plane"];
+                    m_FocusNode.hidden=true;
+                    return;
                 }
-                m_VectorEnd = worldPostion;
-                [self setCurrent: [m_lineCon updateLineContentWithVector:m_VectorEnd]];
+                else
+                {
+                    //中心点和平面交点 和带范围平面相交
+                    //worldPostion = [self.sceneView planeExtentFromPosition:self.view.center];
+                    {
+                        NSArray<ARHitTestResult *> * planeHitTestResult = [self hitTest:self.center types:ARHitTestResultTypeExistingPlaneUsingExtent];
+                        if (planeHitTestResult.count != 0 && planeHitTestResult.firstObject) {
+                            ARHitTestResult *result = planeHitTestResult.firstObject;
+                            worldPostion = [SCNVector3Tool positionTranform:result.worldTransform];
+                        }else{
+                            worldPostion = SCNVector3Zero;
+                        }
+                        
+                    }
+                    if (!m_isMeasuring)
+                    {
+                        [m_SpaceLab setText:[self isChinese]?@"可以开始测量":@"can start measure"];
+                    }
+                    //NSLog(@"worldPostion = %@", [NSValue valueWithSCNVector3:worldPostion]);
+                    if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:worldPostion Right:SCNVector3Zero]) {
+                        [m_SpaceLab setText:[self isChinese]?@"焦点不在平面内":@"focus not in plane"];
+                        m_FocusNode.hidden=true;
+                        return;
+                    }
+                }
+                m_FocusNode.hidden = false;
+                [m_FocusNode setPosition:SCNVector3Make(worldPostion.x, worldPostion.y, worldPostion.z)];
+                if (m_isMeasuring)
+                {
+                    if ([SCNVector3Tool isEqualBothSCNVector3WithLeft:m_VectorStart Right:SCNVector3Zero]) {
+                        //设置第一个起始量算点
+                        m_VectorStart = worldPostion;
+                        m_lineCon = [[LineController alloc] initWithSceneView:self StartVector:m_VectorStart LengthUnit:Enum_LengthUnit_meter];
+                        m_startNode.hidden=false;
+                        m_startNode.position = SCNVector3Make(m_VectorStart.x, m_VectorStart.y, m_VectorStart.z);
+                        [self.scene.rootNode addChildNode:m_startNode];
+                    }
+                    m_VectorEnd = worldPostion;
+                    [self setCurrent: [m_lineCon updateLineContentWithVector:m_VectorEnd]];
+                }
+                
+                double distance = [SCNVector3Tool distanceWithVector:worldPostion StartVector:m_VectorCamera];
+                [self setDistance:distance];
             }
-            
-            double distance = [SCNVector3Tool distanceWithVector:worldPostion StartVector:m_VectorCamera];
-            [self setDistance:distance];
         }
+    } @catch (NSException *exception) {
+        
     }
 }
 
@@ -522,6 +556,16 @@
         
         [[m_endNode.childNodes objectAtIndex:0] removeFromParentNode];
         [m_endNode addChildNode:[self flagNode]];
+        
+        NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+        if([childNodes count]>7){
+            for(int i=7;i<[childNodes count];i++){
+                if(childNodes[i].childNodes&&[childNodes[i].childNodes count]>0){
+                    [[childNodes[i].childNodes objectAtIndex:0] removeFromParentNode];
+                    [childNodes[i] addChildNode:[self flagNode]];
+                }
+            }
+        }
     }
 }
 
@@ -541,7 +585,7 @@
         {
             NSString * strResPath = [[[NSBundle mainBundle]pathForResource:@"SuperMapAR" ofType:@"bundle"] stringByAppendingFormat:@"/obj/pin_bowling.scn"];
             customNode = [[SCNReferenceNode alloc]initWithURL:[NSURL fileURLWithPath:strResPath]];
-            [customNode setScale: SCNVector3Make(0.0005, 0.0005, 0.0005)];
+            [customNode setScale: SCNVector3Make(0.0015, 0.0015, 0.0015)];
             [customNode load];
         }
         default:

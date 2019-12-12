@@ -2531,10 +2531,10 @@ RCT_REMAP_METHOD(openMapByName, openMapByName:(NSString*)name viewEntire:(BOOL)v
                 sMap.smMapWC.mapControl.map.isVisibleScalesEnabled = NO;
                 
                 [map refresh];
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                    [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
-                    [sMap.smMapWC.mapControl.map refresh];
-                });
+//                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+////                    [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
+//                    [sMap.smMapWC.mapControl.map refresh];
+//                });
             }
         }
         
@@ -2611,6 +2611,9 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
     Rectangle2D* bounds = nil;
     for (int i = 0; i < [group getCount]; i++) {
         Layer* temp = [group getLayer:i];
+        if(!temp.visible){
+            continue;
+        }
         if ([temp isKindOfClass:[LayerGroup class]]) {
             bounds = [SMap getLayerGroupBounds:temp];
         }else{
@@ -2654,41 +2657,10 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
 RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLayerFullViewResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
      @try{
          Map* map = sMap.smMapWC.mapControl.map;
-//         Layer* layer =  [SMLayer findLayerByPath:layerPath];
          
          NSArray* paths = [layerPath componentsSeparatedByString:@"/"];
          Layer* layer =  [SMLayer findLayerByPath:paths[0]];
-//
-//         Layers* layers = map.layers;
-//         NSMutableArray* layerArr = [[NSMutableArray alloc] init];
-//         for (int i = 0; i < [layers getCount]; i++) {
-//             Layer* temp = [layers getLayerAtIndex:i];
-//             if ([temp isKindOfClass:[LayerGroup class]]) {
-//                 [SMap setLayerGroupInvisible:temp arr:layerArr name:layer.name];
-//             }else{
-//                 if (temp.visible && ![temp.name isEqualToString:layer.name]) {
-//                     temp.visible = NO;
-//                     [layerArr addObject:temp];
-//                 }
-//             }
-//
-//         }
-//
-//         if ([layer isKindOfClass:[LayerGroup class]] && paths.count > 1) {
-//             NSString* tempPath = paths[1];
-//             for (int i = 2; i < paths.count; i++) {
-//                 tempPath = [NSString stringWithFormat:@"%@/%@", tempPath, paths[i]];
-//             }
-//             NSArray* tempArr = [SMMap setLayersInvisibleByGroup:(LayerGroup *)layer except:tempPath];
-//             layerArr = [[NSMutableArray alloc] initWithArray:[layerArr arrayByAddingObjectsFromArray:tempArr]];
-//         }
-//
-//         [map viewEntire];
-//         for (int i = 0; i < layerArr.count; i++) {
-//             Layer* temp = layerArr[i];
-//             temp.visible = YES;
-//         }
-
+         
          Rectangle2D* bounds = nil;
          if ([layer isKindOfClass:[LayerGroup class]]) {
              bounds = [SMap getLayerGroupBounds:layer];
@@ -2702,11 +2674,6 @@ RCT_REMAP_METHOD(setLayerFullView, setLayerFullView:(NSString*)layerPath setLaye
          } else {
              sMap.smMapWC.mapControl.map.viewBounds = bounds;
              sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
-//             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                 sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
-//                 [map refresh];
-////                  [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.8 time:200];
-//             });
          }
          [map refresh];
          resolve(@(1));
@@ -3225,6 +3192,7 @@ RCT_REMAP_METHOD(saveMap, saveMapWithName:(NSString *)name autoNaming:(BOOL)auto
             wsSaved = [[SMap singletonInstance].smMapWC.workspace save];
         }
         
+        [map refresh];
         if (mapSaved && (!saveWorkspace || wsSaved)) {
             resolve(_name);
         } else {
@@ -3844,44 +3812,38 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
         sMap = [SMap singletonInstance];
         Map* map = sMap.smMapWC.mapControl.map;
         
-        Layer *layerWeb = nil;
-        if(map.layers.getCount>1){
-            Layer *layerTemp = [map.layers getLayerAtIndex:map.layers.getCount-1];
-            if (layerTemp.dataset!=nil && layerTemp.dataset.datasource!=nil ) {
-                EngineType engineType = layerTemp.dataset.datasource.datasourceConnectionInfo.engineType;
-                switch (engineType) {
-                    case ET_OGC:
-                    case ET_SuperMapCloud:
-                    case ET_GOOGLEMAPS:
-                    case ET_REST:
-                    case ET_BAIDU:
-                    case ET_OPENSTREEMAPS:
-                    case ET_BingMaps:
-                    {
-                        layerWeb = layerTemp;
-                    }
-                        break;
-                        
-                    default:
-                        break;
-                }
+        
+        Rectangle2D* bounds = nil;
+        for(int i=0;i<[map.layers getCount];i++){
+            Layer* layer =  [map.layers getLayerAtIndex:i];
+            if((![layer isKindOfClass:[LayerGroup class]] && layer.dataset.datasource.datasourceConnectionInfo.engineType != ET_UDB) || !layer.visible){
+                continue;
+            }
+            Rectangle2D* boundsTmp;
+            if ([layer isKindOfClass:[LayerGroup class]]) {
+                boundsTmp = [SMap getLayerGroupBounds:layer];
+            }else{
+                boundsTmp = [SMap getLayerBounds:layer];
+            }
+            if(bounds==nil){
+                bounds = [[Rectangle2D alloc]initWithRectangle2D:boundsTmp];
+            }else{
+                [bounds unions:boundsTmp];
             }
         }
-        
-        if (layerWeb!=nil) {
-            [layerWeb setVisible:false];
+         
+        if(bounds == nil){
             [map viewEntire];
-            [layerWeb setVisible:true];
+        }else{
+            if(bounds.width <= 0 || bounds.height <= 0){
+                map.center = bounds.center;
+            } else {
+                sMap.smMapWC.mapControl.map.viewBounds = bounds;
+//                sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
+            }
         }
-        else{
-            [map viewEntire];
-        }
-        
         [map refresh];
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            [sMap.smMapWC.mapControl zoomTo:sMap.smMapWC.mapControl.map.scale*0.9 time:200];
-//        });
-        resolve([NSNumber numberWithBool:YES]);
+        resolve(@(1));
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }
@@ -4283,7 +4245,6 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
                     }
                 }
             }
-            resolve(@(YES));
         }else {
             Datasets *datasets = opendatasource.datasets;
             Map *map = sMap.smMapWC.mapControl.map;
@@ -4303,8 +4264,9 @@ RCT_REMAP_METHOD(openTaggingDataset, openTaggingDatasetWithPath:(NSString *)user
                     layer.visible = false;//(false);
                 }
             }
-            resolve(@(YES));
         }
+        [sMap.smMapWC.mapControl.map refresh];
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"openTaggingDataset",exception.reason,nil);
     }
