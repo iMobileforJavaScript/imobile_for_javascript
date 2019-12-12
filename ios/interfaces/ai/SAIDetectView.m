@@ -116,6 +116,17 @@ RCT_EXPORT_MODULE();
     } withInfo:YES];
 }
 
+#pragma mark 开启摄像头
+RCT_REMAP_METHOD(startCamera, startCamera:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [mAIDetectView startCameraPreview];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"startCameraPreview", exception.reason, nil);
+    }
+}
+
+
 #pragma mark ARView系统版本是否支持
 RCT_REMAP_METHOD(checkIfAvailable, checkIfAvailable:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

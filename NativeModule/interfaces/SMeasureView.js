@@ -73,6 +73,23 @@ setFlagType = type => {
   }
 }
 
+startARSession = () => {
+  try {
+    return SMeasureView.startARSession()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+endARSession = () => {
+  try {
+    return SMeasureView.endARSession()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
 export default {
   addNewRecord,
   undoDraw,
@@ -82,4 +99,6 @@ export default {
   saveDataset,
   initMeasureCollector,
   setFlagType,
+  startARSession,
+  endARSession,
 }
