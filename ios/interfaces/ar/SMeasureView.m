@@ -11,6 +11,7 @@
 #import "SuperMap/LocationManagePlugin.h"
 #import "SMCollector.h"
 #import "LocationTransfer.h"
+#import "SLanguage.h"
 
 static SMeasureView *sMeasureView = nil;
 static ARMeasureView* mARMeasureView = nil;
@@ -95,6 +96,32 @@ RCT_REMAP_METHOD(clearAll, clearAll:(RCTPromiseResolveBlock)resolve rejecter:(RC
         reject(@"clearAll", exception.reason, nil);
     }
 }
+
+
+#pragma mark 结束测量
+RCT_REMAP_METHOD(endARSession, endARSession:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if(mARMeasureView){
+            [mARMeasureView stopARSession];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"endARSession", exception.reason, nil);
+    }
+}
+
+#pragma mark 启动摄像头
+RCT_REMAP_METHOD(startARSession, startARSession:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        if(mARMeasureView){
+            [mARMeasureView startARSession];
+        }
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"startARSession", exception.reason, nil);
+    }
+}
+
 
 #pragma mark 设置模型类型
 RCT_REMAP_METHOD(setFlagType, setFlagType:(NSString*)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
