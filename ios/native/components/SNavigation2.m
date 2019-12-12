@@ -91,7 +91,7 @@
     while (![rd2 isEOF]) {
         geo = rd2.geometry;
         Point2D *tmpPoint = [geo getInnerPoint];
-        double len = sqrt( (m_startPoint.x - tmpPoint.x)*(m_startPoint.x - tmpPoint.x) + (m_startPoint.y - tmpPoint.y)*(m_startPoint.y - tmpPoint.y) );
+        double len = sqrt( (m_endPoint.x - tmpPoint.x)*(m_endPoint.x - tmpPoint.x) + (m_endPoint.y - tmpPoint.y)*(m_endPoint.y - tmpPoint.y) );
         if(dLen2 > len){
             Recordset *lineRd = [m_lineDataset queryWithGeometry:geo BufferDistance:0 Type:STATIC];
             if([lineRd recordCount] != 0){
@@ -112,6 +112,12 @@
         [m_navigation setStartPoint:m_nearStartPoint.x sPointY:m_nearStartPoint.y];
         [m_navigation setDestinationPoint:m_nearEndPoint.x dPointY:m_nearEndPoint.y];
         isFind = [m_navigation routeAnalyst];
+        if(!isFind){
+            m_startPoint = nil;
+            m_endPoint = nil;
+            m_nearStartPoint = nil;
+            m_nearEndPoint = nil;
+        }
     }
     
     return isFind;
@@ -151,6 +157,11 @@
     [layer addGeometry:endLine WithTag:@"endLine"];
         
     [m_mapControl.map refresh];
+    
+    m_startPoint = nil;
+    m_endPoint = nil;
+    m_nearStartPoint = nil;
+    m_nearEndPoint = nil;
 }
 
 +(Point2D *)getMapPointWithPoint:(Point2D *)pt PrjCoordSys:(PrjCoordSys *) prjCoordSys{

@@ -978,7 +978,9 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
         BOOL isFind = [navigation2.m_navigation routeAnalyst];
         if(!isFind){
             isFind = [navigation2 reAnalyst];
-            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+            if(isFind){
+                [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+            }
         }else{
             [map refresh];
         }
@@ -988,7 +990,9 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
         Map *map = sMap.smMapWC.mapControl.map;
         SNavigation2 *navigation2 = sMap.sNavigation2;
         BOOL isFind = [navigation2 reAnalyst];
-        [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];;
+        if(isFind){
+            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+        }
         resolve(@(isFind));
     }
 }
