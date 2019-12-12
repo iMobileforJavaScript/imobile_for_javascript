@@ -309,6 +309,9 @@ public class SDatasource extends ReactContextBaseJavaModule {
                             case "gpx":
                                 result = DataConversion.importGPX(filePath, datasource, importParams.getString("datasetName"));
                                 break;
+                            case "img":
+                                result = DataConversion.importIMG(filePath, datasource);
+                                break;
                         }
                     }
                     promise.resolve(result);
@@ -319,6 +322,57 @@ public class SDatasource extends ReactContextBaseJavaModule {
         }).start();
     }
 
+    @ReactMethod
+    public void exportDataset(String type, String filePath, ReadableMap params, Promise promise) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String datasourceAlias = params.getString("datasourceName");
+                    String datasetName = params.getString("datasetName");
+                    Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+                    Datasources datasources = workspace.getDatasources();
+                    Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+                    Dataset dataset = datasets.get(datasetName);
+                    boolean result = false;
+                    switch(type) {
+                        case "tif":
+                            result = DataConversion.exportTIF(filePath, dataset);
+                            break;
+                        case "shp":
+                            result = DataConversion.exportSHP(filePath, dataset);
+                            break;
+                        case "mif":
+                            result = DataConversion.exportMIF(filePath, dataset);
+                            break;
+                        case "kml":
+                            result = DataConversion.exportKML(filePath, dataset);
+                            break;
+                        case "kmz":
+                            result = DataConversion.exportKMZ(filePath, dataset);
+                            break;
+                        case "dwg":
+                            result = DataConversion.exportDWG(filePath, dataset);
+                            break;
+                        case "dxf":
+                            result = DataConversion.exportDXF(filePath, dataset);
+                            break;
+                        case "gpx":
+                            result = DataConversion.exportGPX(filePath, (DatasetVector) dataset);
+                            break;
+                        case "img":
+                            result = DataConversion.exportIMG(filePath, dataset);
+                            break;
+                    }
+
+                    promise.resolve(result);
+                } catch (Exception e) {
+                    promise.reject(e);
+                }
+            }
+        }).start();
+    }
     @ReactMethod
     public void isAvailableDatasetName(String datasourceAlias, String datasetName, Promise promise) {
         try {

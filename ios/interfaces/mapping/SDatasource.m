@@ -328,6 +328,8 @@ RCT_REMAP_METHOD(importDataset,
             } else if([type isEqualToString:@"gpx"]) {
                 NSString *datasetName = importParams[@"datasetName"];
                 result = [DataConversion importGPX:filePath toDatasource:datasource targetDatasetName:datasetName];
+            } else if([type isEqualToString:@"img"]) {
+                result = [DataConversion importIMG:filePath toDatasource:datasource];
             }
         }
         resolve([NSNumber numberWithBool:result]);
@@ -335,6 +337,50 @@ RCT_REMAP_METHOD(importDataset,
         reject(@"importTif", exception.reason, nil);
     }
 }
+
+RCT_REMAP_METHOD(exportDataset,
+                 type:(NSString *) type
+                 filePath:(NSString*) filePath
+                 params:(NSDictionary *)params
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        NSString * datasourceAlias = params[@"datasourceName"];
+        NSString * datasetName = params[@"datasetName"];
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        Dataset* dataset = [datasets getWithName:datasetName];
+        NSRange range = [filePath rangeOfString:@"Documents/"];
+        
+        NSString *relativePath = [filePath substringFromIndex: range.location + range.length];
+        BOOL result = NO;
+        if(dataset != nil) {
+            if([type isEqualToString:@"tif"]) {
+                result = [DataConversion exportTIFNamed:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"shp"]) {
+                result = [DataConversion exportSHPNamed:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"mif"]) {
+                result = [DataConversion exportMIFNamed:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"kml"]) {
+                result = [DataConversion exportKML:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"kmz"]) {
+                result = [DataConversion exportKMZ:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"dwg"]) {
+                result = [DataConversion exportDWG:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"dxf"]) {
+                result = [DataConversion exportDXF:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"gpx"]) {
+                result = [DataConversion exportGPX:relativePath fromDataset:dataset];
+            } else if([type isEqualToString:@"img"]) {
+                result = [DataConversion exportIMG:relativePath fromDataset:dataset];
+            }
+        }
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"exportTif", exception.reason, nil);
+    }
+}
+
 
 RCT_REMAP_METHOD(isAvailableDatasetName, checkAvailaleIn:(NSString*)datasourceAlias WithName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {

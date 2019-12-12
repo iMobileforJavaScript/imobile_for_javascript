@@ -134,6 +134,14 @@ function importDataset(type, filePath, datasourceParams, importParams = {}) {
   }
 }
 
+function exportDataset(type, filePath, datasetParams) {
+  try {
+    return SDatasource.exportDataset(type, filePath, datasetParams)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 function copyDataset(datasoucePath,toDatasourcePath,datasets){
   try {
     return SDatasource.copyDataset(datasoucePath,toDatasourcePath,datasets)
@@ -261,6 +269,7 @@ export {
   createDataset,
   deleteDataset,
   importDataset,
+  exportDataset,
   isAvailableDatasetName,
   removeDatasetByName,
   copyDataset,
