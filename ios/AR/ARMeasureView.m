@@ -294,6 +294,11 @@
             m_VectorStart = m_VectorEnd;
             m_lineCon = [[LineController alloc] initWithSceneView:self StartVector:m_VectorStart LengthUnit:Enum_LengthUnit_meter];
             
+            SCNNode* node = [[SCNNode alloc]init];
+            [node addChildNode:[self flagNode]];
+            [self.scene.rootNode addChildNode:node];
+            node.hidden = false;
+            [node setPosition:SCNVector3Make(m_VectorStart.x, m_VectorStart.y, m_VectorStart.z)];
         }
     }
     
@@ -321,6 +326,14 @@
         m_VectorStart = vectorTemp;
         
         [self setCurrent:[m_lineCon updateLineContentWithVector:m_VectorEnd]];
+        
+            NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+            if([childNodes count]>7){
+                for(int i=(int)[childNodes count]-3;i<[childNodes count];i++){
+                    [childNodes[i] removeFromParentNode];
+                }
+            }
+        
         }else if(m_arrLines.count==0){
             [self endRanging];
             [self clearARSession];
@@ -344,6 +357,13 @@
 
     m_startNode.hidden=true;
     m_endNode.hidden=true;
+    
+    NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+    if([childNodes count]>7){
+        for(int i=7;i<[childNodes count];i++){
+            [childNodes[i] removeFromParentNode];
+        }
+    }
 }
 
 -(NSArray*)endRanging{
@@ -367,6 +387,13 @@
         m_lineCon = nil;
         
         arrRes= [NSArray arrayWithArray:m_arrPlanePoint];
+        
+        NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+        if([childNodes count]>7){
+            for(int i=7;i<[childNodes count];i++){
+                [childNodes[i] removeFromParentNode];
+            }
+        }
     }
     
     return arrRes;
@@ -529,6 +556,16 @@
         
         [[m_endNode.childNodes objectAtIndex:0] removeFromParentNode];
         [m_endNode addChildNode:[self flagNode]];
+        
+        NSArray<SCNNode *> *childNodes=[self.scene.rootNode childNodes];
+        if([childNodes count]>7){
+            for(int i=7;i<[childNodes count];i++){
+                if(childNodes[i].childNodes&&[childNodes[i].childNodes count]>0){
+                    [[childNodes[i].childNodes objectAtIndex:0] removeFromParentNode];
+                    [childNodes[i] addChildNode:[self flagNode]];
+                }
+            }
+        }
     }
 }
 
@@ -548,7 +585,7 @@
         {
             NSString * strResPath = [[[NSBundle mainBundle]pathForResource:@"SuperMapAR" ofType:@"bundle"] stringByAppendingFormat:@"/obj/pin_bowling.scn"];
             customNode = [[SCNReferenceNode alloc]initWithURL:[NSURL fileURLWithPath:strResPath]];
-            [customNode setScale: SCNVector3Make(0.0005, 0.0005, 0.0005)];
+            [customNode setScale: SCNVector3Make(0.0015, 0.0015, 0.0015)];
             [customNode load];
         }
         default:
