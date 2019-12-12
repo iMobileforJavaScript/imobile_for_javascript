@@ -201,7 +201,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         try {
             Log.d(REACT_CLASS, "----------------stopRecording--------RN--------");
             isShowTrace = false;
-
+            mRenderer.saveCurrentRoute();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -238,7 +238,6 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             }
             if (mRenderer != null) {
                 mRenderer.savePoseData(mPostData);
-                mRenderer.saveCurrentRoute();
             }
             //保存到数据集
             saveDataset(name);
@@ -276,7 +275,6 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     public void saveGPSData(String name, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------saveData--------RN--------");
-
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             Point3D point3D = new Point3D(gpsDat.dLongitude, gpsDat.dLatitude, gpsDat.dAltitude);
             //保存到数据集
