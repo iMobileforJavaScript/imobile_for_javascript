@@ -138,6 +138,22 @@ clearAllData = () => {
     }
 }
 
+getSystemTime = () => {
+    try {
+        return SCollectSceneFormView.getSystemTime()
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+reNameDataSource = (name,rename) => {
+    try {
+        return SCollectSceneFormView.reNameDataSource(name,rename)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export default {
     startRecording,
     stopRecording,
@@ -155,4 +171,6 @@ export default {
     isShowTrace,
     isLineDataset,
     clearAllData,
+    getSystemTime,
+    reNameDataSource,
 }

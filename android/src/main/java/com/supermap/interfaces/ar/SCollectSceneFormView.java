@@ -26,6 +26,7 @@ import com.supermap.data.DatasetVectorInfo;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasource;
 import com.supermap.data.DatasourceConnectionInfo;
+import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
 import com.supermap.data.FieldInfo;
@@ -174,6 +175,24 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         mSurfaceView.setSurfaceRenderer(mRenderer);
     }
 
+
+
+
+    /**
+     * 开始记录
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void getSystemTime(Promise promise) {
+        try {
+            String time = this.getCurrentTime();
+            promise.resolve(time);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     /**
      * 开始记录
      *
@@ -240,7 +259,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                 mRenderer.savePoseData(mPostData);
             }
             //保存到数据集
-            saveDataset(name);
+            String time = this.getCurrentTime();
+            saveDataset("Line"+time);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -267,6 +287,23 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 重命名数据源
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void reNameDataSource(String name,String rename , Promise promise) {
+        try {
+
+            rename(name,rename);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 保存当前定位点
      *
      * @param promise
@@ -278,7 +315,8 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
             LocationManagePlugin.GPSData gpsDat = SMCollector.getGPSPoint();
             Point3D point3D = new Point3D(gpsDat.dLongitude, gpsDat.dLatitude, gpsDat.dAltitude);
             //保存到数据集
-            saveDataset(name, point3D);
+            String time = this.getCurrentTime();
+            saveDataset("Point"+time, point3D);
 
             promise.resolve(true);
         } catch (Exception e) {
@@ -794,7 +832,21 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
         }
+    }
 
+    /**
+     * 重命名
+     */
+    private void rename(String name , String rename) {
+        try {
+            MapControl mapControl = SMap.getInstance().getSmMapWC().getMapControl();
+            Workspace workspace = mapControl.getMap().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            datasources.RenameDatasource(name,rename);
+
+        } catch (Exception e) {
+            Log.e(REACT_CLASS, e.getMessage());
+        }
     }
 
 
@@ -804,7 +856,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
         //new日期对
         Date date = new Date(l);
         //转换提日期输出格式
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
         //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_ms", Locale.CHINA);
 
         return dateFormat.format(date);
