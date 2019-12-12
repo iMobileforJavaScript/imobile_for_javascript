@@ -145,6 +145,12 @@ public class SNavigation2 {
                 navigation.setStartPoint(nearStartPoint.getX(),nearStartPoint.getY());
                 navigation.setDestinationPoint(nearEndPoint.getX(),nearEndPoint.getY());
                 isFind = navigation.routeAnalyst();
+                if(!isFind){
+                    startPoint = null;
+                    endPoint = null;
+                    nearStartPoint = null;
+                    nearEndPoint = null;
+                }
             }
             return isFind;
         }catch (Exception e){
@@ -189,6 +195,10 @@ public class SNavigation2 {
 
         mapControl.getMap().refresh();
 
+        startPoint = null;
+        endPoint = null;
+        nearStartPoint = null;
+        nearEndPoint = null;
     }
 
     private Point2D getMapPoint(Point2D pt, PrjCoordSys prjCoordSys){
