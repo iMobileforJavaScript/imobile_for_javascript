@@ -5804,6 +5804,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     @Override
                     public void onStopNavi() {
                         clearOutdoorPoint();
+                        sMap.speakPlugin.stopPlay();
                         // TODO Auto-generated method stub
                         Log.e("+++++++++++++", "-------------****************");
                         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -5978,6 +5979,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 mNavigation3.addNaviInfoListener(new NaviListener() {
                     @Override
                     public void onStopNavi() {
+                        sMap.speakPlugin.stopPlay();
                         // TODO Auto-generated method stub
                         context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit(EventConst.INDUSTRYNAVIAGTION, true);
