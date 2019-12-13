@@ -619,7 +619,7 @@ RCT_REMAP_METHOD(setGridOpaqueRate, setGridOpaqueRateWithResolver:(int) gridOpaq
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
-            //            layerSettingGrid.setOpaqueRate(100 - gridOpaqueRate); //新增接口, 待打开
+            [layerSettingVector setOpaqueRate:100 - gridOpaqueRate];
             
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
@@ -667,7 +667,7 @@ RCT_REMAP_METHOD(getGridContrast, getGridContrastWithResolver:(NSString *)layern
     }
 }
 
-#pragma 设置点符号的透明度: 0-100%
+#pragma 设置点符号的亮度: -100-100
 RCT_REMAP_METHOD(getGridBrightness, getGridBrightnessWithResolver:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
@@ -684,7 +684,7 @@ RCT_REMAP_METHOD(getGridBrightness, getGridBrightnessWithResolver:(NSString *)la
     }
 }
 
-#pragma 设置亮度(-100%-100%)
+#pragma 设置对比度(-100-100)
 RCT_REMAP_METHOD(setGridContrast, setGridContrastWithResolver:(int) gridContrast layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
@@ -692,7 +692,7 @@ RCT_REMAP_METHOD(setGridContrast, setGridContrastWithResolver:(int) gridContrast
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
-            //           layerSettingGrid.setContrast(gridContrast); //新增接口, 待打开
+            [layerSettingVector setContrast:gridContrast];
             
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
@@ -706,7 +706,7 @@ RCT_REMAP_METHOD(setGridContrast, setGridContrastWithResolver:(int) gridContrast
     }
 }
 
-#pragma 设置对比度(-100%-100%)
+#pragma 设置亮度(-100-100)
 RCT_REMAP_METHOD(setGridBrightness, setGridBrightnessWithResolver:(int) gridBrightness layerName:(NSString *)layername resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         LayerSettingGrid *layerSettingVector = [SMCartography getLayerSettingGrid:layername];
@@ -714,7 +714,7 @@ RCT_REMAP_METHOD(setGridBrightness, setGridBrightnessWithResolver:(int) gridBrig
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
-            //             layerSettingGrid.setBrightness(gridBrightness); //新增接口, 待打开
+            [layerSettingVector setBrightness:gridBrightness];
             
             [mapControl.map refresh];
             resolve([NSNumber numberWithBool:YES]);
