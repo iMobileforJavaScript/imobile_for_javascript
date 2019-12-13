@@ -158,6 +158,15 @@ modifyThemeRangeMap = (params) => {
   }
 }
 
+/**修改分段标签专题图**/
+modifyThemeLabelRangeMap = (params) => {
+  try {
+    return SThemeCartography.modifyThemeLabelRangeMap(params)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 /**
  * 新建统一标签专题图
  *
@@ -198,13 +207,13 @@ setUniformLabelBackShape = (params) => {
 }
 
 /**
- * 设置统一标签专题图的字体
+ * 设置统一/分段标签专题图的字体
  *
  * @param params
  */
-setUniformLabelFontName = (params) => {
+setLabelFontName = (params) => {
   try {
-    return SThemeCartography.setUniformLabelFontName(params)
+    return SThemeCartography.setLabelFontName(params)
   } catch (error) {
     console.error(error)
   }
@@ -215,9 +224,9 @@ setUniformLabelFontName = (params) => {
  *
  * @param params
  */
-setUniformLabelFontSize = (params) => {
+setLabelFontSize = (params) => {
   try {
-    return SThemeCartography.setUniformLabelFontSize(params)
+    return SThemeCartography.setLabelFontSize(params)
   } catch (error) {
     console.error(error)
   }
@@ -228,9 +237,9 @@ setUniformLabelFontSize = (params) => {
  *
  * @param params
  */
-setUniformLabelRotaion = (params) => {
+setLabelRotation = (params) => {
   try {
-    return SThemeCartography.setUniformLabelRotaion(params)
+    return SThemeCartography.setLabelRotation(params)
   } catch (error) {
     console.error(error)
   }
@@ -274,9 +283,9 @@ getUniformLabelBackShape = (params) => {
 /**
  * @param params
  */
-getUniformLabelFontName = (params) => {
+getLabelFontName = (params) => {
   try {
-    return SThemeCartography.getUniformLabelFontName(params)
+    return SThemeCartography.getLabelFontName(params)
   } catch (error) {
     console.error(error)
   }
@@ -285,9 +294,9 @@ getUniformLabelFontName = (params) => {
 /**
  * @param params
  */
-getUniformLabelFontSize = (params) => {
+getLabelFontSize = (params) => {
   try {
-    return SThemeCartography.getUniformLabelFontSize(params)
+    return SThemeCartography.getLabelFontSize(params)
   } catch (error) {
     console.error(error)
   }
@@ -296,9 +305,9 @@ getUniformLabelFontSize = (params) => {
 /**
  * @param params
  */
-getUniformLabelRotaion = (params) => {
+setLabelRotation = (params) => {
   try {
-    return SThemeCartography.getUniformLabelRotaion(params)
+    return SThemeCartography.setLabelRotation(params)
   } catch (error) {
     console.error(error)
   }
@@ -996,15 +1005,14 @@ export default {
   createUniformThemeLabelMap,
   setUniformLabelExpression,
   setUniformLabelBackShape,
-  setUniformLabelFontName,
-  setUniformLabelFontSize,
-  setUniformLabelRotaion,
+  setLabelFontName,
+  setLabelFontSize,
+  setLabelRotation,
   setUniformLabelColor,
   getUniformLabelExpression,
   getUniformLabelBackShape,
-  getUniformLabelFontName,
-  getUniformLabelFontSize,
-  getUniformLabelRotaion,
+  getLabelFontName,
+  getLabelFontSize,
   getUniformLabelColor,
   setUniformLabelBackColor,
   //单值标签
@@ -1017,6 +1025,7 @@ export default {
   getRangeLabelExpression,
   setRangeLabelExpression,
   setRangeLabelColorScheme,
+  modifyThemeLabelRangeMap,
   //统计专题图
   createThemeGraphMap,
   createThemeGraphMapByLayer,

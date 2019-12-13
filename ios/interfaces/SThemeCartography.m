@@ -1320,18 +1320,22 @@ RCT_REMAP_METHOD(getUniformLabelBackShape, getUniformLabelBackShapeWithResolver:
 }
 
 /**
- * 设置统一标签专题图的字体
+ * 设置统一/分段标签专题图的字体
  *
  * @param dataDic 单值专题图字段表达式 图层名称 图层索引
  * @param promise
  */
-RCT_REMAP_METHOD(setUniformLabelFontName, setUniformLabelFontNameWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(setLabelFontName, setLabelFontNameWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
+        NSString* type = @"uniform";
         NSString* layerName = @"";
         int layerIndex = -1;
         NSString* fontName = @"";
         
         NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"type"]) {
+            type = [dataDic objectForKey:@"type"];
+        }
         if ([array containsObject:@"LayerName"]) {
             layerName = [dataDic objectForKey:@"LayerName"];
         }
@@ -1357,7 +1361,12 @@ RCT_REMAP_METHOD(setUniformLabelFontName, setUniformLabelFontNameWithResolver:(N
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                int count;
+                if ([type isEqualToString:@"range"]) {
+                    count = [themeLabel getRangeCount];
+                } else {
+                    count = [themeLabel getUniqueCount];
+                }
                 if(count == 0){
                     TextStyle* uniformStyle = themeLabel.mUniformStyle;
                     if([fontName isEqualToString:@"BOLD"]){
@@ -1403,47 +1412,50 @@ RCT_REMAP_METHOD(setUniformLabelFontName, setUniformLabelFontNameWithResolver:(N
                     }
                 }else{
                     for (int i = 0; i < count; i++) {
-                        TextStyle* uniformStyle = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle();
-                      
+                        TextStyle* style;
+                        if ([type isEqualToString:@"range"]) {
+                            style = [themeLabel getRangeItem:i].mTextStyle;
+                        } else {
+                            style = [themeLabel getUniqueItem:i].textStyle;
+                        }
                         if([fontName isEqualToString:@"BOLD"]){
-                            if([uniformStyle isBold]){
-                                [uniformStyle setBold:false];
+                            if([style isBold]){
+                                [style setBold:false];
                             }
                             else{
-                                [uniformStyle setBold:true];
+                                [style setBold:true];
                             }
                         }else if([fontName isEqualToString:@"ITALIC"]){
-                            if([uniformStyle getItalic]){
-                                [uniformStyle setItalic:false];
+                            if([style getItalic]){
+                                [style setItalic:false];
                             }else{
-                                [uniformStyle setItalic:true];
+                                [style setItalic:true];
                             }
                             
                         }else if([fontName isEqualToString:@"UNDERLINE"]){
-                            if([uniformStyle getUnderline]){
-                                [uniformStyle setUnderline:false];
+                            if([style getUnderline]){
+                                [style setUnderline:false];
                             }else{
-                                [uniformStyle setUnderline:true];
+                                [style setUnderline:true];
                             }
                         }else if([fontName isEqualToString:@"STRIKEOUT"]){
-                            if([uniformStyle getStrikeout]){
-                                [uniformStyle setStrikeout:false];
+                            if([style getStrikeout]){
+                                [style setStrikeout:false];
                             }else{
-                                [uniformStyle setStrikeout:true];
+                                [style setStrikeout:true];
                             }
                         }else if([fontName isEqualToString:@"SHADOW"]){
-                            if([uniformStyle getShadow]){
-                                [uniformStyle setShadow:false];
+                            if([style getShadow]){
+                                [style setShadow:false];
                             }else{
-                                [uniformStyle setShadow:true];
+                                [style setShadow:true];
                             }
                         }else if([fontName isEqualToString:@"OUTLINE"] ){
-                            if([uniformStyle getOutline]){
-                                [uniformStyle setOutline:false];
+                            if([style getOutline]){
+                                [style setOutline:false];
                             }else{
-                                [uniformStyle setOutline:YES];
-                                [uniformStyle setBackColor:[[Color alloc]initWithR:255 G:255 B:255]];
-                                //                            uniformStyle.set
+                                [style setOutline:YES];
+                                [style setBackColor:[[Color alloc]initWithR:255 G:255 B:255]];
                             }
                         }
                         
@@ -1470,7 +1482,7 @@ RCT_REMAP_METHOD(setUniformLabelFontName, setUniformLabelFontNameWithResolver:(N
  * @param layerName 图层名称
  */
 
-RCT_REMAP_METHOD(getUniformLabelFontName, getUniformLabelFontNameWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getLabelFontName, getLabelFontNameWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
         Layer *layer = nil;
         NSString* layerName = @"";
@@ -1511,19 +1523,23 @@ RCT_REMAP_METHOD(getUniformLabelFontName, getUniformLabelFontNameWithResolver:(N
 }
 
 /**
- * 设置统一标签专题图的字号
+ * 设置统一/分段标签专题图的字号
  *
  * @param dataDic 单值专题图字段表达式 图层名称 图层索引
  * @param promise
  */
-RCT_REMAP_METHOD(setUniformLabelFontSize, setUniformLabelFontSizeWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(setLabelFontSize, setLabelFontSizeWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
+        NSString* type = @"uniform";
         NSString* layerName = @"";
         int layerIndex = -1;
         double fontSize = -1;
         
         
         NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"type"]) {
+            type = [dataDic objectForKey:@"type"];
+        }
         if ([array containsObject:@"LayerName"]) {
             layerName = [dataDic objectForKey:@"LayerName"];
         }
@@ -1550,16 +1566,26 @@ RCT_REMAP_METHOD(setUniformLabelFontSize, setUniformLabelFontSizeWithResolver:(N
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                int count;
+                if ([type isEqualToString:@"range"]) {
+                    count = [themeLabel getRangeCount];
+                } else {
+                    count = [themeLabel getUniqueCount];
+                }
                 if(count == 0){
                     TextStyle* style = themeLabel.mUniformStyle;
                     [style setFontWidth:fontSize];
                     [style setFontHeight:fontSize];
                 }else{
                     for (int i = 0; i < count; i++) {
-                        TextStyle* uniformStyle = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
-                        [uniformStyle setFontWidth:fontSize];
-                        [uniformStyle setFontHeight:fontSize];
+                        TextStyle* style;
+                        if ([type isEqualToString:@"range"]) {
+                            style = [themeLabel getRangeItem:i].mTextStyle;
+                        } else {
+                            style = [themeLabel getUniqueItem:i].textStyle;
+                        }
+                        [style setFontWidth:fontSize];
+                        [style setFontHeight:fontSize];
                     }
                 }
                
@@ -1582,12 +1608,16 @@ RCT_REMAP_METHOD(setUniformLabelFontSize, setUniformLabelFontSizeWithResolver:(N
  * @param layerName 图层名称
  */
 
-RCT_REMAP_METHOD(getUniformLabelFontSize, getUniformLabelFontSizeWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(getLabelFontSize, getLabelFontSizeWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
+        NSString* type = @"uniform";
         Layer *layer = nil;
         NSString* layerName = @"";
         int layerIndex = -1;
         NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"type"]) {
+            type = [dataDic objectForKey:@"type"];
+        }
         if ([array containsObject:@"LayerName"]) {
             layerName = [dataDic objectForKey:@"LayerName"];
         }
@@ -1603,15 +1633,25 @@ RCT_REMAP_METHOD(getUniformLabelFontSize, getUniformLabelFontSizeWithResolver:(N
         if (layer != nil && layer.theme != nil) {
             if (layer.theme.themeType == TT_label) {
                 ThemeLabel* themeLabel =(ThemeLabel*)layer.theme;
-                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                int count;
+                if ([type isEqualToString:@"range"]) {
+                    count = [themeLabel getRangeCount];
+                } else {
+                    count = [themeLabel getUniqueCount];
+                }
                 if(count == 0){
                     TextStyle* style = themeLabel.mUniformStyle;
                     double fontSize = [style getFontHeight];
                     resolve([NSNumber numberWithDouble:fontSize]);
                 }else{
                     for (int i = 0; i < count; i++) {
-                        TextStyle* uniformStyle = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
-                       double fontSize = [uniformStyle getFontHeight];
+                        TextStyle* style;
+                        if ([type isEqualToString:@"range"]) {
+                            style = [themeLabel getRangeItem:i].mTextStyle;
+                        } else {
+                            style = [themeLabel getUniqueItem:i].textStyle;
+                        }
+                        double fontSize = [style getFontHeight];
                         resolve([NSNumber numberWithDouble:fontSize]);
                         return;
                     }
@@ -1628,19 +1668,23 @@ RCT_REMAP_METHOD(getUniformLabelFontSize, getUniformLabelFontSizeWithResolver:(N
 }
 
 /**
- * 设置统一标签专题图的旋转角度
+ * 设置统一/分段标签专题图的旋转角度
  *
  * @param dataDic 单值专题图字段表达式 图层名称 图层索引
  * @param promise
  */
-RCT_REMAP_METHOD(setUniformLabelRotaion, setUniformLabelRotaionWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+RCT_REMAP_METHOD(setLabelRotation, setLabelRotationWithResolver:(NSDictionary*)dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try{
+        NSString* type = @"uniform";
         NSString* layerName = @"";
         int layerIndex = -1;
         double rotation = -1;
         
         
         NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"type"]) {
+            type = [dataDic objectForKey:@"type"];
+        }
         if ([array containsObject:@"LayerName"]) {
             layerName = [dataDic objectForKey:@"LayerName"];
         }
@@ -1667,7 +1711,12 @@ RCT_REMAP_METHOD(setUniformLabelRotaion, setUniformLabelRotaionWithResolver:(NSD
                 [[mapControl getEditHistory] addMapHistory];
                 
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
-                int count = [themeLabel getUniqueCount];// getUniqueItems().getCount();
+                int count;
+                if ([type isEqualToString:@"range"]) {
+                    count = [themeLabel getRangeCount];
+                } else {
+                    count = [themeLabel getUniqueCount];
+                }
                 if(count == 0){
                     TextStyle* style = themeLabel.mUniformStyle;
                     double lastRotation = [style getRotation];
@@ -1679,7 +1728,12 @@ RCT_REMAP_METHOD(setUniformLabelRotaion, setUniformLabelRotaionWithResolver:(NSD
                     [style setRotation:(lastRotation + rotation)];
                 }else{
                     for (int i = 0; i < count; i++) {
-                        TextStyle* style = [themeLabel getUniqueItem:i].textStyle;//.getUniqueItems().getItem(i).getStyle
+                        TextStyle* style;
+                        if ([type isEqualToString:@"range"]) {
+                            style = [themeLabel getRangeItem:i].mTextStyle;
+                        } else {
+                            style = [themeLabel getUniqueItem:i].textStyle;
+                        }
                         double lastRotation = [style getRotation];
                         if (lastRotation == 360.0) {
                             lastRotation = 0.0;
@@ -2061,6 +2115,107 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
     }
 }
 
+RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:(NSDictionary*) dataDic resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* rangeExpression = @"";
+        RangeMode rangeMode;
+        bool isContainRangeMode = false;
+        double rangeParameter = -1;
+        ColorGradientType colorGradientType;
+        bool isContainColorGradientType = false;
+        NSString* layerName = @"";
+        NSArray* array = [dataDic allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [dataDic objectForKey:@"LayerName"];
+        }
+        Layer* themeLayer = nil;
+        themeLayer = [SMThemeCartography getLayerByName:layerName];
+        Dataset *dataset = nil;
+        if (themeLayer != nil) {
+            dataset = themeLayer.dataset;
+        }
+        
+        ThemeLabel* themeLabel = nil;
+        if (themeLayer != nil && themeLayer.theme != nil && themeLayer.theme.themeType == TT_label) {
+            themeLabel = (ThemeLabel*)themeLayer.theme;
+        }
+        if ([array containsObject:@"RangeExpression"]) {
+            rangeExpression = [dataDic objectForKey:@"RangeExpression"];
+        } else{
+            if (themeLabel != nil) {
+                rangeExpression = themeLabel.rangeExpression;
+            }
+        }
+        if ([array containsObject:@"RangeMode"]) {
+            NSString* mode = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = [SMThemeCartography getRangeMode:mode];
+            isContainRangeMode = true;
+        } else {
+            if (themeLabel != nil) {
+                rangeMode = themeLabel.mRangeMode;
+                isContainRangeMode = true;
+            }
+        }
+        if ([array containsObject:@"RangeParameter"]) {
+            NSNumber* num = [dataDic objectForKey:@"RangeParameter"];
+            rangeParameter = num.doubleValue;
+        }
+        else{
+            if (themeLabel != nil) {
+                rangeParameter = themeLabel.getRangeCount;
+            }
+        }
+        if ([array containsObject:@"ColorGradientType"]) {
+            NSString* strType = [dataDic objectForKey:@"ColorGradientType"];
+            colorGradientType = [SMThemeCartography getColorGradientType:strType];
+            isContainColorGradientType = true;
+        }
+        else
+        {
+            colorGradientType = CGT_GREENWHITE;
+            isContainColorGradientType = true;
+        }
+        bool result = false;
+
+        if (dataset != nil && themeLayer.theme != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
+            MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
+            [[mapControl getEditHistory] addMapHistory];
+            
+            ThemeLabel* tl = nil;
+            tl = [ThemeLabel makeDefault:(DatasetVector*)dataset rangeExpression:rangeExpression rangeMode:rangeMode rangeParameter:rangeParameter colorGradientType:colorGradientType];
+            if(tl != nil)
+            {
+                if(![array containsObject:@"ColorGradientType"]){
+                    NSMutableArray* mulArray = nil;
+                    mulArray =  [SMThemeCartography getLastThemeColors:themeLayer];
+                    if(!mulArray){
+                        mulArray = [NSMutableArray array];
+                        for (int i = 0; i < [themeLabel getRangeCount]; i++) {
+                            Color* color = [themeLabel getRangeItem:i].mTextStyle.getForeColor;
+                            [mulArray addObject:color];
+                        }
+                    }
+                    if (mulArray != nil) {
+                        int rangeCount = [tl getRangeCount];
+                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
+                        for (int i = 0; i < rangeCount; i++) {
+                            [[tl getRangeItem:i].mTextStyle setForeColor:[selectedColors get:i]];
+                        }
+                    }
+                }
+                
+                [themeLayer.theme fromXML:[tl toXML]];
+                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                result = true;
+            }
+        }
+        resolve([NSNumber numberWithBool:result]);
+    }
+    @catch(NSException *exception){
+        reject(@"workspace", exception.reason, nil);
+    }
+}
+
 /**
  * 设置单值专题图颜色方案
  *
@@ -2311,6 +2466,9 @@ RCT_REMAP_METHOD(getRangeCount, getRangeCountWithResolver:(NSDictionary*)dataDic
             if (layer.theme.themeType == TT_Range) {
                 ThemeRange* themeLabel = (ThemeRange*)layer.theme;
                 resolve([NSNumber numberWithInt:[themeLabel getCount]]);
+            } else if (layer.theme.themeType == TT_label) {
+                ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
+                resolve([NSNumber numberWithInt:[themeLabel getRangeCount]]);
             }
         }
         else{
@@ -2936,7 +3094,6 @@ RCT_REMAP_METHOD(getGraphMaxValue, getGraphMaxValueWithResolver:(NSDictionary*) 
     @try{
         
         Layer* layer = nil;
-        Dataset *dataset = nil;
         NSString* layerName = nil;//图层名称
         int layerIndex = -1;
         
@@ -2969,9 +3126,9 @@ RCT_REMAP_METHOD(getGraphMaxValue, getGraphMaxValueWithResolver:(NSDictionary*) 
             }
             
 
-            resolve([NSNumber numberWithBool:YES]);
+            resolve(@(maxSize));
         }else{
-            resolve([NSNumber numberWithBool:NO]);
+            resolve(@(1));
         }
     }
     @catch(NSException *exception){

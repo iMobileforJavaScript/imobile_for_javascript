@@ -215,6 +215,25 @@ static NSArray* lastGridRangeColors = nil;
                     return arrayColor;
                 }
             }
+        } else if(theme.themeType == TT_label && ((ThemeLabel*)theme).getRangeCount > 0){
+            ThemeLabel* themeLabel = (ThemeLabel*) theme;
+            int count = [themeLabel getRangeCount];
+            color_start = [((ThemeLabelItem *)[themeLabel getRangeItem:0]).mTextStyle getForeColor];
+            color_end = [((ThemeLabelItem *)[themeLabel getRangeItem:(count-1)]).mTextStyle getForeColor];
+            if(color_start == nil || color_end == nil) return nil;
+            int rgb_start = color_start.rgb;
+            int rgb_end = color_end.rgb;
+            [SMThemeCartography getRangeColors:nil];
+            for(NSArray* arrayColor in colorRangeDic.allValues){
+                NSUInteger count = arrayColor.count;
+                Color* color01 =[arrayColor objectAtIndex:0];
+                int rgb01 = color01.rgb;
+                Color* color02 = [arrayColor objectAtIndex:count-1];
+                int rgb02 = color02.rgb;
+                if (rgb_start == rgb01 && rgb_end == rgb02) {
+                    return arrayColor;
+                }
+            }
         }
         return nil;
     }
@@ -2817,7 +2836,7 @@ NSMutableDictionary* listAggregationColors = nil;//聚合图颜色方案(热力�
             }
             
             Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
-            [map.layers addDataset:dataset Theme:themeGraph ToHead:YES];
+            [map.layers addDataset:dataset Theme:themeGraph ToHead:NO];
             [map refresh];
             
             return true;
