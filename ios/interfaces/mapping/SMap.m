@@ -1111,7 +1111,7 @@ RCT_REMAP_METHOD(hasLineDataset, hasLineDatasetWithResolver: (RCTPromiseResolveB
 }
 
 #pragma mark 设置当前楼层ID
-RCT_REMAP_METHOD(setCurrentFloorID, methodgetCurrentFloorIdWithId:(NSString *)floorID Resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setCurrentFloorID, setCurrentFloorIDWithId:(NSString *)floorID Resolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
         sMap.smMapWC.floorListView.currentFloorId = floorID;
@@ -1123,10 +1123,14 @@ RCT_REMAP_METHOD(setCurrentFloorID, methodgetCurrentFloorIdWithId:(NSString *)fl
 }
 
 #pragma mark 获取当前楼层ID
-RCT_REMAP_METHOD(getCurrentFloorID, methodgetCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(getCurrentFloorID, getCurrentFloorIDWithResolver: (RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
         sMap = [SMap singletonInstance];
-        NSString *floorID = sMap.smMapWC.floorListView.currentFloorId;
+        NSString *floorID = @"";
+        FloorListView *floorListView = sMap.smMapWC.floorListView;
+        if(floorListView != nil && !floorListView.isHidden){
+            floorID = sMap.smMapWC.floorListView.currentFloorId;
+        }
         resolve(floorID);
     }@catch(NSException *exception){
         reject(@"getCurrentFloorID", exception.reason, nil);
