@@ -3094,7 +3094,6 @@ RCT_REMAP_METHOD(getGraphMaxValue, getGraphMaxValueWithResolver:(NSDictionary*) 
     @try{
         
         Layer* layer = nil;
-        Dataset *dataset = nil;
         NSString* layerName = nil;//图层名称
         int layerIndex = -1;
         
@@ -3127,9 +3126,9 @@ RCT_REMAP_METHOD(getGraphMaxValue, getGraphMaxValueWithResolver:(NSDictionary*) 
             }
             
 
-            resolve([NSNumber numberWithBool:YES]);
+            resolve(@(maxSize));
         }else{
-            resolve([NSNumber numberWithBool:NO]);
+            resolve(@(1));
         }
     }
     @catch(NSException *exception){

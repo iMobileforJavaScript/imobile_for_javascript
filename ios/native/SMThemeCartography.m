@@ -2836,7 +2836,7 @@ NSMutableDictionary* listAggregationColors = nil;//聚合图颜色方案(热力�
             }
             
             Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
-            [map.layers addDataset:dataset Theme:themeGraph ToHead:YES];
+            [map.layers addDataset:dataset Theme:themeGraph ToHead:NO];
             [map refresh];
             
             return true;

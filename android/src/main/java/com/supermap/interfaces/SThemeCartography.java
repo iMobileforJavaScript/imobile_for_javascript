@@ -3198,7 +3198,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     promise.resolve(maxSize);
                 }
             } else {
-                promise.resolve(false);
+                promise.resolve(1);
             }
         } catch (Exception e) {
             Log.e(REACT_CLASS, e.getMessage());
