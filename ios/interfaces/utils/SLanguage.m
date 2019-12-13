@@ -7,6 +7,7 @@
 //
 
 #import "SLanguage.h"
+#import "SuperMap/Toolkit.h"
 
 
 static NSString* g_language = @"CN";
@@ -19,6 +20,7 @@ RCT_EXPORT_MODULE();
 RCT_REMAP_METHOD(setLanguage,language:(NSString*)language setLanguageResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
    @try {
        g_language = language;
+       [Toolkit setLanguage:g_language];
        NSLog(@"-- current language %@",g_language);
        resolve(@(YES));
    }@catch (NSException *exception) {

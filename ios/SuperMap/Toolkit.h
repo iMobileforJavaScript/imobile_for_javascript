@@ -86,4 +86,6 @@ extern const  float FLT_MIN_VALUE ;
 +(double)getCurrentLength:(GeoLine*)geo prj:(PrjCoordSys*)prj;
 //获取当前面积
 +(double)getCurrentArea:(GeoRegion*)geo prj:(PrjCoordSys*)prj;
++(NSString*)getLanguage;
++(void)setLanguage:(NSString*)language;
 @end
