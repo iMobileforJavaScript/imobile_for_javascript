@@ -871,7 +871,7 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置亮度(-100%-100%)
+     * 设置对比度(-100-100)
      *
      * @param promise
      */
@@ -898,7 +898,7 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取亮度(-100%-100%)
+     * 对比度获取(-100-100)
      *
      * @param promise
      */
@@ -919,7 +919,7 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 设置对比度(-100%-100%)
+     * 设置亮度(-100-100)
      *
      * @param promise
      */
@@ -946,7 +946,7 @@ public class SCartography extends ReactContextBaseJavaModule {
     }
 
     /**
-     * 获取对比度(-100%-100%)
+     * 获取亮度(-100-100)
      *
      * @param promise
      */

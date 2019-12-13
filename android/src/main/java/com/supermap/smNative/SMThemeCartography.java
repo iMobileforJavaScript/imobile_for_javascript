@@ -2313,7 +2313,7 @@ public class SMThemeCartography {
                 }
 
                 com.supermap.mapping.Map map = SMap.getSMWorkspace().getMapControl().getMap();
-                map.getLayers().add(dataset, themeGraph, true);
+                map.getLayers().add(dataset, themeGraph, false);
                 map.refresh();
 
                 return true;

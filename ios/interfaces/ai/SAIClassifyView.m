@@ -88,6 +88,7 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
         //设置定时器的触发事件
         dispatch_source_set_event_handler(timer, ^{
             if(index==1){
+//                resolve(@(NO));
                 resolve(@(NO));
                 dispatch_source_cancel(self.timer);
                 self.timer=nil;
@@ -119,13 +120,14 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
         [allResults setObject:arr forKey:@"results"];
         
         
-        [self sendEventWithName:recognizeImage body:allResults];
+//        [self sendEventWithName:recognizeImage body:allResults];
 
         //识别结束取消计时器
         dispatch_source_cancel(self.timer);
         self.timer=nil;
 
-        resolve(@(YES));
+//        resolve(@(YES));
+        resolve(allResults);
     } @catch (NSException *exception) {
         reject(@"loadImageUri", exception.reason, nil);
     }
@@ -186,7 +188,7 @@ RCT_REMAP_METHOD(getImagePath, getImagePath:(NSString*)imgUri resolve:(RCTPromis
             }];
         }];
     } @catch (NSException *exception) {
-        reject(@"initAIClassify", exception.reason, nil);
+        reject(@"getImagePath", exception.reason, nil);
     }
 }
 //处理分类识别返回的结果
@@ -245,7 +247,7 @@ RCT_REMAP_METHOD(clearBitmap, clearBitmap:(RCTPromiseResolveBlock)resolve reject
         classifyImg=nil;
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"initAIClassify", exception.reason, nil);
+        reject(@"clearBitmap", exception.reason, nil);
     }
 }
 

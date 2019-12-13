@@ -109,7 +109,8 @@ RCT_EXPORT_VIEW_PROPERTY(onArObjectClick, RCTBubblingEventBlock)
         NSMutableDictionary* info=[[NSMutableDictionary alloc] init];
         
         [info setValue:0 forKey:@"id"];
-        [info setValue:aIRecognition.label forKey:@"name"];
+        NSString* name=[NSString stringWithFormat:@"%@_%@",[self currentdateInterval],aIRecognition.label];
+        [info setValue:name forKey:@"name"];
         
         NSMutableDictionary* arInfo=[[NSMutableDictionary alloc] init];
         [arInfo setValue:aIRecognition.label forKey:@"mediaName"];
@@ -122,5 +123,13 @@ RCT_EXPORT_VIEW_PROPERTY(onArObjectClick, RCTBubblingEventBlock)
         NSString* reason=exception.reason;
     }
 }
+
+-(NSString *)currentdateInterval
+{
+    NSDate *datenow = [NSDate date];
+    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)([datenow timeIntervalSince1970]*1000)];
+    return timeSp;
+}
+
 
 @end
