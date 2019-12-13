@@ -12,7 +12,7 @@
 #import "AIRecognition.h"
 #import "TensorflowTrackNative.h"
 
-#define  MIN_CORRELATION 0.3f
+#define  MIN_CORRELATION 0.2f
 #define MARGINAL_CORRELATION 0.75f
 #define MAX_OVERLAP 0.2f
 
@@ -164,7 +164,8 @@ static NSArray *_arrColors = nil;
                                   rectTemp.origin.y/height,
                                   rectTemp.size.width/width,
                                   rectTemp.size.height/height);
-        regTemp.count = [[_dicTrackNum objectForKey:trackedRecognition.title] intValue];
+        //regTemp.count = [[_dicTrackNum objectForKey:trackedRecognition.title] intValue];
+        regTemp.count = trackedRecognition.count;
         [arrReslt addObject:regTemp];
     }
     
@@ -306,19 +307,25 @@ static NSArray *_arrColors = nil;
         if(maxIntersect > MAX_OVERLAP){
             //同一个物体
             if(![trackedRecognition.title isEqualToString:recogToReplace.title]){
-                NSNumber *numReplace =  [_dicTrackNum objectForKey:recogToReplace.title];
-                int nRep = 0;
-                if (numReplace.intValue>0) {
-                    nRep = numReplace.intValue-1;
-                }
-                [_dicTrackNum setObject:[NSNumber numberWithInt:nRep] forKey:recogToReplace.title];
+                trackedRecognition.title = recogToReplace.title;
+                trackedRecognition.detectionConfidence =  recogToReplace.detectionConfidence;
+                 trackedRecognition.count = recogToReplace.count;
+//                NSNumber *numReplace =  [_dicTrackNum objectForKey:recogToReplace.title];
+//                int nRep = 0;
+//                if (numReplace.intValue>0) {
+//                    nRep = numReplace.intValue-1;
+//                }
+//                [_dicTrackNum setObject:[NSNumber numberWithInt:nRep] forKey:recogToReplace.title];
                 
-                NSNumber *num = [_dicTrackNum objectForKey:trackedRecognition.title];
-                int value = 0;
-                if (num != nil) {
-                    value = num.intValue;
-                }
-                [_dicTrackNum setObject:[NSNumber numberWithInt:value+1] forKey:trackedRecognition.title];
+//                NSNumber *num = [_dicTrackNum objectForKey:trackedRecognition.title];
+//                int value = 0;
+//                if (num != nil) {
+//                    value = num.intValue;
+//                }
+//                [_dicTrackNum setObject:[NSNumber numberWithInt:value+1] forKey:trackedRecognition.title];
+//                trackedRecognition.count = value+1;
+            }else{
+                trackedRecognition.count = recogToReplace.count;
             }
         }else{
             //不同物体
@@ -328,6 +335,7 @@ static NSArray *_arrColors = nil;
                 value = num.intValue;
             }
             [_dicTrackNum setObject:[NSNumber numberWithInt:value+1] forKey:trackedRecognition.title];
+            trackedRecognition.count = value+1;
         }
     }else{
         trackedRecognition.color = [_arrColors objectAtIndex:0];
@@ -338,6 +346,7 @@ static NSArray *_arrColors = nil;
             value = num.intValue;
         }
         [_dicTrackNum setObject:[NSNumber numberWithInt:value+1] forKey:trackedRecognition.title];
+        trackedRecognition.count = value+1;
     }
     
     
