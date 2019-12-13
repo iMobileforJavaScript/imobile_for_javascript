@@ -290,7 +290,7 @@ RCT_REMAP_METHOD(setDetectInfo, setDetectInfo:(NSDictionary*)detectInfo resolve:
     }
 }
 
-#pragma mark 设置识别框是否绘制检测名称
+#pragma mark 设置识别框开始跟踪计数
 RCT_REMAP_METHOD(startCountTrackedObjs, startCountTrackedObjs:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         mIsDrawCount=YES;
