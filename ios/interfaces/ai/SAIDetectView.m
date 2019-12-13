@@ -35,6 +35,7 @@ static NSString* mLanguage=nil;
 static AIDetectStyle* mAIDetectStyle=nil;   //识别框类型
 static BOOL mIsDrawTitle=YES;         //是否显示title
 static BOOL mIsDrawConfidence=YES;    //是否显示可信度
+static BOOL mIsDrawCount=YES;    //是否显示跟踪计数
 
 static ModelType mModelType = ASSETS_FILE;
 
@@ -70,6 +71,7 @@ RCT_EXPORT_MODULE();
         mAIDetectStyle.isDrawTitle=mIsDrawTitle;
         mAIDetectStyle.isDrawConfidence=mIsDrawConfidence;
         mAIDetectStyle.aiStrokeWidth=3;
+        mAIDetectStyle.isDrawCount = mIsDrawCount;
     }
     [mAIDetectView setAIDetectStyle:mAIDetectStyle];
 //    mAIDetectView.delegate=self;
@@ -288,6 +290,30 @@ RCT_REMAP_METHOD(setDetectInfo, setDetectInfo:(NSDictionary*)detectInfo resolve:
     }
 }
 
+#pragma mark 设置识别框开始跟踪计数
+RCT_REMAP_METHOD(startCountTrackedObjs, startCountTrackedObjs:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        mIsDrawCount=YES;
+        mAIDetectStyle.isDrawCount=mIsDrawCount;
+        [mAIDetectView setAIDetectStyle:mAIDetectStyle];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"startCountTrackedObjs", exception.reason, nil);
+    }
+}
+
+#pragma mark 停止跟踪计数
+RCT_REMAP_METHOD(stopCountTrackedObjs, stopCountTrackedObjs:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        mIsDrawCount=NO;
+        mAIDetectStyle.isDrawCount=mIsDrawCount;
+        [mAIDetectView setAIDetectStyle:mAIDetectStyle];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"stopCountTrackedObjs", exception.reason, nil);
+    }
+}
+
 
 ////////////////////////////////////TODO/////////////////////////////////
 
@@ -339,8 +365,7 @@ RCT_REMAP_METHOD(isProjectionModeEnable, isProjectionModeEnable:(RCTPromiseResol
 #pragma mark 是否开启跟踪计数
 RCT_REMAP_METHOD(getIsCountTrackedMode, getIsCountTrackedMode:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        
-        resolve(@(NO));
+        resolve(@(mAIDetectStyle.isDrawCount));
     } @catch (NSException *exception) {
         reject(@"isProjectionModeEnable", exception.reason, nil);
     }

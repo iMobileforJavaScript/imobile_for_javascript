@@ -240,7 +240,7 @@
         m_FocusNode.hidden=true;
         
         m_crossMark.hidden=true;
-        m_SpaceLab.hidden=true;
+//        m_SpaceLab.hidden=true;
         m_TotalLab.hidden=true;
         m_DistanceLab.hidden=true;
         
