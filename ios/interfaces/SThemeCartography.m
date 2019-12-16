@@ -14,6 +14,7 @@
 //static NSMutableArray* _lastColorUniqueArray = nil;
 //static NSMutableArray* _lastColorRangeArray = nil;
 static NSMutableArray* _lastColorGraphArray = nil;
+static NSString* _colorScheme = nil; // 用于记录单值标签颜色方案
 
 @implementation SThemeCartography
 RCT_EXPORT_MODULE();
@@ -70,10 +71,9 @@ RCT_REMAP_METHOD(createThemeUniqueMap, createThemeUniqueMapWithResolver:(NSDicti
         if (dataset != nil && ![uniqueExpression isEqualToString:@""]) {
             ThemeUnique* themeUnique = [ThemeUnique makeDefault:(DatasetVector*)dataset uniqueExpression:uniqueExpression colorType:colorGradientType];
             if ([array containsObject:@"ColorScheme"]) {
-                NSString* colorScheme = [dataDic objectForKey:@"ColorScheme"];
-                NSMutableDictionary* arrayColor = nil;
+                _colorScheme= [dataDic objectForKey:@"ColorScheme"];
                 NSArray* colorArray;
-                colorArray = [SMThemeCartography getUniqueColors:colorScheme];
+                colorArray = [SMThemeCartography getUniqueColors:_colorScheme];
                 if (colorArray != nil) {
                     int rangeCount = [themeUnique getCount];
                     Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:colorArray];
@@ -626,8 +626,52 @@ RCT_REMAP_METHOD(setUniqueLabelExpression, setUniqueLabelExpressionWithResolver:
             if (layer.theme.themeType == TT_label) {
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
                 [[mapControl getEditHistory] addMapHistory];
-                
+
+//                NSMutableArray* uniqueColors = [[NSMutableArray alloc] init];
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
+                ThemeLabel* newThemeLabel = [ThemeLabel makeDefault:(DatasetVector*)layer.dataset uniqueExpression:labelExpression colorGradientType:CGT_YELLOWBLUE joinItems:nil];
+//                for (int i = 0; i < themeLabel.getUniqueCount; i++) {
+//                    [uniqueColors addObject:[[themeLabel getUniqueItem:i] textStyle].getForeColor];
+//                }
+//                if (!_uniqueColors) _uniqueColors = [[NSMutableArray alloc] initWithCapacity:2];
+//                if (themeLabel.getUniqueCount > 1) {
+//                    _uniqueColors[0] = uniqueColors[0];
+//                    _uniqueColors[1] = uniqueColors[uniqueColors.count - 1];
+//                } else if (uniqueColors.count == 1) {
+//                    NSArray* defaultColors = [SMThemeCartography getUniqueColors:@"DA_Ragular"];
+//                    [_uniqueColors removeAllObjects];
+//                    [_uniqueColors addObject:defaultColors[0]];
+//                    [_uniqueColors addObject:defaultColors[1]];
+//
+//                    uniqueColors[0] = _uniqueColors[0];
+//                    [uniqueColors addObject:_uniqueColors[1]];
+//                }
+
+                NSMutableArray* uniqueColors;
+                if ([themeLabel getUniqueCount] > 1 && !_colorScheme) {
+                    uniqueColors = [[NSMutableArray alloc] init];
+                    [uniqueColors addObject:[[themeLabel getUniqueItem:0] textStyle].getForeColor];
+                    [uniqueColors addObject:[[themeLabel getUniqueItem:([themeLabel getUniqueCount] - 1)] textStyle].getForeColor];
+                } else {
+                    if (!_colorScheme) _colorScheme = @"DA_Ragular";
+                    uniqueColors = [[NSMutableArray alloc] initWithArray:[SMThemeCartography getUniqueColors:_colorScheme]];
+                }
+                Colors* colors;
+                [themeLabel clear];
+                if ([newThemeLabel getUniqueCount] > 0) {
+                    colors = [Colors makeGradient:[newThemeLabel getUniqueCount] gradientColorArray:uniqueColors];
+                } else{
+                    colors = [Colors makeGradient:1 gradientColorArray:uniqueColors];
+                }
+                for (int i = 0; i < newThemeLabel.getUniqueCount; i++) {
+                    ThemeLabelUniqueItem* item = [newThemeLabel getUniqueItem:i];
+                    [[item textStyle] setForeColor:[colors get:i]];
+                    [themeLabel addUniqueItem:item];
+                }
+                [newThemeLabel clear];
+                [newThemeLabel dispose];
+                newThemeLabel = nil;
+                
                 [themeLabel setUniqueExpression:labelExpression];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 resolve([NSNumber numberWithBool:YES]);
@@ -668,6 +712,7 @@ RCT_REMAP_METHOD(setUniqueLabelColorScheme, setUniqueLabelColorSchemeWithResolve
         if ([array containsObject:@"ColorScheme"]) {
             strColor = [dataDic objectForKey:@"ColorScheme"];
             colorArray = [SMThemeCartography getUniqueColors:strColor];
+            _colorScheme = strColor;
         }
         
         Layer* layer = nil;
@@ -2242,6 +2287,7 @@ RCT_REMAP_METHOD(setUniqueColorScheme, setUniqueColorSchemeWithResolver:(NSDicti
         if ([array containsObject:@"ColorScheme"]) {
             strColor = [dataDic objectForKey:@"ColorScheme"];
             colorArray = [SMThemeCartography getUniqueColors:strColor];
+            _colorScheme = strColor; // 记录单值专题图颜色方案
         }
         
         Layer* layer = nil;

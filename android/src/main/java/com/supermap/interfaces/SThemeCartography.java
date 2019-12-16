@@ -24,6 +24,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 //    private static Color[] lastUniqueColors = null;
 //    private static Color[] lastRangeColors = null;
     private static Color[] lastGraphColors = null;
+    private static String _colorScheme = null; // 用于记录单值标签颜色方案
 
     public SThemeCartography(ReactApplicationContext context) {
         super(context);
@@ -92,8 +93,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 ThemeUnique themeUnique = ThemeUnique.makeDefault((DatasetVector) dataset, uniqueExpression, colorGradientType);
                 if (themeUnique != null) {
                     if (data.containsKey("ColorScheme")) {
-                        String colorScheme = data.get("ColorScheme").toString();
-                        Color[] rangeColors = SMThemeCartography.getUniqueColors(colorScheme);
+                        _colorScheme = data.get("ColorScheme").toString();
+                        Color[] rangeColors = SMThemeCartography.getUniqueColors(_colorScheme);
 
                         if (rangeColors != null) {
                             int rangeCount = themeUnique.getCount();
@@ -617,6 +618,34 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
+                    ThemeLabel newThemeLabel = ThemeLabel.makeDefault((DatasetVector)layer.getDataset(), labelExpression, ColorGradientType.YELLOWBLUE, null);
+
+                    Color[] uniqueColors;
+                    if (themeLabel.getUniqueItems().getCount() > 1) {
+                        uniqueColors = new Color[2];
+                        uniqueColors[0] = themeLabel.getUniqueItems().getItem(0).getStyle().getForeColor();
+                        uniqueColors[1] = themeLabel.getUniqueItems().getItem(themeLabel.getUniqueItems().getCount() - 1).getStyle().getForeColor();
+                    } else {
+                        if (_colorScheme == null || _colorScheme.equals("")) _colorScheme = "DA_Ragular";
+                        uniqueColors = SMThemeCartography.getUniqueColors(_colorScheme);
+                    }
+                    Colors colors;
+                    themeLabel.getUniqueItems().clear();
+                    if (newThemeLabel.getUniqueItems().getCount() > 0) {
+                        colors = Colors.makeGradient(newThemeLabel.getUniqueItems().getCount(), uniqueColors);
+                    } else {
+                        colors = Colors.makeGradient(1, uniqueColors);
+                    }
+
+                    for (int i = 0; i < newThemeLabel.getUniqueItems().getCount(); i++) {
+                        ThemeLabelUniqueItem item = newThemeLabel.getUniqueItems().getItem(i);
+                        item.getStyle().setForeColor(colors.get(i));
+                        themeLabel.getUniqueItems().add(item);
+                    }
+                    newThemeLabel.getUniqueItems().clear();
+                    newThemeLabel.dispose();
+                    newThemeLabel = null;
+
                     themeLabel.setUniqueExpression(labelExpression);
 
                     mapControl.getMap().refresh();
@@ -658,6 +687,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("ColorScheme")) {
                 String colorScheme = data.get("ColorScheme").toString();
                 colors = SMThemeCartography.getUniqueColors(colorScheme);
+                _colorScheme = colorScheme;
             }
 
             Layer layer;
@@ -2278,6 +2308,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("ColorScheme")) {
                 String colorScheme = data.get("ColorScheme").toString();
                 rangeColors = SMThemeCartography.getUniqueColors(colorScheme);
+                _colorScheme = colorScheme; // 记录单值专题图颜色方案
             }
 
             Layer layer;
