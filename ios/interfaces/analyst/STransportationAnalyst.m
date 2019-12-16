@@ -157,17 +157,22 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point text:(NSSt
     @try {
         NSString* nodeTag = [NSString stringWithFormat:@"barrier_node_%ld", (long)[[NSDate date] timeIntervalSince1970]];
         int pointID = 3614;
-//        int node = -1;
+        int node = -1;
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
             [style setLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
             [style setMarkerSymbolID:3614];
 //            node = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
-            if (!barrierNodes) barrierNodes = [[NSMutableArray alloc] init];
-//            if (node > 0) [barrierNodes addObject:@(node)];
             
-            Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+//            Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            NSDictionary* dic = [self selectNodeWithPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            Point2D* p2D = [dic objectForKey:@"point"];
+            node = [[dic objectForKey:@"ID"] intValue];;
+            
+            if (!barrierNodes) barrierNodes = [[NSMutableArray alloc] init];
+            if (node > 0) [barrierNodes addObject:@(node)];
+            
             if (p2D) {
                 [self addBarrierPoints:p2D];
                 
@@ -404,7 +409,7 @@ RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL
             paramter.points = ps;
         }
         
-        if (paramter.barrierPoints.getCount <= 0) {
+        if (paramter.barrierPoints.getCount <= 0 && barrierPoints && [barrierPoints getCount] > 0) {
             paramter.barrierPoints = barrierPoints;
         }
         
