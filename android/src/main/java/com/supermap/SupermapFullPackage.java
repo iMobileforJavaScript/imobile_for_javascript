@@ -18,6 +18,7 @@ import com.supermap.interfaces.collector.SCollector;
 import com.supermap.interfaces.collector.SCollectorType;
 import com.supermap.interfaces.collector.SMediaCollector;
 import com.supermap.interfaces.mapping.SDatasource;
+import com.supermap.interfaces.mapping.SNavigationManager;
 import com.supermap.interfaces.mapping.SLayerManager;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.interfaces.utils.SLanguage;
@@ -209,6 +210,10 @@ public class SupermapFullPackage implements ReactPackage {
 		modules.add(new SCartography(reactContext));
         modules.add(new SThemeCartography(reactContext));
         modules.add(new SDatasource(reactContext));
+        /**
+         * 导航
+         */
+        modules.add(new SNavigationManager(reactContext));
 
         modules.add(new SMediaCollector(reactContext));
 

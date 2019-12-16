@@ -51,6 +51,8 @@ static AIView* uiView = nil;
 
 @implementation AIDetectViewManager
 
+static AIDetectView* aIDetectView;
+
 RCT_EXPORT_MODULE(RCTAIDetectView)
 
 //  事件的导出，onArObjectClick对应view中扩展的属性
@@ -63,7 +65,7 @@ RCT_EXPORT_VIEW_PROPERTY(onArObjectClick, RCTBubblingEventBlock)
         CGRect rt = [ UIScreen mainScreen ].bounds;
         uiView=[[AIView alloc] initWithFrame:rt];
         
-        AIDetectView* aIDetectView=[[AIDetectView alloc] initWithFrame:uiView.frame];
+        aIDetectView=[[AIDetectView alloc] initWithFrame:uiView.frame];
 //        SAIDetectView* sAIDetectView=[[SAIDetectView alloc] init];
 //        _sAIDetectView=[[SAIDetectView alloc] init];
         [SAIDetectView setInstance:aIDetectView];
@@ -118,7 +120,9 @@ RCT_EXPORT_VIEW_PROPERTY(onArObjectClick, RCTBubblingEventBlock)
         
         //        [self sendEventWithName:onArObjectClick body:info];
         
-        uiView.onArObjectClick(info);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            uiView.onArObjectClick(info);
+        });
     } @catch (NSException *exception) {
         NSString* reason=exception.reason;
     }

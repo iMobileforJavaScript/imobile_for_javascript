@@ -15,6 +15,8 @@
 #import "SuperMap/DatasourceConnectionInfo.h"
 #import "SuperMap/DataConversion.h"
 #import "SuperMap/Rectangle2D.h"
+#import "SuperMap/GeoCoordSys.h"
+#import "SuperMap/GeoCoordSysType.h"
 #import "SMDatasource.h"
 #import "SMAnalyst.h"
 

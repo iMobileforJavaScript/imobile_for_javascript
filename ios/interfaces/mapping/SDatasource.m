@@ -381,6 +381,29 @@ RCT_REMAP_METHOD(exportDataset,
     }
 }
 
+RCT_REMAP_METHOD(isPrgCoordSysWGS1984,
+                 params:(NSDictionary *)params
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    @try {
+        NSString * datasourceAlias = params[@"datasourceName"];
+        NSString * datasetName = params[@"datasetName"];
+        Datasources* datasources = [SMap singletonInstance].smMapWC.workspace.datasources;
+        Datasets* datasets = [datasources getAlias:datasourceAlias].datasets;
+        Dataset* dataset = [datasets getWithName:datasetName];
+        
+        BOOL result = NO;
+        if(dataset.prjCoordSys.type == PCST_EARTH_LONGITUDE_LATITUDE
+           && dataset.prjCoordSys.geoCoordSys.geoCoordSysType == GCST_WGS_1984) {
+            result = YES;
+        }
+        
+        resolve([NSNumber numberWithBool:result]);
+    } @catch(NSException *exception){
+        reject(@"isPrgCoordSysWGS1984", exception.reason, nil);
+    }
+}
+
 
 RCT_REMAP_METHOD(isAvailableDatasetName, checkAvailaleIn:(NSString*)datasourceAlias WithName:(NSString *)datasetName resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
     @try {
