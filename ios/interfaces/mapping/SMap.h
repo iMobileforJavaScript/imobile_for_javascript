@@ -70,7 +70,7 @@
 #import "SMMapFixColors.h"
 #import "SuperMap/RecycleLicenseManager.h"
 #import "SNavigation2.h"
-@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate, SMMapRenderDelegate,navigation2ChangedDelegate,NaviListener,GeocodingCallback>
+@interface SMap : RCTEventEmitter<RCTBridgeModule, MapMeasureDelegate, GeometrySelectedDelegate, MapEditDelegate, TouchableViewDelegate,AfterGeometryAddedDelegate,LegendContentDelegate,MapParameterChangedDelegate, SMMapRenderDelegate>
 @property (strong, nonatomic) SMMapWC* smMapWC;
 @property (strong, nonatomic) Selection* selection;
 @property (strong, nonatomic) ScaleViewHelper* scaleViewHelper;

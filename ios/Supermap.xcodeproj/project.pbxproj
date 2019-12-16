@@ -230,6 +230,7 @@
 		4AF967A721B5283A00105B74 /* SCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A621B5283A00105B74 /* SCartography.m */; };
 		4EE4616C239A3F5900775A76 /* SLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EE4616B239A3F5900775A76 /* SLanguage.m */; };
 		611AE55923177F96009A0B9A /* SMMapFixColors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 611AE55823177F96009A0B9A /* SMMapFixColors.mm */; };
+		B7B85EA223A7193E00D5E7CF /* SNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B85EA123A7193E00D5E7CF /* SNavigationManager.m */; };
 		B7B9A5FB2399F67500718E4F /* SNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B9A5FA2399F67500718E4F /* SNavigation2.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
 		D82F377A2189ABEF00F85267 /* SCollectorType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82F37792189ABEF00F85267 /* SCollectorType.m */; };
@@ -707,6 +708,8 @@
 		617D9BF2230FE37F00ADCCCA /* _imagingmorph.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = _imagingmorph.a; path = "python/Pillow-master/_imagingmorph.a"; sourceTree = "<group>"; };
 		617D9BFA230FE3B500ADCCCA /* libstarpy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstarpy.a; path = python/starcore_for_ios/libstarpy.a; sourceTree = "<group>"; };
 		617D9BFB230FE3B500ADCCCA /* libstarcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstarcore.a; path = python/starcore_for_ios/libstarcore.a; sourceTree = "<group>"; };
+		B7B85EA023A7193E00D5E7CF /* SNavigationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNavigationManager.h; sourceTree = "<group>"; };
+		B7B85EA123A7193E00D5E7CF /* SNavigationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SNavigationManager.m; sourceTree = "<group>"; };
 		B7B9A5F92399F67400718E4F /* SNavigation2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNavigation2.h; sourceTree = "<group>"; };
 		B7B9A5FA2399F67500718E4F /* SNavigation2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SNavigation2.m; sourceTree = "<group>"; };
 		D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSWorkspaceType.m; sourceTree = "<group>"; };
@@ -1140,6 +1143,8 @@
 				0A84DED221BA403B007995FC /* SDatasource.m */,
 				2AD85BD323265A0600BDE6A6 /* SPlot.h */,
 				2AD85BD423265A0600BDE6A6 /* SPlot.m */,
+				B7B85EA023A7193E00D5E7CF /* SNavigationManager.h */,
+				B7B85EA123A7193E00D5E7CF /* SNavigationManager.m */,
 			);
 			path = mapping;
 			sourceTree = "<group>";
@@ -1677,6 +1682,7 @@
 				0A332E35211D623E00F56F26 /* JSOverlayAnalyst.m in Sources */,
 				0A27E3812288FFF600227B8C /* InfoCallout.m in Sources */,
 				0A332DF5211D623E00F56F26 /* JSBufferAnalystParameter.m in Sources */,
+				B7B85EA223A7193E00D5E7CF /* SNavigationManager.m in Sources */,
 				0A6F7CB923A22D53002BDBE7 /* ObjectTracker.mm in Sources */,
 				0A332E1B211D623E00F56F26 /* JSGeoStyle.m in Sources */,
 				005693BA2191696C00AEC46E /* SOnlineService.m in Sources */,
