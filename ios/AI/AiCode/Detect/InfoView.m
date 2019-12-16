@@ -217,8 +217,16 @@
     if(index!=-1&&index<[self.aIRectArr count]){
 //         NSLog(@"++ touch %@",@"3");
         AIRecognition *aIRecognition=[self.aIRecognitionArray objectAtIndex:index];
-        self.callBackBlock(aIRecognition);
-        return [self.aIRecognitionArray objectAtIndex:index];
+        
+        [self.aIRecognitionArray removeAllObjects];
+        [self.aIRecognitionArray addObject:aIRecognition];
+        [self setNeedsDisplay];
+        
+         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+             self.callBackBlock(aIRecognition);
+        });
+        
+        return aIRecognition;
     }
     
     return nil;
