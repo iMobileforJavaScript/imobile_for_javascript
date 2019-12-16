@@ -29,6 +29,8 @@ import com.supermap.data.EngineType;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
+import com.supermap.data.GeoCoordSysType;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
@@ -373,6 +375,28 @@ public class SDatasource extends ReactContextBaseJavaModule {
             }
         }).start();
     }
+
+    @ReactMethod
+    public void isPrgCoordSysWGS1984(ReadableMap params, Promise promise) {
+        try {
+            String datasourceAlias = params.getString("datasourceName");
+            String datasetName = params.getString("datasetName");
+            Workspace workspace = SMap.getInstance().getSmMapWC().getWorkspace();
+            Datasources datasources = workspace.getDatasources();
+            Datasets datasets =  datasources.get(datasourceAlias).getDatasets();
+
+            Dataset dataset = datasets.get(datasetName);
+            Boolean result = false;
+            if(dataset.getPrjCoordSys().getType() == PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE
+                    && dataset.getPrjCoordSys().getGeoCoordSys().getType() == GeoCoordSysType.GCS_WGS_1984) {
+                result = true;
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
     @ReactMethod
     public void isAvailableDatasetName(String datasourceAlias, String datasetName, Promise promise) {
         try {

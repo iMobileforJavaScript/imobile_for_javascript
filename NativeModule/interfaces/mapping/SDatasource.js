@@ -142,6 +142,14 @@ function exportDataset(type, filePath, datasetParams) {
   }
 }
 
+function isPrgCoordSysWGS1984(datasetParams) {
+  try {
+    return SDatasource.isPrgCoordSysWGS1984(datasetParams)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 function copyDataset(datasoucePath,toDatasourcePath,datasets){
   try {
     return SDatasource.copyDataset(datasoucePath,toDatasourcePath,datasets)
@@ -270,6 +278,7 @@ export {
   deleteDataset,
   importDataset,
   exportDataset,
+  isPrgCoordSysWGS1984,
   isAvailableDatasetName,
   removeDatasetByName,
   copyDataset,
