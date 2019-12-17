@@ -627,6 +627,7 @@
             recordset = [datasetVector recordset:NO cursorType:STATIC];
         }
         result = [recordset statisticByName:fieldName statisticMode:statisticMode];
+        [recordset dispose];
         
         return result;
     }@catch (NSException *exception) {
