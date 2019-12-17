@@ -2179,6 +2179,7 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
         }
         if ([array containsObject:@"RangeExpression"]) {
             rangeExpression = [dataDic objectForKey:@"RangeExpression"];
+            [themeLabel setRangeExpression:rangeExpression];
         } else{
             if (themeLabel != nil) {
                 rangeExpression = themeLabel.rangeExpression;
@@ -2187,6 +2188,7 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
         if ([array containsObject:@"RangeMode"]) {
             NSString* mode = [dataDic objectForKey:@"RangeMode"];
             rangeMode = [SMThemeCartography getRangeMode:mode];
+            [themeLabel setMRangeMode:rangeMode];
             isContainRangeMode = true;
         } else {
             if (themeLabel != nil) {
@@ -2215,7 +2217,7 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
         }
         bool result = false;
 
-        if (dataset != nil && themeLayer.theme != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
+        if (dataset != nil && themeLabel != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
             MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
             [[mapControl getEditHistory] addMapHistory];
             
@@ -2224,25 +2226,30 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
             if(tl != nil)
             {
                 if(![array containsObject:@"ColorGradientType"]){
-                    NSMutableArray* mulArray = nil;
-                    mulArray =  [SMThemeCartography getLastThemeColors:themeLayer];
-                    if(!mulArray){
-                        mulArray = [NSMutableArray array];
+                    NSArray* mulArray =  [SMThemeCartography getLastThemeColors:themeLayer];
+                    if(mulArray==nil || mulArray.count<2){
+                        NSMutableArray* arrayTemp = [[NSMutableArray alloc]init];
                         for (int i = 0; i < [themeLabel getRangeCount]; i++) {
                             Color* color = [themeLabel getRangeItem:i].mTextStyle.getForeColor;
-                            [mulArray addObject:color];
+                            [arrayTemp addObject:color];
                         }
+                        mulArray = arrayTemp;
                     }
-                    if (mulArray != nil) {
-                        int rangeCount = [tl getRangeCount];
-                        Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
-                        for (int i = 0; i < rangeCount; i++) {
-                            [[tl getRangeItem:i].mTextStyle setForeColor:[selectedColors get:i]];
-                        }
+                    
+                    int rangeCount = [tl getRangeCount];
+                    Colors* selectedColors = [Colors makeGradient:rangeCount gradientColorArray:mulArray];
+                    for (int i = 0; i < rangeCount; i++) {
+                        [[tl getRangeItem:i].mTextStyle setForeColor:[selectedColors get:i]];
                     }
+                    
                 }
                 
-                [themeLayer.theme fromXML:[tl toXML]];
+                [themeLabel clear];
+                for (int i=0; i<tl.getRangeCount; i++) {
+                    [themeLabel addToTail:[tl getRangeItem:i] normalise:YES];
+                }
+                
+                //[themeLayer.theme fromXML:[tl toXML]];
                 [[SMap singletonInstance].smMapWC.mapControl.map refresh];
                 result = true;
             }
