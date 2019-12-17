@@ -621,12 +621,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel newThemeLabel = ThemeLabel.makeDefault((DatasetVector)layer.getDataset(), labelExpression, ColorGradientType.YELLOWBLUE, null);
 
                     Color[] uniqueColors;
-                    if (themeLabel.getUniqueItems().getCount() > 1) {
+                    if (_colorScheme != null && !_colorScheme.equals("")) {
+                        uniqueColors = SMThemeCartography.getUniqueColors(_colorScheme);
+                    } else if (themeLabel.getUniqueItems().getCount() > 1) {
                         uniqueColors = new Color[2];
                         uniqueColors[0] = themeLabel.getUniqueItems().getItem(0).getStyle().getForeColor();
                         uniqueColors[1] = themeLabel.getUniqueItems().getItem(themeLabel.getUniqueItems().getCount() - 1).getStyle().getForeColor();
                     } else {
-                        if (_colorScheme == null || _colorScheme.equals("")) _colorScheme = "DA_Ragular";
+                        _colorScheme = "DA_Ragular";
                         uniqueColors = SMThemeCartography.getUniqueColors(_colorScheme);
                     }
                     Colors colors;

@@ -627,25 +627,8 @@ RCT_REMAP_METHOD(setUniqueLabelExpression, setUniqueLabelExpressionWithResolver:
                 MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
                 [[mapControl getEditHistory] addMapHistory];
 
-//                NSMutableArray* uniqueColors = [[NSMutableArray alloc] init];
                 ThemeLabel* themeLabel = (ThemeLabel*)layer.theme;
                 ThemeLabel* newThemeLabel = [ThemeLabel makeDefault:(DatasetVector*)layer.dataset uniqueExpression:labelExpression colorGradientType:CGT_YELLOWBLUE joinItems:nil];
-//                for (int i = 0; i < themeLabel.getUniqueCount; i++) {
-//                    [uniqueColors addObject:[[themeLabel getUniqueItem:i] textStyle].getForeColor];
-//                }
-//                if (!_uniqueColors) _uniqueColors = [[NSMutableArray alloc] initWithCapacity:2];
-//                if (themeLabel.getUniqueCount > 1) {
-//                    _uniqueColors[0] = uniqueColors[0];
-//                    _uniqueColors[1] = uniqueColors[uniqueColors.count - 1];
-//                } else if (uniqueColors.count == 1) {
-//                    NSArray* defaultColors = [SMThemeCartography getUniqueColors:@"DA_Ragular"];
-//                    [_uniqueColors removeAllObjects];
-//                    [_uniqueColors addObject:defaultColors[0]];
-//                    [_uniqueColors addObject:defaultColors[1]];
-//
-//                    uniqueColors[0] = _uniqueColors[0];
-//                    [uniqueColors addObject:_uniqueColors[1]];
-//                }
 
                 NSMutableArray* uniqueColors;
                 if ([themeLabel getUniqueCount] > 1 && !_colorScheme) {
@@ -654,6 +637,16 @@ RCT_REMAP_METHOD(setUniqueLabelExpression, setUniqueLabelExpressionWithResolver:
                     [uniqueColors addObject:[[themeLabel getUniqueItem:([themeLabel getUniqueCount] - 1)] textStyle].getForeColor];
                 } else {
                     if (!_colorScheme) _colorScheme = @"DA_Ragular";
+                    uniqueColors = [[NSMutableArray alloc] initWithArray:[SMThemeCartography getUniqueColors:_colorScheme]];
+                }
+                if (_colorScheme) {
+                    uniqueColors = [[NSMutableArray alloc] initWithArray:[SMThemeCartography getUniqueColors:_colorScheme]];
+                } else if ([themeLabel getUniqueCount] > 1) {
+                    uniqueColors = [[NSMutableArray alloc] init];
+                    [uniqueColors addObject:[[themeLabel getUniqueItem:0] textStyle].getForeColor];
+                    [uniqueColors addObject:[[themeLabel getUniqueItem:([themeLabel getUniqueCount] - 1)] textStyle].getForeColor];
+                } else {
+                    _colorScheme = @"DA_Ragular";
                     uniqueColors = [[NSMutableArray alloc] initWithArray:[SMThemeCartography getUniqueColors:_colorScheme]];
                 }
                 Colors* colors;
