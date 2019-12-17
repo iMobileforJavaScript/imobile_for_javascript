@@ -115,6 +115,7 @@ RCT_EXPORT_MODULE();
 //        if(aIImage){
 //            aIImage=nil;
 //        }
+        [mAIDetectView clearClickAIRecognition];
     } withInfo:YES];
 }
 
