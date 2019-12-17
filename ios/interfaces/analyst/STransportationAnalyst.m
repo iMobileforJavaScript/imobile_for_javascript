@@ -189,6 +189,7 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point text:(NSSt
                 [nodeData setObject:nodeTag forKey:@"labelTag"];
                 [nodeData setObject:label forKey:@"label"];
                 [nodeData setObject:p2D forKey:@"point"];
+                [nodeData setObject:@(node) forKey:@"nodeID"];
                 [nodeData setObject:@(pointID) forKey:@"pointID"];
                 [nodeData setObject:style forKey:@"pointStyle"];
                 [nodeData setObject:textStyle forKey:@"labelStyle"];
@@ -526,8 +527,9 @@ RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
             NSString* tag = [node objectForKey:@"tag"];
             NSString* labelTag = [node objectForKey:@"labelTag"];
             
-            if ([tag containsString:@"barrier_node_"] && barrierPoints != nil) {
-                [barrierPoints remove:barrierPoints.getCount - 1];
+            if ([tag containsString:@"barrier_node_"] && barrierNodes != nil && barrierNodes.count > 0) {
+//                [barrierPoints remove:barrierPoints.getCount - 1];
+                [barrierNodes removeLastObject];
             } else if ([tag containsString:@"node_"] && barrierPoints != nil) {
                 [points remove:points.getCount - 1];
             } else if ([tag isEqualToString:@"startNode"]) {
@@ -565,8 +567,9 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
             int pointID = [[node objectForKey:@"pointID"] intValue];
             Point2D* point2D = [node objectForKey:@"point"];
             
-            if ([tag containsString:@"barrier_node_"] && barrierPoints != nil) {
-                [barrierPoints add:point2D];
+            if ([tag containsString:@"barrier_node_"] && barrierNodes != nil && [[node objectForKey:@"nodeID"] intValue] >= 0) {
+                int nodeID = [[node objectForKey:@"nodeID"] intValue];
+                [barrierNodes addObject:@(nodeID)];
             } else if ([tag containsString:@"node_"] && points != nil) {
                 [points add:point2D];
             } else if ([tag isEqualToString:@"startNode"]) {
