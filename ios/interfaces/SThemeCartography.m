@@ -1622,7 +1622,7 @@ RCT_REMAP_METHOD(setLabelFontSize, setLabelFontSizeWithResolver:(NSDictionary*)d
                         } else {
                             style = [themeLabel getUniqueItem:i].textStyle;
                         }
-                        [style setFontWidth:fontSize];
+//                        [style setFontWidth:fontSize];
                         [style setFontHeight:fontSize];
                     }
                 }
