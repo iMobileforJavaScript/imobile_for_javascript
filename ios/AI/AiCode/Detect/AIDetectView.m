@@ -124,6 +124,10 @@
     }
 }
 
+-(void)clearClickAIRecognition{
+    _infoView.clickAIRecognition=nil;
+}
+
 
 -(void)didOutput:(CVPixelBufferRef)pixelBuffer{
     if(!_isDetecting){

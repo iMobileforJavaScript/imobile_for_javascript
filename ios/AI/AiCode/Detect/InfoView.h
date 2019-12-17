@@ -18,6 +18,7 @@ typedef void(^CallBackBlock)(AIRecognition *aIRecognition); // 返回点击的�
 @property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
 @property(nonatomic)CGSize sizeCamera;
 @property (nonatomic, strong)CallBackBlock callBackBlock;
+@property (nonatomic, strong)AIRecognition *clickAIRecognition;
 
 // 起始点
 @property(nonatomic)CGPoint startPoint;

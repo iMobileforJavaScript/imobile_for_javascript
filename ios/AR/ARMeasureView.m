@@ -521,7 +521,9 @@
 -(void)setTotal:(double)dLen{
     if (m_dTotalLineLen!=dLen) {
         m_dTotalLineLen = dLen;
-        [m_TotalLab setText:[NSString stringWithFormat:@" %@： %.2f m",[self isChinese]?@"总长度":@"total length",m_dTotalLineLen]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [m_TotalLab setText:[NSString stringWithFormat:@" %@： %.2f m",[self isChinese]?@"总长度":@"total length",m_dTotalLineLen]];
+        });
         if (arRangingDelegate!=nil && [arRangingDelegate respondsToSelector:@selector(onTotalLengthOfSidesChange:)]) {
             [arRangingDelegate onTotalLengthOfSidesChange:m_dTotalLineLen];
         }
