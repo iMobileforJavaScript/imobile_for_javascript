@@ -69,6 +69,10 @@
 
 -(void)drawRect:(CGRect)rx//UIView绘制入口，系统回调
 {
+    if(_clickAIRecognition){
+        [self.aIRecognitionArray removeAllObjects];
+        [self.aIRecognitionArray addObject:_clickAIRecognition];
+    }
     UIColor* color=nil;
     
     // 获得上下文
@@ -217,9 +221,8 @@
     if(index!=-1&&index<[self.aIRectArr count]){
 //         NSLog(@"++ touch %@",@"3");
         AIRecognition *aIRecognition=[self.aIRecognitionArray objectAtIndex:index];
-        
-        [self.aIRecognitionArray removeAllObjects];
-        [self.aIRecognitionArray addObject:aIRecognition];
+       
+        _clickAIRecognition=aIRecognition;
         [self setNeedsDisplay];
         
          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

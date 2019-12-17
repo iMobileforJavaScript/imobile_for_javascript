@@ -118,6 +118,16 @@ RCT_EXPORT_MODULE();
     } withInfo:YES];
 }
 
+#pragma mark 清除选中的对象,清除后才能再刷新界面
+RCT_REMAP_METHOD(clearClickAIRecognition, clearClickAIRecognition:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [mAIDetectView clearClickAIRecognition];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"clearClickAIRecognition", exception.reason, nil);
+    }
+}
+
 #pragma mark 开启摄像头
 RCT_REMAP_METHOD(startCamera, startCamera:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {

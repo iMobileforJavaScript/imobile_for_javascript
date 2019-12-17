@@ -42,6 +42,8 @@ typedef void(^getImageCallBackBlock)(UIImage *image,NSError* error);
 /** 设置识别框显示样式 **/
 -(void) setAIDetectStyle:(AIDetectStyle*) aIDetectStyle;
 
+//清除选中的识别对象
+-(void)clearClickAIRecognition;
 //截图拍照
 -(void)outputImage:(getImageCallBackBlock)getImageCallback withInfo:(BOOL)bInfo;
 @end
