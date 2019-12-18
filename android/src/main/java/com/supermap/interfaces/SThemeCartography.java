@@ -2228,7 +2228,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String mode = data.get("RangeMode").toString();
                 rangeMode  = SMThemeCartography.getRangeMode(mode);
                 if(themelabel != null){
-                    themelabel.setRangeMode(rangeMode);
+//                    themelabel.setRangeMode(rangeMode);
                 }
             } else {
                 if (themelabel != null) {
