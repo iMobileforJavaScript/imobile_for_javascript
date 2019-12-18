@@ -41,7 +41,7 @@
 @property (strong, nonatomic) Workspace* workspace;
 @property (strong, nonatomic) MapControl* mapControl;
 @property (strong, nonatomic) DynamicView* dynamicView;
-@property (strong, nonatomic) FloorListView* floorListView;
+@property (strong, atomic) FloorListView* floorListView;
 
 - (BOOL)openWorkspace:(NSDictionary *)infoDic;
 - (Datasource *)openDatasource:(NSDictionary *)params;

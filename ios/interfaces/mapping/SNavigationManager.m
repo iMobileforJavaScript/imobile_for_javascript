@@ -16,7 +16,6 @@ static NSString *incrementNetworkDatasetName;
 static BOOL incrementLayerAdded = NO;
 //Gps点
 Point2Ds *GpsPoint2Ds;
-
 @implementation SNavigationManager
 RCT_EXPORT_MODULE();
 - (NSArray<NSString *> *)supportedEvents
@@ -969,11 +968,15 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
         if(floorRelationTable != nil){
             
             //初始化floorListView
-            FloorListView *floorListView = [[FloorListView alloc] initWithFrame:CGRectMake(0,0,0,0)];
-            [floorListView linkMapControl:sMap.smMapWC.mapControl];
-            sMap.smMapWC.floorListView = floorListView;
+            dispatch_async(dispatch_get_main_queue(), ^{
+               FloorListView* floorListView = [[FloorListView alloc] init];
+                [floorListView linkMapControl:sMap.smMapWC.mapControl];
+                sMap.smMapWC.floorListView = floorListView;
+            });
             
-            
+            while(sMap.smMapWC.floorListView == nil){
+                usleep(100000);
+            }
             NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
             NSMutableArray *array = [[NSMutableArray alloc] init];
             DatasetVector *datasetVector = (DatasetVector *)floorRelationTable;
@@ -988,7 +991,7 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
             [recordset close];
             [recordset dispose];
             
-            NSString *currentFloorID = floorListView.currentFloorId == nil ? @"" : floorListView.currentFloorId;
+            NSString *currentFloorID = sMap.smMapWC.floorListView.currentFloorId == nil ? @"" : sMap.smMapWC.floorListView.currentFloorId;
             [dic setValue:array forKey:@"data"];
             [dic setValue:curDatasource.alias forKey:@"datasource"];
             [dic setValue:currentFloorID forKey:@"currentFloorID"];
@@ -998,6 +1001,7 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
             resolve(@{@"datasource": @""});
         }
     }@catch(NSException *exception){
+        NSLog(@"xzy %@",exception);
         reject(@"getFloorData", exception.reason, nil);
     }
 }
