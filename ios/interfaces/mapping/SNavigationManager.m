@@ -22,6 +22,7 @@ RCT_EXPORT_MODULE();
 {
     return @[
              INDUSTRYNAVIAGTION,
+             IS_FLOOR_HIDDEN,
              ];
 }
 #pragma mark 清除导航路线
@@ -193,9 +194,15 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         BOOL isIndoorGuiding = [[mapControl getNavigation3] isGuiding];
         BOOL isOutdoorGuiding = [sMap.sNavigation2.m_navigation isGuiding];
-        resolve(@(isIndoorGuiding || isOutdoorGuiding));
+        resolve(@{
+                  @"isOutdoorGuiding":@(isOutdoorGuiding),
+                  @"isIndoorGuiding":@(isIndoorGuiding),
+                  });
     } @catch (NSException *exception) {
-        resolve(@(NO));
+        resolve(@{
+                  @"isOutdoorGuiding":@(NO),
+                  @"isIndoorGuiding":@(NO),
+                  });
         NSLog(@"navigation error: %@", exception.reason);
 //        reject(@"isGuiding",exception.reason,nil);
     }
@@ -275,6 +282,7 @@ RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTP
             [navigation3 setHintRouteStyle:styleHint];
             [navigation3 setDatasource:naviDatasource];
             navigation3.navDelegate = self;
+            navigation3.navigation3ChangedDelegate = self;
             resolve(@(YES));
         }else{
             resolve(@(NO));
@@ -300,7 +308,16 @@ RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTP
     [self sendEventWithName:INDUSTRYNAVIAGTION
                        body:@(YES)];
 }
-
+#pragma mark 楼层改变回调
+- (void)floorChangeCallBack:(NSString *)floorId{
+    sMap = [SMap singletonInstance];
+    if(sMap.smMapWC.floorListView.currentFloorId != floorId){
+        Navigation3 *navigation3 = [sMap.smMapWC.mapControl getNavigation3];
+        [navigation3 setCurrentFloorId:floorId];
+        sMap.smMapWC.floorListView.currentFloorId = floorId;
+        [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":floorId}];
+    }
+}
 #pragma mark 室内导航路径分析
 RCT_REMAP_METHOD(beginIndoorNavigation, beginIndoorNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver:(RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -1141,13 +1158,6 @@ RCT_REMAP_METHOD(isPointsInMapBounds, isPointsInMapBoundsWithStartPoint:(NSDicti
         resolve(@{});
         NSLog(@"navigation error: %@", exception.reason);
 //        reject(@"isPointsInMapBounds",exception.reason,nil);
-    }
-}
-//楼层改变回调
--(void) floorChange:(NSString *)name floorID:(NSString *)floorId{
-    sMap = [SMap singletonInstance];
-    if(sMap.smMapWC.floorListView.currentFloorId != floorId){
-        sMap.smMapWC.floorListView.currentFloorId = floorId;
     }
 }
 @end

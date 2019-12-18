@@ -57,8 +57,6 @@ import com.supermap.navi.NaviListener;
 import com.supermap.navi.NaviPath;
 import com.supermap.navi.NaviStep;
 import com.supermap.navi.Navigation3;
-import com.supermap.onlineservices.Geocoding;
-import com.supermap.onlineservices.GeocodingData;
 import com.supermap.plugin.LocationManagePlugin;
 import com.supermap.plugin.SpeakPlugin;
 import com.supermap.plugin.Speaker;
@@ -70,7 +68,6 @@ import com.supermap.smNative.components.SNavigation2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
@@ -114,7 +111,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(isLaungched);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -132,7 +131,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(isDestroyed);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -149,7 +150,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -179,7 +182,11 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             map.putInt("length", (int) naviPath.getLength());
             promise.resolve(map);
         } catch (Exception e) {
-            promise.reject(e);
+            WritableMap map = Arguments.createMap();
+            map.putInt("length",0);
+            promise.resolve(map);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -220,7 +227,10 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(array);
         } catch (Exception e) {
-            promise.reject(e);
+            WritableArray array = Arguments.createArray();
+            promise.resolve(array);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -258,7 +268,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             sMap.smMapWC.getMapControl().getMap().refresh();
             promise.resolve(true);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
     /**
@@ -342,7 +354,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -372,9 +386,17 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             if(sNavigation2 != null){
                 isOutdoorGuiding = sNavigation2.getNavigation().isGuiding();
             }
-            promise.resolve(isIndoorGuiding || isOutdoorGuiding);
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isOutdoorGuiding",isOutdoorGuiding);
+            map.putBoolean("isIndoorGuiding",isIndoorGuiding);
+            promise.resolve(map);
         } catch (Exception e) {
-            promise.reject(e);
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isOutdoorGuiding",false);
+            map.putBoolean("isIndoorGuiding",false);
+            promise.resolve(map);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -437,7 +459,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             });
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -514,9 +538,12 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 mNavigation3.setDatasource(naviDatasource);
                 promise.resolve(true);
             }else {
-                promise.reject("DatasourceError:","naviDatasource can't be null");
+                promise.resolve(false);
+                Log.e("navigation error:","naviDatasource can't be null");
             }
         } catch (Exception e) {
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
             promise.reject(e);
         }
     }
@@ -534,7 +561,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             boolean result = sMap.getSmMapWC().getMapControl().getNavigation3().routeAnalyst();
             promise.resolve(result);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -558,7 +587,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             });
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -586,7 +617,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(hasLineDataset);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -602,7 +635,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             sMap.smMapWC.getFloorListView().setCurrentFloorId(floorID);
             promise.resolve(true);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -622,7 +657,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(floorID);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve("");
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -639,7 +676,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             sMap.smMapWC.getFloorListView().setCurrentFloorId(floorID);
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -666,7 +705,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(true);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -705,7 +746,10 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(array);
         } catch (Exception e) {
-            promise.reject(e);
+            WritableArray array = Arguments.createArray();
+            promise.resolve(array);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -760,7 +804,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 }
             });
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -796,7 +842,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 }
             });
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -824,7 +872,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(hasNetworkDataset);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -877,7 +927,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 }
             });
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -897,7 +949,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             GpsPoint2Ds.add(gpsPoint);
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -942,7 +996,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 promise.resolve(false);
             }
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -983,7 +1039,11 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             map.putBoolean("isindoor", isindoor);
             promise.resolve(map);
         } catch (Exception e) {
-            promise.reject(e);
+            WritableMap map = Arguments.createMap();
+            map.putBoolean("isindoor", false);
+            promise.resolve(map);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1007,7 +1067,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1032,7 +1094,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1060,7 +1124,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             });
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1086,7 +1152,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             });
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1114,7 +1182,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             map.putDouble("y",point.getY());
             promise.resolve(map);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
 
     }
@@ -1125,7 +1195,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
      * @return
      */
     private Point2D getPoint(double x, double y) {
-        Point2D point2D = null;
+        Point2D point2D;
         if (SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys().getType() != PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE) {
             PrjCoordSys srcPrjCoordSys = SMap.getInstance().getSmMapWC().getMapControl().getMap().getPrjCoordSys();
             Point2Ds point2Ds = new Point2Ds();
@@ -1244,7 +1314,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(true);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1266,7 +1338,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(isadd);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1304,7 +1378,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
 
             promise.resolve(result);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1316,20 +1392,25 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void copyNaviSnmFile(ReadableArray files, Promise promise) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    sMap = SMap.getInstance();
-                    for(int i = 0; i < files.size(); i++){
-                        ReadableMap map = files.getMap(i);
-                        sMap.getSmMapWC().copyNaviSnmFile(map);
+        try{
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        sMap = SMap.getInstance();
+                        for(int i = 0; i < files.size(); i++){
+                            ReadableMap map = files.getMap(i);
+                            sMap.getSmMapWC().copyNaviSnmFile(map);
+                        }
+                        promise.resolve(true);
+                    } catch (Exception e) {
+                        promise.reject(e);
                     }
-                    promise.resolve(true);
-                } catch (Exception e) {
-                    promise.reject(e);
-                }
-            }}).start();
+                }}).start();
+        }catch (Exception e){
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+        }
     }
 
     /**
@@ -1350,7 +1431,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(isIndoor);
         } catch (Exception e) {
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1379,7 +1462,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(inBounds);
         }catch (Exception e){
-            promise.reject(e);
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1441,7 +1526,11 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
 
             promise.resolve(map);
         }catch (Exception e){
-            promise.reject(e);
+            WritableMap map = Arguments.createMap();
+            map.putString("datasource","");
+            promise.resolve(map);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
@@ -1503,7 +1592,10 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             }
             promise.resolve(map);
         }catch (Exception e){
-            promise.reject(e);
+            WritableMap map = Arguments.createMap();
+            promise.resolve(map);
+            Log.e("navigation error:",e.toString());
+//            promise.reject(e);
         }
     }
 
