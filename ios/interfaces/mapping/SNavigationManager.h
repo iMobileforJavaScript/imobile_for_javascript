@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SMap.h"
 
-@interface SNavigationManager : RCTEventEmitter<RCTBridgeModule,navigation2ChangedDelegate,NaviListener>
+@interface SNavigationManager : RCTEventEmitter<RCTBridgeModule,navigation2ChangedDelegate,NaviListener,IndoorMapChangedDelegate>
 
 @end

@@ -33,7 +33,9 @@ RCT_REMAP_METHOD(clearTrackingLayer, clearTrackingLayerWithResolver: (RCTPromise
         [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"clearTarckingLayer",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"clearTarckingLayer",exception.reason,nil);
     }
 }
 
@@ -55,7 +57,9 @@ RCT_REMAP_METHOD(getNavPathLength, getNavPathLengthWithBool:(BOOL)isIndoor resol
         NSDictionary *dic = @{@"length":[NSNumber numberWithInt:length]};
         resolve(dic);
     } @catch (NSException *exception) {
-        reject(@"getNavPathLength",exception.reason,nil);
+        resolve(@{@"length":[NSNumber numberWithInt:0]});
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getNavPathLength",exception.reason,nil);
     }
 }
 
@@ -84,7 +88,9 @@ RCT_REMAP_METHOD(getPathInfos, getPathInfosWithBool:(BOOL)isIndoor resolver: (RC
         }
         resolve(array);
     } @catch (NSException *exception) {
-        reject(@"getPathInfos",exception.reason,nil);
+        resolve(@[]);
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getPathInfos",exception.reason,nil);
     }
 }
 
@@ -114,7 +120,9 @@ RCT_REMAP_METHOD(drawOnlinePath,drawOnlinePathWithPathPoints:(NSArray *)pathPoin
         [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     }@catch(NSException *exception){
-        reject(@"drawOnlinePath", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"drawOnlinePath", exception.reason, nil);
     }
 }
 
@@ -154,7 +162,9 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
         }
         
     } @catch (NSException *exception) {
-        reject(@"startNavigation",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"startNavigation",exception.reason,nil);
     }
 }
 
@@ -186,7 +196,9 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
         BOOL isOutdoorGuiding = [sMap.sNavigation2.m_navigation isGuiding];
         resolve(@(isIndoorGuiding || isOutdoorGuiding));
     } @catch (NSException *exception) {
-        reject(@"isGuiding",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"isGuiding",exception.reason,nil);
     }
 }
 
@@ -232,7 +244,9 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resol
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
-        reject(@"outdoorNavigation",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"outdoorNavigation",exception.reason,nil);
     }
 }
 
@@ -264,11 +278,15 @@ RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTP
             navigation3.navDelegate = self;
             resolve(@(YES));
         }else{
-            reject(@"startIndoorNavigation",@"naviDatasource can't be null",nil);
+            resolve(@(NO));
+            NSLog(@"navigation error: naviDatasource can't be null");
+//            reject(@"startIndoorNavigation",@"naviDatasource can't be null",nil);
         }
         
     } @catch (NSException *exception) {
-        reject(@"startIndoorNavigation",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"startIndoorNavigation",exception.reason,nil);
     }
 }
 
@@ -291,7 +309,9 @@ RCT_REMAP_METHOD(beginIndoorNavigation, beginIndoorNavigationWithX:(double)x Y:(
         BOOL result = [[sMap.smMapWC.mapControl getNavigation3] routeAnalyst];
         resolve(@(result));
     }@catch(NSException *exception){
-        reject(@"beginIndoorNavigation",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"beginIndoorNavigation",exception.reason,nil);
     }
 }
 
@@ -306,7 +326,9 @@ RCT_REMAP_METHOD(indoorNavigation, indoorNavigationWithInt:(int)naviType resolve
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
-        reject(@"indoorNavigation",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"indoorNavigation",exception.reason,nil);
     }
 }
 
@@ -328,7 +350,9 @@ RCT_REMAP_METHOD(hasLineDataset, hasLineDatasetWithResolver: (RCTPromiseResolveB
         }
         resolve(@(hasLineDataset));
     } @catch (NSException *exception) {
-        reject(@"hasLineDataset", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"hasLineDataset", exception.reason, nil);
     }
 }
 
@@ -340,7 +364,9 @@ RCT_REMAP_METHOD(setCurrentFloorID, setCurrentFloorIDWithId:(NSString *)floorID 
         [[sMap.smMapWC.mapControl getNavigation3] setCurrentFloorId:floorID];
         resolve(@(YES));
     }@catch(NSException *exception){
-        reject(@"setCurrentFloorID", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"setCurrentFloorID", exception.reason, nil);
     }
 }
 
@@ -356,7 +382,9 @@ RCT_REMAP_METHOD(getCurrentFloorID, getCurrentFloorIDWithResolver: (RCTPromiseRe
         }
         resolve(floorID);
     }@catch(NSException *exception){
-        reject(@"getCurrentFloorID", exception.reason, nil);
+        resolve(@"");
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getCurrentFloorID", exception.reason, nil);
     }
 }
 
@@ -378,7 +406,9 @@ RCT_REMAP_METHOD(openNavDatasource, openNavDatasourceWithParams:(NSDictionary *)
         }
         resolve(@(YES));
     }@catch(NSException *exception){
-        reject(@"openNavDatasource",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"openNavDatasource",exception.reason,nil);
     }
 }
 
@@ -413,7 +443,13 @@ RCT_REMAP_METHOD(getNetworkDataset, getNetworkDatasourceWithResolver: (RCTPromis
         }
         resolve(array);
     }@catch(NSException *exception){
-        reject(@"getNetworkDatasource",exception.reason, nil);
+        resolve(@{
+                  @"name":@"",
+                  @"modelFileName":@"",
+                  @"datasourceName":@"",
+                  });
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getNetworkDatasource",exception.reason, nil);
     }
 }
 
@@ -460,7 +496,9 @@ RCT_REMAP_METHOD(addNetWorkDataset, addNetWorkDatasetWithResolver: (RCTPromiseRe
             }
         });
     } @catch (NSException *exception) {
-        reject(@"addNetWorkDataset",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"addNetWorkDataset",exception.reason,nil);
     }
 }
 
@@ -490,7 +528,9 @@ RCT_REMAP_METHOD(removeNetworkDataset, removeNetworkDatasetWithResolver: (RCTPro
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
-        reject(@"removeNetworkDataset" ,exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"removeNetworkDataset" ,exception.reason, nil);
     }
 }
 
@@ -513,7 +553,9 @@ RCT_REMAP_METHOD(hasNetworkDataset, hasNetworkDatasetWithResolver: (RCTPromiseRe
         }
         resolve(@(hasNetworkDataset));
     } @catch (NSException *exception) {
-        reject(@"hasNetworkDataset", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"hasNetworkDataset", exception.reason, nil);
     }
 }
 
@@ -556,7 +598,9 @@ RCT_REMAP_METHOD(buildNetwork, buildNetworkWithResolver: (RCTPromiseResolveBlock
             resolve(@(YES));
         });
     }@catch(NSException *exception){
-        reject(@"buildNetwork", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"buildNetwork", exception.reason, nil);
     }
 }
 
@@ -573,7 +617,9 @@ RCT_REMAP_METHOD(gpsBegin, gpsBeginWithResolver: (RCTPromiseResolveBlock) resolv
         [GpsPoint2Ds add:gpsPoint];
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"gpsBegin",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"gpsBegin",exception.reason,nil);
     }
 }
 
@@ -609,7 +655,9 @@ RCT_REMAP_METHOD(addGPSRecordset,addGPSRecordsetWithResolver: (RCTPromiseResolve
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"addGPSRecordset",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"addGPSRecordset",exception.reason,nil);
     }
 }
 
@@ -644,7 +692,11 @@ RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolv
         NSDictionary *dic = @{@"isindoor":@(isIndoor)};
         resolve(dic);
     }@catch(NSException *exception){
-        reject(@"isIndoorPoint",exception.reason,nil);
+        resolve(@{
+                  @"isindoor":@(NO),
+                  });
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"isIndoorPoint",exception.reason,nil);
     }
 }
 
@@ -664,7 +716,9 @@ RCT_REMAP_METHOD(getStartPoint, getStartPointWithX:(double)x Y:(double) y isIndo
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"getStartPoint", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getStartPoint", exception.reason, nil);
     }
 }
 
@@ -683,7 +737,9 @@ RCT_REMAP_METHOD(getEndPoint, getEndPointWithX:(double)x Y:(double) y isIndoor: 
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"getEndPoint", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getEndPoint", exception.reason, nil);
     }
 }
 
@@ -699,7 +755,9 @@ RCT_REMAP_METHOD(clearPoint, clearPointWithResolver: (RCTPromiseResolveBlock) re
         });
         resolve(@(YES));
     }@catch(NSException *exception){
-        reject(@"clearPoint", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"clearPoint", exception.reason, nil);
     }
 }
 
@@ -713,7 +771,9 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
         });
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"stopGuide",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"stopGuide",exception.reason,nil);
     }
 }
 
@@ -761,7 +821,12 @@ RCT_REMAP_METHOD(getCurrentMapPosition, getCurrentMapPositionWithResolver:(RCTPr
                   @"y":[NSNumber numberWithDouble:point2D.y],
                   });
     }@catch(NSException *exception){
-        reject(@"getCurrentMapPosition",exception.reason,nil);
+        resolve(@{
+                  @"x":@0,
+                  @"y":@0,
+                  });
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getCurrentMapPosition",exception.reason,nil);
     }
 }
 
@@ -850,7 +915,9 @@ RCT_REMAP_METHOD(openTrafficMap, openTrafficMapWithData:(NSDictionary *)data res
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"openTrafficMap",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"openTrafficMap",exception.reason,nil);
     }
 }
 
@@ -867,7 +934,9 @@ RCT_REMAP_METHOD(isOpenTrafficMap, isOpenTrafficMapWithResolver: (RCTPromiseReso
         }
         resolve(@(isOpen));
     } @catch (NSException *exception) {
-        reject(@"isOpenTrafficMap",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"isOpenTrafficMap",exception.reason,nil);
     }
 }
 
@@ -896,7 +965,9 @@ RCT_REMAP_METHOD(removeTrafficMap, removeTrafficMapWith:(NSString *)layerName re
         [map refresh];
         resolve(@(result));
     }@catch(NSException *exception){
-        reject(@"removeTrafficMap",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"removeTrafficMap",exception.reason,nil);
     }
 }
 
@@ -911,7 +982,9 @@ RCT_REMAP_METHOD(copyNaviSnmFile,copyNaviSnmFileWithArray:(NSArray *)files resol
         }
         resolve(@(YES));
     } @catch (NSException *exception) {
-        reject(@"copyNaviSnmFile",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"copyNaviSnmFile",exception.reason,nil);
     }
 }
 
@@ -925,7 +998,9 @@ RCT_REMAP_METHOD(isIndoorMap,isIndoorMapWithResolver: (RCTPromiseResolveBlock) r
         }
         resolve(@(isIndoor));
     } @catch (NSException *exception) {
-        reject(@"isIndoorMap",exception.reason,nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"isIndoorMap",exception.reason,nil);
     }
 }
 
@@ -947,7 +1022,9 @@ RCT_REMAP_METHOD(isInBounds, isInBoundsWithPoint:(NSDictionary *)point DatasetNa
         }
         resolve(@(inBounds));
     } @catch (NSException *exception) {
-        reject(@"isInBounds", exception.reason, nil);
+        resolve(@(NO));
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"isInBounds", exception.reason, nil);
     }
 }
 #pragma mark 获取楼层相关数据，并初始化楼层控件 额外返回一个数据源名称，用于判断是否需要重新获取楼层信息
@@ -971,8 +1048,8 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
             //初始化floorListView
             FloorListView *floorListView = [[FloorListView alloc] initWithFrame:CGRectMake(0,0,0,0)];
             [floorListView linkMapControl:sMap.smMapWC.mapControl];
+            floorListView.delegate = self;
             sMap.smMapWC.floorListView = floorListView;
-            
             
             NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
             NSMutableArray *array = [[NSMutableArray alloc] init];
@@ -998,7 +1075,11 @@ RCT_REMAP_METHOD(getFloorData, getFloorDataWithResolver: (RCTPromiseResolveBlock
             resolve(@{@"datasource": @""});
         }
     }@catch(NSException *exception){
-        reject(@"getFloorData", exception.reason, nil);
+        resolve(@{
+                  @"datasource":@"",
+                  });
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"getFloorData", exception.reason, nil);
     }
 }
 
@@ -1054,9 +1135,17 @@ RCT_REMAP_METHOD(isPointsInMapBounds, isPointsInMapBoundsWithStartPoint:(NSDicti
         }
         resolve(dic);
     }@catch(NSException *exception){
-        reject(@"isPointsInMapBounds",exception.reason,nil);
+        resolve(@{});
+        NSLog(@"navigation error: %@", exception.reason);
+//        reject(@"isPointsInMapBounds",exception.reason,nil);
     }
 }
-
+//楼层改变回调
+-(void) floorChange:(NSString *)name floorID:(NSString *)floorId{
+    sMap = [SMap singletonInstance];
+    if(sMap.smMapWC.floorListView.currentFloorId != floorId){
+        sMap.smMapWC.floorListView.currentFloorId = floorId;
+    }
+}
 @end
 
