@@ -2215,6 +2215,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             if (data.containsKey("RangeExpression")){
                 rangeExpression  = data.get("RangeExpression").toString();
+                if(themelabel != null){
+                    themelabel.setRangeExpression(rangeExpression);
+                }
             } else {
                 if (themelabel != null) {
                     rangeExpression = themelabel.getRangeExpression();
@@ -2224,6 +2227,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("RangeMode")){
                 String mode = data.get("RangeMode").toString();
                 rangeMode  = SMThemeCartography.getRangeMode(mode);
+                if(themelabel != null){
+                    themelabel.setRangeMode(rangeMode);
+                }
             } else {
                 if (themelabel != null) {
                     rangeMode = themelabel.getRangeMode();
@@ -2271,7 +2277,13 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                             }
                         }
                     }
-                    themeLayer.getTheme().fromXML(tr.toXML());
+                    //themeLayer.getTheme().fromXML(tr.toXML());
+                    themelabel.getRangeItems().clear();
+                    for(int i=0;i<tr.getRangeItems().getCount();i++){
+                        ThemeLabelRangeItem itemTemp = tr.getRangeItems().getItem(i);
+                        themelabel.getRangeItems().addToHead(itemTemp,true);
+                    }
+
                     mapControl.getMap().refresh();
 
                     result = true;
