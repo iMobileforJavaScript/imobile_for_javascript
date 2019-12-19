@@ -333,6 +333,14 @@ startCamera = () => {
   }
 }
 
+stopCamera = () => {
+  try {
+    return SAIDetectView.stopCamera()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 clearClickAIRecognition = () => {
   try {
     return SAIDetectView.clearClickAIRecognition()
@@ -379,5 +387,6 @@ export default {
   checkIfAvailable,
   getDetectInfo,
   startCamera,
+  stopCamera,
   clearClickAIRecognition,
 }

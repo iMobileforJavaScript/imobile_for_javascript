@@ -139,6 +139,15 @@ RCT_REMAP_METHOD(startCamera, startCamera:(RCTPromiseResolveBlock)resolve reject
     }
 }
 
+#pragma mark 关闭摄像头
+RCT_REMAP_METHOD(stopCamera, stopCamera:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [mAIDetectView stopCameraPreview];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"stopCamera", exception.reason, nil);
+    }
+}
 
 #pragma mark ARView系统版本是否支持
 RCT_REMAP_METHOD(checkIfAvailable, checkIfAvailable:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

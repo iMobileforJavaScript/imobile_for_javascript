@@ -95,7 +95,7 @@ class SMAIDetectView extends React.Component {
       if (appState === 'active') {
         SAIDetectView.startCamera()
       } else if (appState === 'background') {
-        // this.disconnectService()
+        SAIDetectView.stopCamera()
       }
     }
   }
