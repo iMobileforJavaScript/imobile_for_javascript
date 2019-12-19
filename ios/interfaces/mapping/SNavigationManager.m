@@ -149,15 +149,14 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
             if(sNavigation2 == nil){
                 sNavigation2 = [[SNavigation2 alloc] initWithMapControl:sMap.smMapWC.mapControl];
             }
-            SNavigation2 *navigation2 = sNavigation2;
             GeoStyle *style = [[GeoStyle alloc] init];
             [style setLineSymbolID:964882];
             //defaultMap 加数据集 导航线符号拿不到 需要设置线的颜色
             [style setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
-            [navigation2 setRouteStyle:style];
-            [navigation2 setNetworkDataset:networkDataset];
-            [navigation2 loadModel:netModelPath];
-            navigation2.m_navigation.navi2Delegate = self;
+            [sNavigation2 setRouteStyle:style];
+            [sNavigation2 setNetworkDataset:networkDataset];
+            [sNavigation2 loadModel:netModelPath];
+            sNavigation2.m_navigation.navi2Delegate = self;
             resolve(@(YES));
         }else{
             resolve(@(NO));
@@ -215,15 +214,14 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
     @try {
         sMap = [SMap singletonInstance];
         Map *map = sMap.smMapWC.mapControl.map;
-        SNavigation2 *navigation2 = sNavigation2;
-        [navigation2 setStartPoint:x sPointY:y];
-        [navigation2 setDestinationPoint:x2 dPointY:y2];
-        [navigation2.m_navigation setPathVisible:YES];
-        BOOL isFind = [navigation2.m_navigation routeAnalyst];
+        [sNavigation2 setStartPoint:x sPointY:y];
+        [sNavigation2 setDestinationPoint:x2 dPointY:y2];
+        [sNavigation2.m_navigation setPathVisible:YES];
+        BOOL isFind = [sNavigation2.m_navigation routeAnalyst];
         if(!isFind){
-            isFind = [navigation2 reAnalyst];
+            isFind = [sNavigation2 reAnalyst];
             if(isFind){
-                [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+                [sNavigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
             }
         }else{
             [map refresh];
@@ -232,10 +230,9 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
     } @catch (NSException *exception) {
         sMap = [SMap singletonInstance];
         Map *map = sMap.smMapWC.mapControl.map;
-        SNavigation2 *navigation2 = sNavigation2;
-        BOOL isFind = [navigation2 reAnalyst];
+        BOOL isFind = [sNavigation2 reAnalyst];
         if(isFind){
-            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+            [sNavigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
         }
         resolve(@(isFind));
     }

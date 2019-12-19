@@ -77,7 +77,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
     private static SMap sMap = null;
     private static SpeakPlugin mSpeakPlugin;
     private static ReactContext mReactContext;
-    public SNavigation2 sNavigation2;
+    private SNavigation2 sNavigation2;
     private InfoCallout m_callout;
     private Datasource incrementDatasource;
     private String incrementLineDatasetName;
