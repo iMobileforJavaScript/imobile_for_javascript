@@ -560,6 +560,9 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             
             [recordset moveFirst];
             
+            PrjCoordSys *prj =  recordset.datasetVector.prjCoordSys;
+            PrjCoordSys *mapCoordSys = sMap.smMapWC.mapControl.map.prjCoordSys;
+            
             while (![recordset isEOF]) {
                 NSString* geoStyleJSON = [item objectForKey:@"style"];
                 GeoStyle* geoStyle = nil;
@@ -585,9 +588,47 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                         [arr addObject:dic];
                     }
                 }
-                
-                [trackingLayer addGeometry:geometry WithTag:@""];
-                
+                NSDictionary *dic;
+                if(prj.type != mapCoordSys.type){
+                    NSString *jsonString = [geometry toJson];
+                    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+                    NSError *err;
+                    dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];
+                    if(!err){
+                        
+                        NSDictionary *styleDic = [dic valueForKey:@"style"];
+                        NSData *styleJsonData = [NSJSONSerialization dataWithJSONObject:styleDic options:NSJSONWritingPrettyPrinted error:&err];
+                        NSString *styleJsonString;
+                        if(!err){
+                            styleJsonString = [[NSString alloc] initWithData:styleJsonData encoding:NSUTF8StringEncoding];
+                        }
+                        
+                        NSArray *pointsArr = [dic valueForKey:@"points"];
+                        Point2Ds *point2Ds = [[Point2Ds alloc] init];
+                        for(int index = 0; index < pointsArr.count; index++){
+                            NSDictionary *curDic = pointsArr[index];
+                            double x = [[curDic valueForKey:@"x"] doubleValue];
+                            double y = [[curDic valueForKey:@"y"] doubleValue];
+                            Point2D *pt = [[Point2D alloc] initWithX:x Y:y];
+                            [point2Ds add:pt];
+                        }
+                        PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
+                        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+                        [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                        
+                        GeoStyle *style = [[GeoStyle alloc] init];
+                        [style fromJson:styleJsonString];
+                        
+                        GeoRegion *region = [[GeoRegion alloc] initWithPoint2Ds:point2Ds];
+                        [region setStyle:style];
+                        [trackingLayer addGeometry:region WithTag:@""];
+                    }else{
+                        NSLog(@"String to json failed");
+                    }
+                }else{
+                    [trackingLayer addGeometry:geometry WithTag:@""];
+                }
+
                 [recordset moveNext];
             }
             [recordset dispose];
