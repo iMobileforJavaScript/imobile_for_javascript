@@ -10,14 +10,21 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.CoordSysTransMethod;
+import com.supermap.data.CoordSysTransParameter;
+import com.supermap.data.CoordSysTranslator;
 import com.supermap.data.CursorType;
 import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
+import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
+import com.supermap.data.PrjCoordSys;
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
@@ -26,6 +33,9 @@ import com.supermap.mapping.Map;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
 import com.supermap.smNative.SMLayer;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -797,6 +807,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 }
 
                 Recordset recordset = dv.query(ids, CursorType.STATIC);
+                PrjCoordSys prjCoordSys = recordset.getDataset().getPrjCoordSys();
+                PrjCoordSys mapCoordSys = sMap.smMapWC.getMapControl().getMap().getPrjCoordSys();
 
                 while(!recordset.isEOF()) {
                     GeoStyle geoStyle = null;
@@ -823,8 +835,32 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
                         arr.pushMap(idInfo);
                     }
+                    if(!SMap.safeGetType(prjCoordSys,mapCoordSys)){
+                        String jsonString = geometry.toJson();
+                        JSONObject jsonObject = new JSONObject(jsonString);
+                        JSONObject style = jsonObject.getJSONObject("style");
+                        JSONArray pointsArr = jsonObject.getJSONArray("points");
+                        Point2Ds point2Ds = new Point2Ds();
+                        for(int index = 0; index < pointsArr.length(); index++){
+                            JSONObject object = pointsArr.getJSONObject(index);
+                            double x = object.getDouble("x");
+                            double y = object.getDouble("y");
+                            Point2D pt = new Point2D(x,y);
+                            point2Ds.add(pt);
+                        }
+                        PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                        desPrjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                        CoordSysTranslator.convert(point2Ds,desPrjCoordSys,mapCoordSys,new CoordSysTransParameter(),CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
 
-                    trackingLayer.add(geometry, "");
+                        GeoStyle geoStyle1 = new GeoStyle();
+                        geoStyle1.fromJson(style.toString());
+
+                        GeoRegion region = new GeoRegion(point2Ds);
+                        region.setStyle(geoStyle1);
+                        trackingLayer.add(region,"");
+                    }else{
+                        trackingLayer.add(geometry, "");
+                    }
 
                     recordset.moveNext();
                 }
