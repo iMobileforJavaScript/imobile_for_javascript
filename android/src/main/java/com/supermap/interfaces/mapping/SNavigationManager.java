@@ -77,7 +77,8 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
     private static SMap sMap = null;
     private static SpeakPlugin mSpeakPlugin;
     private static ReactContext mReactContext;
-    private static InfoCallout m_callout;
+    public SNavigation2 sNavigation2;
+    private InfoCallout m_callout;
     private Datasource incrementDatasource;
     private String incrementLineDatasetName;
     private String incrementNetworkDatasetName;
@@ -171,7 +172,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             if (isIndoor) {
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
             } else {
-                SNavigation2 sNavigation2 = sMap.sNavigation2;
                 if(sNavigation2 != null){
                     naviPath = sNavigation2.getNavigation().getNaviPath();
                 }else {
@@ -204,7 +204,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             if (isIndoor) {
                 naviPath = sMap.getSmMapWC().getMapControl().getNavigation3().getNaviPath();
             } else {
-                SNavigation2 sNavigation2 = sMap.sNavigation2;
                 if(sNavigation2 != null){
                     naviPath = sNavigation2.getNavigation().getNaviPath();
                 }else {
@@ -295,17 +294,16 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             if (dataset != null) {
                 // 初始化行业导航对象
                 DatasetVector networkDataset = (DatasetVector) dataset;
-                if(sMap.sNavigation2 == null){
-                    sMap.sNavigation2 = new SNavigation2(sMap.smMapWC.getMapControl());
+                if(sNavigation2 == null){
+                    sNavigation2 = new SNavigation2(sMap.smMapWC.getMapControl());
                 }
-                SNavigation2 navigation2 = sMap.sNavigation2;
                 GeoStyle style = new GeoStyle();
                 style.setLineSymbolID(964882);
                 style.setLineColor(new Color(82,198,233));
-                navigation2.setRouteStyle(style);
-                navigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
-                navigation2.loadModel(netModelPath);  // 加载网络模型
-                navigation2.getNavigation().addNaviInfoListener(new NaviListener() {
+                sNavigation2.setRouteStyle(style);
+                sNavigation2.setNetworkDataset(networkDataset);    // 设置网络数据集
+                sNavigation2.loadModel(netModelPath);  // 加载网络模型
+                sNavigation2.getNavigation().addNaviInfoListener(new NaviListener() {
                     @Override
                     public void onStopNavi() {
                         clearOutdoorPoint();
@@ -350,7 +348,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                         Log.e("+++++++++++++", "-------------****************");
                     }
                 });
-                navigation2.getNavigation().enablePanOnGuide(true);
+                sNavigation2.getNavigation().enablePanOnGuide(true);
             }
             promise.resolve(true);
         } catch (Exception e) {
@@ -381,7 +379,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             sMap = SMap.getInstance();
             MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
             boolean isIndoorGuiding = mapControl.getNavigation3().isGuiding();
-            SNavigation2 sNavigation2 = sMap.sNavigation2;
             boolean isOutdoorGuiding = false;
             if(sNavigation2 != null){
                 isOutdoorGuiding = sNavigation2.getNavigation().isGuiding();
@@ -410,16 +407,15 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         try {
             sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            SNavigation2 navigation2 = sMap.sNavigation2;
-            navigation2.setStartPoint(x,y);
-            navigation2.setDestinationPoint(x2,y2);
-            navigation2.getNavigation().setPathVisible(true);
+            sNavigation2.setStartPoint(x,y);
+            sNavigation2.setDestinationPoint(x2,y2);
+            sNavigation2.getNavigation().setPathVisible(true);
 
-            boolean isFind = navigation2.getNavigation().routeAnalyst();
+            boolean isFind = sNavigation2.getNavigation().routeAnalyst();
             if(!isFind){
-                isFind = navigation2.reAnalyst();
+                isFind = sNavigation2.reAnalyst();
                 if(isFind){
-                    navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+                    sNavigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
                 }
             }else{
                 map.refresh();
@@ -428,10 +424,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             SMap sMap = SMap.getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            SNavigation2 navigation2 = sMap.sNavigation2;
-            boolean isFind = navigation2.reAnalyst();
+            boolean isFind = sNavigation2.reAnalyst();
             if(isFind){
-                navigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
+                sNavigation2.addGuideLineOnTrackingLayer(map.getPrjCoordSys());
             }
             promise.resolve(isFind);
         }
@@ -449,7 +444,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    SNavigation2 sNavigation2 = sMap.sNavigation2;
                     if(sNavigation2 != null){
                         sNavigation2.getNavigation().enablePanOnGuide(true);
                         sNavigation2.getNavigation().startGuide(naviType);
@@ -495,6 +489,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 styleHint.setLineColor(new com.supermap.data.Color(82, 198, 223));
                 styleHint.setLineSymbolID(2);
                 mNavigation3.setHintRouteStyle(styleHint);
+                mNavigation3.setDeviateTolerance(10);
                 mNavigation3.addNaviInfoListener(new NaviListener() {
                     @Override
                     public void onStopNavi() {
@@ -1113,7 +1108,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    SNavigation2 sNavigation2 = sMap.sNavigation2;
                     if(sNavigation2 != null){
                         sNavigation2.getNavigation().cleanPath();
                     }
@@ -1143,7 +1137,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
             mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    SNavigation2 sNavigation2 = sMap.sNavigation2;
                     if(sNavigation2 != null){
                         sNavigation2.getNavigation().stopGuide();
                     }
