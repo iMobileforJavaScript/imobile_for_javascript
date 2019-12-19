@@ -34,13 +34,7 @@
 #import "SMAnalyst.h"
 #import "SNetworkAnalyst.h"
 
-@interface STransportationAnalyst : SNetworkAnalyst {
-@public
-    NSMutableArray* nodes;
-    NSMutableArray* barrierNodes;
-    Point2Ds* points;
-    Point2Ds* barrierPoints;
-}
+@interface STransportationAnalyst : SNetworkAnalyst
 - (TransportationAnalyst *)getTransportationAnalyst;
 
 @end
