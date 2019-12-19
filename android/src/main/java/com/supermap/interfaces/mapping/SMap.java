@@ -183,7 +183,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private static ReactApplicationContext context;
     private static MeasureListener mMeasureListener;
     private GestureDetector mGestureDetector;
-    public SNavigation2 sNavigation2;
     private GeometrySelectedListener mGeometrySelectedListener;
     private ScaleViewHelper scaleViewHelper;
     private static Boolean hasBigCallout = false;
