@@ -124,8 +124,12 @@ RCT_EXPORT_MODULE();
     if (hitSelection && hitSelection.getCount > 0) {
         Recordset* rs = hitSelection.toRecordset;
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
+        Point2D* p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
         ID = (int)rs.ID;
 //        [elementIDs addObject:@(ID)];
+
+        BOOL isExsit = [self pointIsExist:p2D];
+        if (isExsit) return -1;
         
         GeoStyle* style = geoStyle;
         if (!style) {
@@ -167,6 +171,9 @@ RCT_EXPORT_MODULE();
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
         ID = (int)rs.ID;
         p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
+        
+        BOOL isExsit = [self pointIsExist:p2D];
+        if (isExsit) return nil;
         
         GeoStyle* style = geoStyle;
         if (!style) {
@@ -213,6 +220,9 @@ RCT_EXPORT_MODULE();
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
         
         p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
+        
+        BOOL isExsit = [self pointIsExist:p2D];
+        if (isExsit) return nil;
 
         GeoStyle* style = geoStyle;
         if (!style) {
@@ -300,5 +310,29 @@ RCT_EXPORT_MODULE();
             break;
         }
     }
+}
+
+- (BOOL)pointIsExist:(Point2D *)point {
+    if (!points) points = [[Point2Ds alloc] init];
+    if (!barrierPoints) barrierPoints = [[Point2Ds alloc] init];
+    for (int i = 0; i < barrierPoints.getCount; i++) {
+        Point2D* pt = [barrierPoints getItem:i];
+        if (pt.x == point.x && pt.y == point.y) {
+            return YES;
+        }
+    }
+    for (int i = 0; i < points.getCount; i++) {
+        Point2D* pt = [points getItem:i];
+        if (pt.x == point.x && pt.y == point.y) {
+            return YES;
+        }
+    }
+    if (startPoint && startPoint.x == point.x && startPoint.y == point.y) {
+        return YES;
+    }
+    if (endPoint && endPoint.x == point.x && endPoint.y == point.y) {
+        return YES;
+    }
+    return NO;
 }
 @end

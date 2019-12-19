@@ -61,11 +61,6 @@ public class STransportationAnalyst extends SNetworkAnalyst {
     private static STransportationAnalyst analyst;
     private static ReactApplicationContext context;
     private TransportationAnalyst transportationAnalyst = null;
-    private ArrayList<Integer> nodes = null;
-    private ArrayList<Integer> barrierNodes = null;
-
-    private Point2Ds points = null;
-    private Point2Ds barrierPoints = null;
 
     private GeoStyle getGeoStyle(Size2D size2D, Color color) {
         GeoStyle geoStyle = new GeoStyle();
@@ -759,45 +754,22 @@ public class STransportationAnalyst extends SNetworkAnalyst {
 
     public void addBarrierPoints(Point2D point) {
         if (barrierPoints == null) barrierPoints = new Point2Ds();
-        boolean isExist = false;
+        com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
+        if (SMap.safeGetType(map.getPrjCoordSys(), transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType())) {
+            Point2Ds point2Ds = new Point2Ds();
+            point2Ds.add(point);
+            PrjCoordSys prjCoordSys = new PrjCoordSys();
+            prjCoordSys.setType(transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType());
+            CoordSysTransParameter parameter = new CoordSysTransParameter();
 
-        for (int i = 0; i < barrierPoints.getCount(); i++) {
-            Point2D pt = barrierPoints.getItem(i);
-            if (pt.getX() == point.getX() && pt.getY() == point.getY()) {
-                isExist = true;
-                break;
-            }
+            CoordSysTranslator.convert(point2Ds, prjCoordSys, map.getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+            point = point2Ds.getItem(0);
         }
-
-        if (!isExist) {
-            com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
-            if (SMap.safeGetType(map.getPrjCoordSys(), transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType())) {
-                Point2Ds point2Ds = new Point2Ds();
-                point2Ds.add(point);
-                PrjCoordSys prjCoordSys = new PrjCoordSys();
-                prjCoordSys.setType(transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType());
-                CoordSysTransParameter parameter = new CoordSysTransParameter();
-
-                CoordSysTranslator.convert(point2Ds, prjCoordSys, map.getPrjCoordSys(), parameter, CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-                point = point2Ds.getItem(0);
-            }
-            barrierPoints.add(point);
-        }
+        barrierPoints.add(point);
     }
 
     public void addPoint(Point2D point) {
         if (barrierPoints == null) barrierPoints = new Point2Ds();
-        boolean isExist = false;
-
-        for (int i = 0; i < points.getCount(); i++) {
-            Point2D pt = points.getItem(i);
-            if (pt.getX() == point.getX() && pt.getY() == point.getY()) {
-                isExist = true;
-                break;
-            }
-        }
-
-        if (!isExist) {
             com.supermap.mapping.Map map = SMap.getInstance().getSmMapWC().getMapControl().getMap();
             if (SMap.safeGetType(map.getPrjCoordSys(), transportationAnalyst.getAnalystSetting().getNetworkDataset().getPrjCoordSys().getType())) {
                 Point2Ds point2Ds = new Point2Ds();
@@ -811,5 +783,4 @@ public class STransportationAnalyst extends SNetworkAnalyst {
             }
             points.add(point);
         }
-    }
 }
