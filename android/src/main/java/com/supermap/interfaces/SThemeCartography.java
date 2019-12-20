@@ -971,12 +971,12 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     mapControl.getEditHistory().addMapHistory();
 
                     ThemeLabel theme = (ThemeLabel) layer.getTheme();
-                    ThemeLabelRangeItems items = theme.getRangeItems();
-                    int count = items.getCount();
+                    //ThemeLabelRangeItems items = theme.getRangeItems();
+                    int count = theme.getCount();
                     Colors selectedColors = Colors.makeGradient(count, colors);
 
                     for (int i = 0; i < count; i++) {
-                        items.getItem(i).getStyle().setForeColor( selectedColors.get(i) );
+                        theme.getItem(i).getStyle().setForeColor( selectedColors.get(i) );
                     }
                     mapControl.getMap().refresh();
 
@@ -1350,7 +1350,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     int count;
                     if (type.equals("range")) {
-                        count = themeLabel.getRangeItems().getCount();
+                        count = themeLabel.getCount();
                     } else {
                         count = themeLabel.getUniqueItems().getCount();
                     }
@@ -1400,7 +1400,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         for (int i = 0; i < count; i++) {
                             TextStyle style;
                             if (type.equals("range")) {
-                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                                style = themeLabel.getItem(i).getStyle();
                             } else {
                                 style = themeLabel.getUniqueItems().getItem(i).getStyle();
                             }
@@ -1554,7 +1554,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     int count;
                     if (type.equals("range")) {
-                        count = themeLabel.getRangeItems().getCount();
+                        count = themeLabel.getCount();
                     } else {
                         count = themeLabel.getUniqueItems().getCount();
                     }
@@ -1565,7 +1565,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         for (int i = 0; i < count; i++) {
                             TextStyle style;
                             if (type.equals("range")) {
-                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                                style = themeLabel.getItem(i).getStyle();
                             } else {
                                 style = themeLabel.getUniqueItems().getItem(i).getStyle();
                             }
@@ -1626,7 +1626,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     int count;
                     if (type.equals("range")) {
-                        count = themeLabel.getRangeItems().getCount();
+                        count = themeLabel.getCount();
                     } else {
                         count = themeLabel.getUniqueItems().getCount();
                     }
@@ -1639,7 +1639,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         for (int i = 0; i < count; i++) {
                             TextStyle style;
                             if (type.equals("range")) {
-                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                                style = themeLabel.getItem(i).getStyle();
                             } else {
                                 style = themeLabel.getUniqueItems().getItem(i).getStyle();
                             }
@@ -1707,7 +1707,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     int count;
                     if (type.equals("range")) {
-                        count = themeLabel.getRangeItems().getCount();
+                        count = themeLabel.getCount();
                     } else {
                         count = themeLabel.getUniqueItems().getCount();
                     }
@@ -1724,7 +1724,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         for (int i = 0; i < count; i++) {
                             TextStyle style;
                             if (type.equals("range")) {
-                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                                style = themeLabel.getItem(i).getStyle();
                             } else {
                                 style = themeLabel.getUniqueItems().getItem(i).getStyle();
                             }
@@ -1790,7 +1790,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
                     int count;
                     if (type.equals("range")) {
-                        count = themeLabel.getRangeItems().getCount();
+                        count = themeLabel.getCount();
                     } else {
                         count = themeLabel.getUniqueItems().getCount();
                     }
@@ -1803,7 +1803,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         for (int i = 0; i < count; i++) {
                             TextStyle style;
                             if (type.equals("range")) {
-                                style = themeLabel.getRangeItems().getItem(i).getStyle();
+                                style = themeLabel.getItem(i).getStyle();
                             } else {
                                 style = themeLabel.getUniqueItems().getItem(i).getStyle();
                             }
@@ -2208,7 +2208,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             ThemeLabel themelabel = null;
             if (themeLayer != null && themeLayer.getTheme() != null && themeLayer.getTheme().getType() == ThemeType.LABEL) {
                 themelabel = (ThemeLabel) themeLayer.getTheme();
-                if (themelabel.getRangeExpression().isEmpty() || themelabel.getRangeItems().getCount() == 0) {
+                if (themelabel.getRangeExpression().isEmpty() || themelabel.getCount() == 0) {
                     themelabel = null;
                 }
             }
@@ -2278,10 +2278,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         }
                     }
                     //themeLayer.getTheme().fromXML(tr.toXML());
-                    themelabel.getRangeItems().clear();
-                    for(int i=0;i<tr.getRangeItems().getCount();i++){
-                        ThemeLabelRangeItem itemTemp = tr.getRangeItems().getItem(i);
-                        themelabel.getRangeItems().addToHead(itemTemp,true);
+                    themelabel.clear();
+                    for(int i=0;i<tr.getCount();i++){
+                        ThemeLabelItem itemTemp = tr.getItem(i);
+                        themelabel.addToTail(itemTemp,true);
                     }
 
                     mapControl.getMap().refresh();
@@ -2603,7 +2603,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 } else if (layer.getTheme().getType() == ThemeType.LABEL) {
                     ThemeLabel themeLabel = (ThemeLabel) layer.getTheme();
 
-                    promise.resolve(themeLabel.getRangeItems().getCount());
+                    promise.resolve(themeLabel.getCount());
                 }
             } else {
                 promise.resolve(false);

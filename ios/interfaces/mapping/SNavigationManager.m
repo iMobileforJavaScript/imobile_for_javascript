@@ -9,6 +9,8 @@
 #import "SNavigationManager.h"
 
 static SMap *sMap = nil;
+
+static SNavigation2* sNavigation2;
 //导航相关数据源
 static Datasource *incrementDatasource;
 static NSString *incrementLineDatasetName;
@@ -47,7 +49,7 @@ RCT_REMAP_METHOD(getNavPathLength, getNavPathLengthWithBool:(BOOL)isIndoor resol
         if(isIndoor){
             naviPath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
         }else{
-            naviPath = [sMap.sNavigation2.m_navigation getNaviPath];
+            naviPath = [sNavigation2.m_navigation getNaviPath];
         }
         int length =  0;
         for(int i = 0; i < naviPath.count; i++){
@@ -71,7 +73,7 @@ RCT_REMAP_METHOD(getPathInfos, getPathInfosWithBool:(BOOL)isIndoor resolver: (RC
         if(isIndoor){
             navipath = [[sMap.smMapWC.mapControl getNavigation3] getNaviPath];
         }else{
-            navipath = [sMap.sNavigation2.m_navigation getNaviPath];
+            navipath = [sNavigation2.m_navigation getNaviPath];
         }
         NSMutableArray *array = [[NSMutableArray alloc] init];
         for(int i = 0; i < navipath.count; i++){
@@ -144,18 +146,17 @@ RCT_REMAP_METHOD(startNavigation, startNavigationWithNetworkDatasetName:(NSDicti
         
         if(dataset != nil){
             DatasetVector *networkDataset = (DatasetVector *)dataset;
-            if(sMap.sNavigation2 == nil){
-                sMap.sNavigation2 = [[SNavigation2 alloc] initWithMapControl:sMap.smMapWC.mapControl];
+            if(sNavigation2 == nil){
+                sNavigation2 = [[SNavigation2 alloc] initWithMapControl:sMap.smMapWC.mapControl];
             }
-            SNavigation2 *navigation2 = sMap.sNavigation2;
             GeoStyle *style = [[GeoStyle alloc] init];
             [style setLineSymbolID:964882];
             //defaultMap 加数据集 导航线符号拿不到 需要设置线的颜色
             [style setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
-            [navigation2 setRouteStyle:style];
-            [navigation2 setNetworkDataset:networkDataset];
-            [navigation2 loadModel:netModelPath];
-            navigation2.m_navigation.navi2Delegate = self;
+            [sNavigation2 setRouteStyle:style];
+            [sNavigation2 setNetworkDataset:networkDataset];
+            [sNavigation2 loadModel:netModelPath];
+            sNavigation2.m_navigation.navi2Delegate = self;
             resolve(@(YES));
         }else{
             resolve(@(NO));
@@ -193,7 +194,7 @@ RCT_REMAP_METHOD(isGuiding, isGuidingWithResolver: (RCTPromiseResolveBlock) reso
     @try {
         MapControl *mapControl = [SMap singletonInstance].smMapWC.mapControl;
         BOOL isIndoorGuiding = [[mapControl getNavigation3] isGuiding];
-        BOOL isOutdoorGuiding = [sMap.sNavigation2.m_navigation isGuiding];
+        BOOL isOutdoorGuiding = [sNavigation2.m_navigation isGuiding];
         resolve(@{
                   @"isOutdoorGuiding":@(isOutdoorGuiding),
                   @"isIndoorGuiding":@(isIndoorGuiding),
@@ -213,15 +214,14 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
     @try {
         sMap = [SMap singletonInstance];
         Map *map = sMap.smMapWC.mapControl.map;
-        SNavigation2 *navigation2 = sMap.sNavigation2;
-        [navigation2 setStartPoint:x sPointY:y];
-        [navigation2 setDestinationPoint:x2 dPointY:y2];
-        [navigation2.m_navigation setPathVisible:YES];
-        BOOL isFind = [navigation2.m_navigation routeAnalyst];
+        [sNavigation2 setStartPoint:x sPointY:y];
+        [sNavigation2 setDestinationPoint:x2 dPointY:y2];
+        [sNavigation2.m_navigation setPathVisible:YES];
+        BOOL isFind = [sNavigation2.m_navigation routeAnalyst];
         if(!isFind){
-            isFind = [navigation2 reAnalyst];
+            isFind = [sNavigation2 reAnalyst];
             if(isFind){
-                [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+                [sNavigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
             }
         }else{
             [map refresh];
@@ -230,10 +230,9 @@ RCT_REMAP_METHOD(beginNavigation, beginNavigationWithX:(double)x Y:(double)y X2:
     } @catch (NSException *exception) {
         sMap = [SMap singletonInstance];
         Map *map = sMap.smMapWC.mapControl.map;
-        SNavigation2 *navigation2 = sMap.sNavigation2;
-        BOOL isFind = [navigation2 reAnalyst];
+        BOOL isFind = [sNavigation2 reAnalyst];
         if(isFind){
-            [navigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
+            [sNavigation2 addGuideLineOnTrackinglayerWithMapPrj:map.prjCoordSys];
         }
         resolve(@(isFind));
     }
@@ -244,9 +243,9 @@ RCT_REMAP_METHOD(outdoorNavigation, outdoorNavigationWithInt:(int)naviType resol
     @try {
         sMap = [SMap singletonInstance];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [sMap.sNavigation2.m_navigation enablePanOnGuide:YES];
-            [sMap.sNavigation2.m_navigation startGuide:naviType];
-            [sMap.sNavigation2.m_navigation setIsCarUpFront:NO];
+            [sNavigation2.m_navigation enablePanOnGuide:YES];
+            [sNavigation2.m_navigation startGuide:naviType];
+            [sNavigation2.m_navigation setIsCarUpFront:NO];
             resolve(@(YES));
         });
     } @catch (NSException *exception) {
@@ -280,6 +279,7 @@ RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTP
             [styleHint setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
             [styleHint setLineSymbolID:2];
             [navigation3 setHintRouteStyle:styleHint];
+            [navigation3 setDeviateTolerance:10];
             [navigation3 setDatasource:naviDatasource];
             navigation3.navDelegate = self;
             navigation3.navigation3ChangedDelegate = self;
@@ -318,6 +318,11 @@ RCT_REMAP_METHOD(startIndoorNavigation, startIndoorNavigationWithResolver: (RCTP
         [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":floorId}];
     }
 }
+
+- (void)azimuthChange:(double)dngle {
+    NSLog(@"%f",dngle);
+}
+
 #pragma mark 室内导航路径分析
 RCT_REMAP_METHOD(beginIndoorNavigation, beginIndoorNavigationWithX:(double)x Y:(double)y X2:(double)x2 Y2:(double)y2 resolver:(RCTPromiseResolveBlock) resolve rejector: (RCTPromiseRejectBlock)reject){
     @try{
@@ -764,7 +769,7 @@ RCT_REMAP_METHOD(clearPoint, clearPointWithResolver: (RCTPromiseResolveBlock) re
     @try{
         sMap = [SMap singletonInstance];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [sMap.sNavigation2.m_navigation cleanPath];
+            [sNavigation2.m_navigation cleanPath];
             [sMap.smMapWC.mapControl.map.trackingLayer clear];
             [[sMap.smMapWC.mapControl getNavigation3] cleanPath];
             [SNavigationManager clearOutdoorPoint];
@@ -782,7 +787,7 @@ RCT_REMAP_METHOD(stopGuide, stopGuideWithResolver: (RCTPromiseResolveBlock) reso
     @try {
         sMap = [SMap singletonInstance];
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [sMap.sNavigation2.m_navigation stopGuide];
+            [sNavigation2.m_navigation stopGuide];
             [[sMap.smMapWC.mapControl getNavigation3] stopGuide];
         });
         resolve(@(YES));

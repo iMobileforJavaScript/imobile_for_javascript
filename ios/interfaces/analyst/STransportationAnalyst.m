@@ -36,7 +36,8 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point text:(NSStri
         [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
         [style setMarkerSymbolID:pointID];
         Point2D* tempPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-        if (tempPoint) {
+        BOOL isExist = [self pointIsExist:tempPoint];
+        if (tempPoint && !isExist) {
             if (startPoint) {
                 [self removeTagFromTrackingLayer:nodeTag];
                 [self removeTagFromTrackingLayer:textTag];
@@ -100,7 +101,8 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point text:(NSString *
         [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
         [style setMarkerSymbolID:pointID];
         Point2D* tempPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-        if (tempPoint) {
+        BOOL isExist = [self pointIsExist:tempPoint];
+        if (tempPoint && !isExist) {
             if (endPoint) {
                 [self removeTagFromTrackingLayer:nodeTag];
                 [self removeTagFromTrackingLayer:textTag];
@@ -611,14 +613,7 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
 
 - (void)addPoint:(Point2D *)point {
     if (!points) points = [[Point2Ds alloc] init];
-    BOOL isExist = NO;
-    for (int i = 0; i < points.getCount; i++) {
-        Point2D* pt = [points getItem:i];
-        if (pt.x == point.x && pt.y == point.y) {
-            isExist = YES;
-            break;
-        }
-    }
+    BOOL isExist = [self pointIsExist:point];
     if (!isExist) {
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if ([map.prjCoordSys type] != transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type) {//若投影坐标不是经纬度坐标则进行转换
@@ -638,14 +633,7 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
 
 - (void)addBarrierPoints:(Point2D *)point {
     if (!barrierPoints) barrierPoints = [[Point2Ds alloc] init];
-    BOOL isExist = NO;
-    for (int i = 0; i < barrierPoints.getCount; i++) {
-        Point2D* pt = [barrierPoints getItem:i];
-        if (pt.x == point.x && pt.y == point.y) {
-            isExist = YES;
-            break;
-        }
-    }
+    BOOL isExist = [self pointIsExist:point];
     if (!isExist) {
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if ([map.prjCoordSys type] != transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type) {//若投影坐标不是经纬度坐标则进行转换
