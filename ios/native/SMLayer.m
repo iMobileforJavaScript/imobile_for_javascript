@@ -113,7 +113,9 @@
         [dictionary setValue:datasetName forKey:@"datasetName"];
         [dictionary setValue:datasourceAlias forKey:@"datasourceAlias"];
     } else {
+        NSArray * child = [self getLayersByGroupPath:path];
         [dictionary setValue:@"layerGroup" forKey:@"type"];
+        [dictionary setValue:child forKey:@"child"];
     }
     return dictionary;
 }
