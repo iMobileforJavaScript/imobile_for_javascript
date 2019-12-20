@@ -1597,6 +1597,7 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
         if ([temp isKindOfClass:[LayerGroup class]]) {
             bounds = [SMap getLayerGroupBounds:temp];
         }else{
+            if (!bounds || (bounds.width == 0 && bounds.height == 0 && bounds.center.x == 0 && bounds.center.y == 0)) continue;
             Rectangle2D* tmpBounds =[SMap getLayerBounds:temp];
             if(!bounds){
                 bounds = [[Rectangle2D alloc]initWithRectangle2D:tmpBounds];
@@ -1611,7 +1612,19 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
 
 +(Rectangle2D*)getLayerBounds:(Layer*)layer{
     Map* map = sMap.smMapWC.mapControl.map;
-    Rectangle2D* bounds = layer.dataset.bounds;
+    Rectangle2D* bounds;
+    if ([layer.dataset isKindOfClass:[DatasetVector class]]) {
+        Recordset* recordset = [((DatasetVector *)layer.dataset) recordset:NO cursorType:STATIC];
+        if (recordset.recordCount <= 0) {
+            [recordset dispose];
+            return nil;
+        } else {
+            [recordset dispose];
+        }
+        bounds = [((DatasetVector *)layer.dataset) computeBounds];
+    } else {
+        bounds = layer.dataset.bounds;
+    }
     if(layer.dataset.prjCoordSys.type != map.prjCoordSys.type){
         Point2Ds *points = [[Point2Ds alloc]init];
         [points add:[[Point2D alloc]initWithX:bounds.left Y:bounds.top]];
@@ -2805,6 +2818,7 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
             }else{
                 boundsTmp = [SMap getLayerBounds:layer];
             }
+            if (boundsTmp == nil) continue;
             if(bounds==nil){
                 bounds = [[Rectangle2D alloc]initWithRectangle2D:boundsTmp];
             }else{
@@ -2815,11 +2829,13 @@ RCT_REMAP_METHOD(viewEntire, viewEntireWithResolve:(RCTPromiseResolveBlock)resol
         if(bounds == nil){
             [map viewEntire];
         }else{
-            if(bounds.width <= 0 || bounds.height <= 0){
-                map.center = bounds.center;
-            } else {
-                sMap.smMapWC.mapControl.map.viewBounds = bounds;
-//                sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
+            if (!(bounds.width == 0 && bounds.height == 0 && bounds.center.x == 0 && bounds.center.y == 0)) {
+                if(bounds.width <= 0 || bounds.height <= 0){
+                    map.center = bounds.center;
+                } else {
+                    sMap.smMapWC.mapControl.map.viewBounds = bounds;
+//                    sMap.smMapWC.mapControl.map.scale = sMap.smMapWC.mapControl.map.scale*0.8;
+                }
             }
         }
         [map refresh];

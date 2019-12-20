@@ -3179,6 +3179,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     boundsTmp = getLayerBounds(layer);
                 }
 
+                if (boundsTmp == null) continue;
+
                 if(bounds == null){
                     bounds = new Rectangle2D(boundsTmp);
                 }else{
@@ -3189,10 +3191,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if(bounds == null){
                 sMap.getSmMapWC().getMapControl().getMap().viewEntire();
             }else{
-                if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
-                    sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
-                } else {
-                    sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+                if (!(bounds.getWidth() == 0 && bounds.getHeight() == 0 && bounds.getCenter().getY() == 0 && bounds.getCenter().getX() == 0)) {
+                    if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
+                        sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
+                    } else {
+                        sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+                    }
                 }
             }
 
@@ -3752,22 +3756,38 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             }else{
                 Rectangle2D tmpBounds = getLayerBounds(tmpLayer);
+
+                if (tmpBounds == null || tmpBounds.getWidth() == 0 && tmpBounds.getHeight() == 0 &&
+                        tmpBounds.getCenter().getY() == 0 && tmpBounds.getCenter().getX() == 0) {
+                    continue;
+                }
                 if(bounds == null){
                     bounds = new Rectangle2D(tmpBounds);
                 }else{
                     bounds.union(tmpBounds);
                 }
             }
-
         }
 
         return bounds;
     }
     private Rectangle2D getLayerBounds(Layer layer){
         sMap = SMap.getInstance();
-        Rectangle2D bounds = layer.getDataset().getBounds();
+        Rectangle2D bounds = null;
+        if (DatasetVector.class.isInstance(layer.getDataset())) {
+            Recordset recordset = ((DatasetVector)layer.getDataset()).getRecordset(false, CursorType.STATIC);
+            if (recordset.getRecordCount() <= 0) {
+                recordset.dispose();
+                return null;
+            } else {
+                recordset.dispose();
+            }
+            bounds = ((DatasetVector)layer.getDataset()).computeBounds();
+        } else {
+            bounds = layer.getDataset().getBounds();
+        }
 
-        if (!safeGetType(layer.getDataset().getPrjCoordSys(), sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
+        if (bounds != null && !safeGetType(layer.getDataset().getPrjCoordSys(), sMap.smMapWC.getMapControl().getMap().getPrjCoordSys())) {
             Point2Ds point2Ds = new Point2Ds();
             point2Ds.add(new Point2D(bounds.getLeft(), bounds.getTop()));
             point2Ds.add(new Point2D(bounds.getRight(), bounds.getBottom()));
@@ -3802,22 +3822,26 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 bounds = getLayerBounds(layer);
             }
 
-            if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
-                sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
+            if (bounds.getWidth() == 0 && bounds.getHeight() == 0 && bounds.getCenter().getY() == 0 && bounds.getCenter().getX() == 0) {
+                promise.resolve(true);
             } else {
-                sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 100);
-                    }
-                }, 100);//3秒后执行Runnable中的run方法
+                if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
+                    sMap.getSmMapWC().getMapControl().getMap().setCenter(bounds.getCenter());
+                } else {
+                    sMap.getSmMapWC().getMapControl().getMap().setViewBounds(bounds);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * 0.6, 100);
+                        }
+                    }, 100);//3秒后执行Runnable中的run方法
+                }
+
+                sMap.getSmMapWC().getMapControl().getMap().refresh();
+
+                promise.resolve(true);
             }
-
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
-
-            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
