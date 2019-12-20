@@ -3909,6 +3909,38 @@ RCT_REMAP_METHOD(activateLicense, activateLicense:(NSString*)serialNumber resolv
     }
 }
 
+#pragma mark 激活本地文件许可，需提前导入许可文件
+RCT_REMAP_METHOD(activateNativeLicense, activateNativeLicense:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        NSString* nativeOfficalLicensePath=[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/license/Official_License.txt"];
+        BOOL isExist=[[NSFileManager defaultManager] fileExistsAtPath:nativeOfficalLicensePath];
+        if(!isExist){
+            resolve(@(NO));
+            return;
+        }
+        
+        NSString *serialNumber = [NSString stringWithContentsOfFile:nativeOfficalLicensePath encoding:NSUTF8StringEncoding error:nil];
+
+        RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
+        
+        [Environment setLicenseType:1];
+        NSArray *moudles=[licenseManagers query:serialNumber];
+        [Environment setUserLicInfo:serialNumber Modules:moudles];
+        //激活
+        BOOL isActive = [licenseManagers activateDevice:serialNumber modules:moudles];
+        if(isActive){
+            [KeychainUtil saveKeychainValue:serialNumber key:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
+            [KeychainUtil saveKeychainValue:[moudles componentsJoinedByString:@","] key:KEYCHAIN_STORAGE_SERIAL_MODULES_KEY];
+            resolve(serialNumber);
+            return;
+        }
+        resolve(@(NO));
+    } @catch (NSException *exception) {
+        reject(@"setLabelColor",exception.reason,nil);
+    }
+}
+
 #pragma mark 获取正式许可所含模块
 RCT_REMAP_METHOD(licenseContainModule, licenseContainModule:(NSString*)serialNumber resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {

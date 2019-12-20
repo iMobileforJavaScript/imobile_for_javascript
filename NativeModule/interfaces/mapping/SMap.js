@@ -2244,6 +2244,19 @@ export default (function () {
   }
 
   /**
+   * 激活许可序列号
+   * @param serialNumber
+   */
+  function activateNativeLicense(){
+    try {
+      return SMap.activateNativeLicense()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+
+  /**
    * 获取正式许可所含模块
    * @param serialNumber
    */
@@ -2496,6 +2509,7 @@ export default (function () {
     resetMapFixColorsModeValue,
 
     activateLicense,
+    activateNativeLicense,
     licenseContainModule,
     recycleLicense,
     clearLocalLicense,
