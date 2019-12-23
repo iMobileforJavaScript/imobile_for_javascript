@@ -18,9 +18,12 @@ import com.supermap.data.Dataset;
 import com.supermap.data.DatasetVector;
 import com.supermap.data.Datasets;
 import com.supermap.data.Datasources;
+import com.supermap.data.GeoLine;
+import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoRegion;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
+import com.supermap.data.GeometryType;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
@@ -855,9 +858,19 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         GeoStyle geoStyle1 = new GeoStyle();
                         geoStyle1.fromJson(style.toString());
 
-                        GeoRegion region = new GeoRegion(point2Ds);
-                        region.setStyle(geoStyle1);
-                        trackingLayer.add(region,"");
+                        GeometryType geoType = recordset.getGeometry().getType();
+                        Geometry newGeometry = null;
+                        if (geoType == GeometryType.GEOPOINT) {
+                            newGeometry = new GeoPoint(point2Ds.getItem(0).getX(), point2Ds.getItem(0).getY());
+                        } else if (geoType == GeometryType.GEOLINE) {
+                            newGeometry = new GeoLine(point2Ds);
+                        } else if (geoType == GeometryType.GEOREGION) {
+                            newGeometry = new GeoRegion(point2Ds);
+                        }
+                        if (newGeometry != null) {
+                            newGeometry.setStyle(geoStyle1);
+                            trackingLayer.add(newGeometry,"");
+                        }
                     }else{
                         trackingLayer.add(geometry, "");
                     }

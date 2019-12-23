@@ -18,6 +18,9 @@
 #import <SuperMap/Recordset.h>
 #import <SuperMap/LayerSettingVector.h>
 #import <SuperMap/TrackingLayer.h>
+#import <SuperMap/GeoLine.h>
+#import <SuperMap/GeoRegion.h>
+#import <SuperMap/GeoPoint.h>
 
 @interface SLayerManager : NSObject<RCTBridgeModule>
 
