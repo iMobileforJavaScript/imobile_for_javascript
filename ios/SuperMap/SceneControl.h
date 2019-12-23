@@ -59,6 +59,7 @@
  @param  viewControl 指定的视图控件。
  */
 - (void)initSceneControl:(UIViewController *)viewControl;
+- (void)initSceneControl:(UIViewController *)viewControl windows:(UIWindow*)win;
 
 /**@brief 在指定的视图控件和场景窗口类型上初始化三维场景控件。
  @param  viewControl 指定的视图控件。
