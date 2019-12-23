@@ -602,8 +602,12 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                         if(!err){
                             styleJsonString = [[NSString alloc] initWithData:styleJsonData encoding:NSUTF8StringEncoding];
                         }
-                        
-                        NSArray *pointsArr = [dic valueForKey:@"points"];
+                        NSMutableArray *pointsArr = [[NSMutableArray alloc] init];
+                        if([dic objectForKey:@"points"]){
+                            pointsArr = [dic valueForKey:@"points"];
+                        }else if([dic objectForKey:@"center"]){
+                            [pointsArr addObject:[dic objectForKey:@"center"]];
+                        }
                         Point2Ds *point2Ds = [[Point2Ds alloc] init];
                         for(int index = 0; index < pointsArr.count; index++){
                             NSDictionary *curDic = pointsArr[index];
@@ -618,10 +622,28 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                         
                         GeoStyle *style = [[GeoStyle alloc] init];
                         [style fromJson:styleJsonString];
+                        Geometry* newGeometry = nil;
+                        switch (recordset.geometry.getType) {
+                            case GT_GEOPOINT:
+                                newGeometry = [[GeoPoint alloc] initWithPoint2D:[point2Ds getItem:0]];
+                                break;
+                            case GT_GEOLINE:
+                                newGeometry = [[GeoLine alloc] initWithPoint2Ds:point2Ds];
+                                break;
+                            case GT_GEOREGION:
+                                newGeometry = [[GeoRegion alloc] initWithPoint2Ds:point2Ds];
+                                break;
+                            case GT_PLOT:
+                                newGeometry=[((GeoGraphicObject*)geometry) clone];
+                                break;
+                            default:
+                                break;
+                        }
                         
-                        GeoRegion *region = [[GeoRegion alloc] initWithPoint2Ds:point2Ds];
-                        [region setStyle:style];
-                        [trackingLayer addGeometry:region WithTag:@""];
+                        if (newGeometry) {
+                            [newGeometry setStyle:style];
+                            [trackingLayer addGeometry:newGeometry WithTag:@""];
+                        }
                     }else{
                         NSLog(@"String to json failed");
                     }

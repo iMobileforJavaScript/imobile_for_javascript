@@ -26,42 +26,19 @@
             _sceneCtrl = [[SceneControl alloc]init];
             _sceneCtrl.multipleTouchEnabled = YES;
            //  [self addSubview:_sceneCtrl];
-            [_sceneCtrl setFrame:self.bounds];
-            id target=_sceneCtrl;
-            while (target) {
-                target = ((UIResponder *)target).nextResponder;
-                if ([target isKindOfClass:[UIViewController class]]) {
-                    break;
-                }
-            }
-            [_sceneCtrl initSceneControl:(UIViewController*)target];
-            
+//            [_sceneCtrl setFrame:self.bounds];
+            [_sceneCtrl initSceneControl:nil windows:nil];
             [SScene setInstance:_sceneCtrl];
         }
     }
-    timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(change) userInfo:nil repeats:YES];
-    return self;
-}
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-//static bool b = false;
--(void)change{
-    if([_sceneCtrl.superview isEqual:self]){
-        [timer invalidate];
-        timer = nil;
-    }else{
-        UIWindow *si  = [[UIApplication sharedApplication].windows objectAtIndex:0];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [oldView removeFromSuperview];
+        [_sceneCtrl.superview addSubview:oldView];
         [_sceneCtrl removeFromSuperview];
-        [si addSubview:oldView];
         [self addSubview:_sceneCtrl];
-        [_sceneCtrl setFrame:self.bounds];
-        oldView = nil;
-    }
+        
+    });
+    return self;
 }
 
 -(void)layoutSubviews{

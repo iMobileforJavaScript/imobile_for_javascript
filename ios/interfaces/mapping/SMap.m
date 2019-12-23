@@ -3932,7 +3932,7 @@ RCT_REMAP_METHOD(activateNativeLicense, activateNativeLicense:(RCTPromiseResolve
         NSString* nativeOfficalLicensePath=[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/license/Official_License.txt"];
         BOOL isExist=[[NSFileManager defaultManager] fileExistsAtPath:nativeOfficalLicensePath];
         if(!isExist){
-            resolve(@(NO));
+            resolve(@(-1));
             return;
         }
         
@@ -3951,7 +3951,7 @@ RCT_REMAP_METHOD(activateNativeLicense, activateNativeLicense:(RCTPromiseResolve
             resolve(serialNumber);
             return;
         }
-        resolve(@(NO));
+        resolve(@(-2));
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
     }
