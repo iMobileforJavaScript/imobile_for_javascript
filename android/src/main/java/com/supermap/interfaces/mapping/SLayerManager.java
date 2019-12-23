@@ -35,6 +35,7 @@ import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Map;
 import com.supermap.mapping.Selection;
 import com.supermap.mapping.TrackingLayer;
+import com.supermap.plot.GeoGraphicObject;
 import com.supermap.smNative.SMLayer;
 
 import org.json.JSONArray;
@@ -839,37 +840,41 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         arr.pushMap(idInfo);
                     }
                     if(!SMap.safeGetType(prjCoordSys,mapCoordSys)){
-                        String jsonString = geometry.toJson();
-                        JSONObject jsonObject = new JSONObject(jsonString);
-                        JSONObject style = jsonObject.getJSONObject("style");
-                        JSONArray pointsArr = jsonObject.getJSONArray("points");
-                        Point2Ds point2Ds = new Point2Ds();
-                        for(int index = 0; index < pointsArr.length(); index++){
-                            JSONObject object = pointsArr.getJSONObject(index);
-                            double x = object.getDouble("x");
-                            double y = object.getDouble("y");
-                            Point2D pt = new Point2D(x,y);
-                            point2Ds.add(pt);
-                        }
-                        PrjCoordSys desPrjCoordSys = new PrjCoordSys();
-                        desPrjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                        CoordSysTranslator.convert(point2Ds,desPrjCoordSys,mapCoordSys,new CoordSysTransParameter(),CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                        if(geometry.getType()==GeometryType.GEOGRAPHICOBJECT){
+                            trackingLayer.add(geometry.clone(), "");
+                        }else {
+                            String jsonString = geometry.toJson();
+                            JSONObject jsonObject = new JSONObject(jsonString);
+                            JSONObject style = jsonObject.getJSONObject("style");
+                            JSONArray pointsArr = jsonObject.getJSONArray("points");
+                            Point2Ds point2Ds = new Point2Ds();
+                            for (int index = 0; index < pointsArr.length(); index++) {
+                                JSONObject object = pointsArr.getJSONObject(index);
+                                double x = object.getDouble("x");
+                                double y = object.getDouble("y");
+                                Point2D pt = new Point2D(x, y);
+                                point2Ds.add(pt);
+                            }
+                            PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                            desPrjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                            CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
 
-                        GeoStyle geoStyle1 = new GeoStyle();
-                        geoStyle1.fromJson(style.toString());
+                            GeoStyle geoStyle1 = new GeoStyle();
+                            geoStyle1.fromJson(style.toString());
 
-                        GeometryType geoType = recordset.getGeometry().getType();
-                        Geometry newGeometry = null;
-                        if (geoType == GeometryType.GEOPOINT) {
-                            newGeometry = new GeoPoint(point2Ds.getItem(0).getX(), point2Ds.getItem(0).getY());
-                        } else if (geoType == GeometryType.GEOLINE) {
-                            newGeometry = new GeoLine(point2Ds);
-                        } else if (geoType == GeometryType.GEOREGION) {
-                            newGeometry = new GeoRegion(point2Ds);
-                        }
-                        if (newGeometry != null) {
-                            newGeometry.setStyle(geoStyle1);
-                            trackingLayer.add(newGeometry,"");
+                            GeometryType geoType = recordset.getGeometry().getType();
+                            Geometry newGeometry = null;
+                            if (geoType == GeometryType.GEOPOINT) {
+                                newGeometry = new GeoPoint(point2Ds.getItem(0).getX(), point2Ds.getItem(0).getY());
+                            } else if (geoType == GeometryType.GEOLINE) {
+                                newGeometry = new GeoLine(point2Ds);
+                            } else if (geoType == GeometryType.GEOREGION) {
+                                newGeometry = new GeoRegion(point2Ds);
+                            }
+                            if (newGeometry != null) {
+                                newGeometry.setStyle(geoStyle1);
+                                trackingLayer.add(newGeometry, "");
+                            }
                         }
                     }else{
                         trackingLayer.add(geometry, "");
