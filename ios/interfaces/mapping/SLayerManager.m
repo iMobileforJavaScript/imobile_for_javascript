@@ -602,8 +602,12 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                         if(!err){
                             styleJsonString = [[NSString alloc] initWithData:styleJsonData encoding:NSUTF8StringEncoding];
                         }
-                        
-                        NSArray *pointsArr = [dic valueForKey:@"points"];
+                        NSMutableArray *pointsArr = [[NSMutableArray alloc] init];
+                        if([dic objectForKey:@"points"]){
+                            pointsArr = [dic valueForKey:@"points"];
+                        }else if([dic objectForKey:@"center"]){
+                            [pointsArr addObject:[dic objectForKey:@"center"]];
+                        }
                         Point2Ds *point2Ds = [[Point2Ds alloc] init];
                         for(int index = 0; index < pointsArr.count; index++){
                             NSDictionary *curDic = pointsArr[index];
@@ -629,7 +633,9 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                             case GT_GEOREGION:
                                 newGeometry = [[GeoRegion alloc] initWithPoint2Ds:point2Ds];
                                 break;
-                                
+                            case GT_PLOT:
+                                newGeometry=[((GeoGraphicObject*)geometry) clone];
+                                break;
                             default:
                                 break;
                         }

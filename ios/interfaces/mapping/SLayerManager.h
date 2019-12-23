@@ -15,6 +15,7 @@
 #import <SuperMap/QueryParameter.h>
 #import <SuperMap/CursorType.h>
 #import <SuperMap/Geometry.h>
+#import "SuperMap/GeoGraphicObject.h"
 #import <SuperMap/Recordset.h>
 #import <SuperMap/LayerSettingVector.h>
 #import <SuperMap/TrackingLayer.h>
