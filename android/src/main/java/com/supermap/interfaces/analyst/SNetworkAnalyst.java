@@ -11,6 +11,7 @@ import com.supermap.data.GeoText;
 import com.supermap.data.Geometry;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
+import com.supermap.data.Point2Ds;
 import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
 import com.supermap.data.TextPart;
@@ -110,6 +111,10 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
     public int endNodeID;
     public Point2D startPoint;
     public Point2D endPoint;
+    public ArrayList<Integer> nodes = null;
+    public ArrayList<Integer> barrierNodes = null;
+    public Point2Ds points = null;
+    public Point2Ds barrierPoints = null;
     public ArrayList<Integer> middleNodeIDs;
     public History history;
     ReactContext mReactContext;
@@ -197,7 +202,11 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
         if (hitSelection != null && hitSelection.getCount() > 0) {
             Recordset rs = hitSelection.toRecordset();
             GeoPoint geoPoint = (GeoPoint)rs.getGeometry();
+            Point2D point2D = new Point2D(geoPoint.getX(), geoPoint.getY());
             ID = rs.getID();
+            // 已存在，返回null
+            Boolean isExist = pointIsExist(point2D);
+            if (isExist) return -1;
 
             GeoStyle style = geoStyle;
             if (style == null) {
@@ -245,6 +254,10 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
 //            map.putInt("x", p2.getY());
             point2D = new Point2D(geoPoint.getX(), geoPoint.getY());
 
+            // 已存在，返回null
+            Boolean isExist = pointIsExist(point2D);
+            if (isExist) return null;
+
             GeoStyle style = geoStyle;
             if (style == null) {
                 style = getGeoStyle(new Size2D(10, 10), new Color(255, 105, 0));
@@ -291,6 +304,30 @@ public class SNetworkAnalyst extends ReactContextBaseJavaModule {
                 break;
             }
         }
+    }
+
+    public boolean pointIsExist(Point2D point) {
+        if (points == null) points = new Point2Ds();
+        if (barrierPoints == null) barrierPoints = new Point2Ds();
+        for (int i = 0; i < barrierPoints.getCount(); i++) {
+            Point2D pt = barrierPoints.getItem(i);
+            if (pt.getX() == point.getX() && pt.getY() == point.getY()) {
+                return true;
+            }
+        }
+        for (int i = 0; i < points.getCount(); i++) {
+            Point2D pt = points.getItem(i);
+            if (pt.getX() == point.getX() && pt.getY() == point.getY()) {
+                return true;
+            }
+        }
+        if (startPoint != null && startPoint.getX() == point.getX() && startPoint.getY() == point.getY()) {
+            return true;
+        }
+        if (endPoint != null && endPoint.getX() == point.getX() && endPoint.getY() == point.getY()) {
+            return true;
+        }
+        return false;
     }
 
 //    public WritableMap undo() {

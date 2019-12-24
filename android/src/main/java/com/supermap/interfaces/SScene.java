@@ -2523,37 +2523,42 @@ public class SScene extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getSceneXMLfromWorkspace(String serverUrl, Promise promise) {
-        try {
-            Workspace ws = new Workspace();
-            WorkspaceConnectionInfo workspaceConnectionInfo = new WorkspaceConnectionInfo();
-            workspaceConnectionInfo.setServer(serverUrl);
-            String tempStr = serverUrl.toLowerCase();
-            if(tempStr.endsWith(".smwu")){
-                workspaceConnectionInfo.setType(WorkspaceType.SMWU);
-            } else if(tempStr.endsWith(".sxwu")) {
-                workspaceConnectionInfo.setType(WorkspaceType.SXWU);
-            } else if(tempStr.endsWith(".smw")) {
-                workspaceConnectionInfo.setType(WorkspaceType.SMW);
-            } else if(tempStr.endsWith(".sxw")) {
-                workspaceConnectionInfo.setType(WorkspaceType.SXW);
-            }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Workspace ws = new Workspace();
+                    WorkspaceConnectionInfo workspaceConnectionInfo = new WorkspaceConnectionInfo();
+                    workspaceConnectionInfo.setServer(serverUrl);
+                    String tempStr = serverUrl.toLowerCase();
+                    if(tempStr.endsWith(".smwu")){
+                        workspaceConnectionInfo.setType(WorkspaceType.SMWU);
+                    } else if(tempStr.endsWith(".sxwu")) {
+                        workspaceConnectionInfo.setType(WorkspaceType.SXWU);
+                    } else if(tempStr.endsWith(".smw")) {
+                        workspaceConnectionInfo.setType(WorkspaceType.SMW);
+                    } else if(tempStr.endsWith(".sxw")) {
+                        workspaceConnectionInfo.setType(WorkspaceType.SXW);
+                    }
 
-            WritableArray scenes = Arguments.createArray();
+                    WritableArray scenes = Arguments.createArray();
 
-            if(ws.open(workspaceConnectionInfo)){
-                for(int i = 0; i < ws.getScenes().getCount(); i++) {
-                    WritableMap scene = Arguments.createMap();
-                    scene.putString("name", ws.getScenes().get(i));
-                    scene.putString("xml", ws.getScenes().getSceneXML(i));
-                    scenes.pushMap(scene);
+                    if(ws.open(workspaceConnectionInfo)){
+                        for(int i = 0; i < ws.getScenes().getCount(); i++) {
+                            WritableMap scene = Arguments.createMap();
+                            scene.putString("name", ws.getScenes().get(i));
+                            scene.putString("xml", ws.getScenes().getSceneXML(i));
+                            scenes.pushMap(scene);
+                        }
+                    }
+
+                    ws.close();
+                    ws.dispose();
+                    promise.resolve(scenes);
+                } catch (Exception e) {
+                    promise.reject(e);
                 }
             }
-
-            ws.close();
-            ws.dispose();
-            promise.resolve(scenes);
-        } catch (Exception e) {
-            promise.reject(e);
-        }
+        }).start();
     }
 }

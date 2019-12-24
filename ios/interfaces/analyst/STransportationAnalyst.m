@@ -36,7 +36,8 @@ RCT_REMAP_METHOD(setStartPoint, setStartPoint:(NSDictionary *)point text:(NSStri
         [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
         [style setMarkerSymbolID:pointID];
         Point2D* tempPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-        if (tempPoint) {
+        BOOL isExist = [self pointIsExist:tempPoint];
+        if (tempPoint && !isExist) {
             if (startPoint) {
                 [self removeTagFromTrackingLayer:nodeTag];
                 [self removeTagFromTrackingLayer:textTag];
@@ -100,7 +101,8 @@ RCT_REMAP_METHOD(setEndPoint, setEndPoint:(NSDictionary *)point text:(NSString *
         [style setLineColor:[[Color alloc] initWithR:105 G:255 B:0]];
         [style setMarkerSymbolID:pointID];
         Point2D* tempPoint = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
-        if (tempPoint) {
+        BOOL isExist = [self pointIsExist:tempPoint];
+        if (tempPoint && !isExist) {
             if (endPoint) {
                 [self removeTagFromTrackingLayer:nodeTag];
                 [self removeTagFromTrackingLayer:textTag];
@@ -157,17 +159,22 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point text:(NSSt
     @try {
         NSString* nodeTag = [NSString stringWithFormat:@"barrier_node_%ld", (long)[[NSDate date] timeIntervalSince1970]];
         int pointID = 3614;
-//        int node = -1;
+        int node = -1;
         if (nodeLayer) {
             GeoStyle* style = [[GeoStyle alloc] init];
             [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
             [style setLineColor:[[Color alloc] initWithR:255 G:0 B:0]];
             [style setMarkerSymbolID:3614];
 //            node = [self selectNode:point layer:nodeLayer geoStyle:style tag:nodeTag];
-            if (!barrierNodes) barrierNodes = [[NSMutableArray alloc] init];
-//            if (node > 0) [barrierNodes addObject:@(node)];
             
-            Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+//            Point2D* p2D = [self selectPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            NSDictionary* dic = [self selectNodeWithPoint:point layer:nodeLayer geoStyle:style tag:nodeTag];
+            Point2D* p2D = [dic objectForKey:@"point"];
+            node = [[dic objectForKey:@"ID"] intValue];;
+            
+            if (!barrierNodes) barrierNodes = [[NSMutableArray alloc] init];
+            if (node > 0) [barrierNodes addObject:@(node)];
+            
             if (p2D) {
                 [self addBarrierPoints:p2D];
                 
@@ -184,6 +191,7 @@ RCT_REMAP_METHOD(addBarrierNode, addBarrierNode:(NSDictionary *)point text:(NSSt
                 [nodeData setObject:nodeTag forKey:@"labelTag"];
                 [nodeData setObject:label forKey:@"label"];
                 [nodeData setObject:p2D forKey:@"point"];
+                [nodeData setObject:@(node) forKey:@"nodeID"];
                 [nodeData setObject:@(pointID) forKey:@"pointID"];
                 [nodeData setObject:style forKey:@"pointStyle"];
                 [nodeData setObject:textStyle forKey:@"labelStyle"];
@@ -404,7 +412,7 @@ RCT_REMAP_METHOD(findPath,findPath:(NSDictionary*)params hasLeastEdgeCount:(BOOL
             paramter.points = ps;
         }
         
-        if (paramter.barrierPoints.getCount <= 0) {
+        if (paramter.barrierPoints.getCount <= 0 && barrierPoints && [barrierPoints getCount] > 0) {
             paramter.barrierPoints = barrierPoints;
         }
         
@@ -521,8 +529,9 @@ RCT_REMAP_METHOD(undo, undoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
             NSString* tag = [node objectForKey:@"tag"];
             NSString* labelTag = [node objectForKey:@"labelTag"];
             
-            if ([tag containsString:@"barrier_node_"] && barrierPoints != nil) {
-                [barrierPoints remove:barrierPoints.getCount - 1];
+            if ([tag containsString:@"barrier_node_"] && barrierNodes != nil && barrierNodes.count > 0) {
+//                [barrierPoints remove:barrierPoints.getCount - 1];
+                [barrierNodes removeLastObject];
             } else if ([tag containsString:@"node_"] && barrierPoints != nil) {
                 [points remove:points.getCount - 1];
             } else if ([tag isEqualToString:@"startNode"]) {
@@ -560,8 +569,9 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
             int pointID = [[node objectForKey:@"pointID"] intValue];
             Point2D* point2D = [node objectForKey:@"point"];
             
-            if ([tag containsString:@"barrier_node_"] && barrierPoints != nil) {
-                [barrierPoints add:point2D];
+            if ([tag containsString:@"barrier_node_"] && barrierNodes != nil && [[node objectForKey:@"nodeID"] intValue] >= 0) {
+                int nodeID = [[node objectForKey:@"nodeID"] intValue];
+                [barrierNodes addObject:@(nodeID)];
             } else if ([tag containsString:@"node_"] && points != nil) {
                 [points add:point2D];
             } else if ([tag isEqualToString:@"startNode"]) {
@@ -603,14 +613,7 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
 
 - (void)addPoint:(Point2D *)point {
     if (!points) points = [[Point2Ds alloc] init];
-    BOOL isExist = NO;
-    for (int i = 0; i < points.getCount; i++) {
-        Point2D* pt = [points getItem:i];
-        if (pt.x == point.x && pt.y == point.y) {
-            isExist = YES;
-            break;
-        }
-    }
+    BOOL isExist = [self pointIsExist:point];
     if (!isExist) {
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if ([map.prjCoordSys type] != transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type) {//若投影坐标不是经纬度坐标则进行转换
@@ -630,14 +633,7 @@ RCT_REMAP_METHOD(redo, redoWithResolver:(RCTPromiseResolveBlock)resolve rejecter
 
 - (void)addBarrierPoints:(Point2D *)point {
     if (!barrierPoints) barrierPoints = [[Point2Ds alloc] init];
-    BOOL isExist = NO;
-    for (int i = 0; i < barrierPoints.getCount; i++) {
-        Point2D* pt = [barrierPoints getItem:i];
-        if (pt.x == point.x && pt.y == point.y) {
-            isExist = YES;
-            break;
-        }
-    }
+    BOOL isExist = [self pointIsExist:point];
     if (!isExist) {
         Map* map = [SMap singletonInstance].smMapWC.mapControl.map;
         if ([map.prjCoordSys type] != transportationAnalyst.analystSetting.networkDataset.prjCoordSys.type) {//若投影坐标不是经纬度坐标则进行转换

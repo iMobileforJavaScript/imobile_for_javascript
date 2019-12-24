@@ -66,14 +66,20 @@
     Point2D* endPoint;
     NSMutableArray* middleNodeIDs;
     History* history;
+    NSMutableArray* nodes;
+    NSMutableArray* barrierNodes;
+    Point2Ds* points;
+    Point2Ds* barrierPoints;
 }
 - (void)displayResult:(NSArray *)ids selection:(Selection *)selection;
 - (GeoStyle *)getGeoStyle:(Size2D *)size2D color:(Color *)color;
 - (void)clear;
 - (void)clearRoutes:(Selection *)selection;
 - (int)selectNode:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
+- (NSDictionary *)selectNodeWithPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
 - (Point2D *)selectPoint:(NSDictionary *)point layer:(Layer *)layer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
 - (int)setText:(NSString *)text point:(Point2D *)point textStyle:(TextStyle *)textStyle tag:(NSString *)tag;
 //- (Point2D *)selectByPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag;
 - (void)removeTagFromTrackingLayer:(NSString *)tag;
+- (BOOL)pointIsExist:(Point2D *)point;
 @end

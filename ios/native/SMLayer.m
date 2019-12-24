@@ -113,7 +113,9 @@
         [dictionary setValue:datasetName forKey:@"datasetName"];
         [dictionary setValue:datasourceAlias forKey:@"datasourceAlias"];
     } else {
+        NSArray * child = [self getLayersByGroupPath:path];
         [dictionary setValue:@"layerGroup" forKey:@"type"];
+        [dictionary setValue:child forKey:@"child"];
     }
     return dictionary;
 }
@@ -627,6 +629,7 @@
             recordset = [datasetVector recordset:NO cursorType:STATIC];
         }
         result = [recordset statisticByName:fieldName statisticMode:statisticMode];
+        [recordset dispose];
         
         return result;
     }@catch (NSException *exception) {

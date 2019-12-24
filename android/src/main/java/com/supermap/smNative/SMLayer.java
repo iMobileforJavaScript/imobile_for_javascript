@@ -182,7 +182,9 @@ public class SMLayer {
             wMap.putString("datasetName", datasetName);
             wMap.putString("datasourceAlias", datasourceAlias);
         } else {
+            WritableArray child = getLayersByGroupPath(path);
             wMap.putString("type", "layerGroup");
+            wMap.putArray("child", child);
         }
 
         return wMap;

@@ -179,9 +179,10 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             }
             [collector setDataset:ds];
             
-            resolve([[NSNumber alloc] initWithBool:YES]);
+            NSDictionary* layerInfo = [SMLayer getLayerInfo:layer path:@""];
+            resolve(layerInfo);
         } else {
-            resolve([[NSNumber alloc] initWithBool:NO]);
+            resolve(nil);
         }
 
     } @catch (NSException *exception) {
@@ -400,6 +401,11 @@ RCT_REMAP_METHOD(removeByIds, removeByIds:(NSArray *)geoIds layerPath:(NSString 
         Layer* layer = [SMLayer findLayerByPath: layerPath];
         
         Recordset* recordset = layer.getSelection.toRecordset;
+        
+        EditHistory * editHistory = sMap.smMapWC.mapControl.getEditHistory;
+        [editHistory BatchBegin];
+        [editHistory addHistoryType:EHT_Delete recordset:recordset isCurrentOnly:NO];
+        [editHistory BatchEnd];
         
         bool result = YES;
         for (int i = 0; i < geoIds.count; i++) {

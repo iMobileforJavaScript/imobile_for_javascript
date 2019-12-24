@@ -124,8 +124,12 @@ RCT_EXPORT_MODULE();
     if (hitSelection && hitSelection.getCount > 0) {
         Recordset* rs = hitSelection.toRecordset;
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
+        Point2D* p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
         ID = (int)rs.ID;
 //        [elementIDs addObject:@(ID)];
+
+        BOOL isExsit = [self pointIsExist:p2D];
+        if (isExsit) return -1;
         
         GeoStyle* style = geoStyle;
         if (!style) {
@@ -154,6 +158,53 @@ RCT_EXPORT_MODULE();
     return ID;
 }
 
+- (NSDictionary *)selectNodeWithPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
+    int ID = -1;
+    Point2D* p2D = nil;
+    double x = [(NSNumber *)[point objectForKey:@"x"] doubleValue];
+    double y = [(NSNumber *)[point objectForKey:@"y"] doubleValue];
+    CGPoint p = CGPointMake(x, y);
+    Selection* hitSelection = [nodeLayer hitTestEx:p With:20];
+    
+    if (hitSelection && hitSelection.getCount > 0) {
+        Recordset* rs = hitSelection.toRecordset;
+        GeoPoint* gPoint = (GeoPoint *)rs.geometry;
+        ID = (int)rs.ID;
+        p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
+        
+        BOOL isExsit = [self pointIsExist:p2D];
+        if (isExsit) return nil;
+        
+        GeoStyle* style = geoStyle;
+        if (!style) {
+            style = [[GeoStyle alloc] init];
+            [style setMarkerSize:[[Size2D alloc] initWithWidth:10 Height:10]];
+            [style setLineColor:[[Color alloc] initWithR:255 G:105 B:0]];
+            [style setMarkerSymbolID:3614];
+        }
+        [gPoint setStyle:style];
+        
+        TrackingLayer* trackingLayer = [SMap singletonInstance].smMapWC.mapControl.map.trackingLayer;
+        [trackingLayer addGeometry:gPoint WithTag:tag];
+        
+//        NSMutableDictionary* nodeData = [[NSMutableDictionary alloc] init];
+//        [nodeData setObject:tag forKey:@"tag"];
+//        [nodeData setObject:point forKey:@"node"];
+//        if (history == nil) {
+//            history = [[History alloc] init];
+//        }
+//        [history addHistory:nodeData];
+        
+        [gPoint dispose];
+        [rs close];
+        [rs dispose];
+    }
+    return @{
+        @"ID": @(ID),
+        @"point": p2D,
+    };
+}
+
 - (Point2D *)selectPoint:(NSDictionary *)point layer:(Layer *)nodeLayer geoStyle:(GeoStyle *)geoStyle tag:(NSString *)tag {
 //    int ID = -1;
     double x = [(NSNumber *)[point objectForKey:@"x"] doubleValue];
@@ -169,6 +220,9 @@ RCT_EXPORT_MODULE();
         GeoPoint* gPoint = (GeoPoint *)rs.geometry;
         
         p2D = [[Point2D alloc] initWithX:gPoint.getX Y:gPoint.getY];
+        
+        BOOL isExsit = [self pointIsExist:p2D];
+        if (isExsit) return nil;
 
         GeoStyle* style = geoStyle;
         if (!style) {
@@ -256,5 +310,29 @@ RCT_EXPORT_MODULE();
             break;
         }
     }
+}
+
+- (BOOL)pointIsExist:(Point2D *)point {
+    if (!points) points = [[Point2Ds alloc] init];
+    if (!barrierPoints) barrierPoints = [[Point2Ds alloc] init];
+    for (int i = 0; i < barrierPoints.getCount; i++) {
+        Point2D* pt = [barrierPoints getItem:i];
+        if (pt.x == point.x && pt.y == point.y) {
+            return YES;
+        }
+    }
+    for (int i = 0; i < points.getCount; i++) {
+        Point2D* pt = [points getItem:i];
+        if (pt.x == point.x && pt.y == point.y) {
+            return YES;
+        }
+    }
+    if (startPoint && startPoint.x == point.x && startPoint.y == point.y) {
+        return YES;
+    }
+    if (endPoint && endPoint.x == point.x && endPoint.y == point.y) {
+        return YES;
+    }
+    return NO;
 }
 @end

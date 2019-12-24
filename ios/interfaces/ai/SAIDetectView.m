@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE();
     
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
-    mAIDetectView.detectInterval=500;
+    mAIDetectView.detectInterval=200;
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];
@@ -115,7 +115,18 @@ RCT_EXPORT_MODULE();
 //        if(aIImage){
 //            aIImage=nil;
 //        }
+        [mAIDetectView clearClickAIRecognition];
     } withInfo:YES];
+}
+
+#pragma mark 清除选中的对象,清除后才能再刷新界面
+RCT_REMAP_METHOD(clearClickAIRecognition, clearClickAIRecognition:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [mAIDetectView clearClickAIRecognition];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"clearClickAIRecognition", exception.reason, nil);
+    }
 }
 
 #pragma mark 开启摄像头
@@ -128,6 +139,15 @@ RCT_REMAP_METHOD(startCamera, startCamera:(RCTPromiseResolveBlock)resolve reject
     }
 }
 
+#pragma mark 关闭摄像头
+RCT_REMAP_METHOD(stopCamera, stopCamera:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        [mAIDetectView stopCameraPreview];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"stopCamera", exception.reason, nil);
+    }
+}
 
 #pragma mark ARView系统版本是否支持
 RCT_REMAP_METHOD(checkIfAvailable, checkIfAvailable:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

@@ -41,7 +41,7 @@
 @property (strong, nonatomic) Workspace* workspace;
 @property (strong, nonatomic) MapControl* mapControl;
 @property (strong, nonatomic) DynamicView* dynamicView;
-@property (strong, nonatomic) FloorListView* floorListView;
+@property (strong, atomic) FloorListView* floorListView;
 
 - (BOOL)openWorkspace:(NSDictionary *)infoDic;
 - (Datasource *)openDatasource:(NSDictionary *)params;
@@ -67,5 +67,5 @@
 -(BOOL)addLayersFromMapJson:(NSString*)jsonSrcMap toMap:(NSString*)jsonDesMap;
 -(NSString *)getUserName;
 - (BOOL)copyAnimationFileFrom:(NSString*)fromPath to:(NSString*)toPath toMapName:(NSString*)mapName;
--(void)copyNaviSnmFileFrom:(NSString *)path;
+-(void)copyNaviSnmFileFrom:(NSDictionary *)path;
 @end

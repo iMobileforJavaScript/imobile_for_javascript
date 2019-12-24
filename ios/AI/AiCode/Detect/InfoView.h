@@ -13,11 +13,12 @@
 typedef void(^CallBackBlock)(AIRecognition *aIRecognition); // 返回点击的对象
 
 @interface InfoView : UIView
-@property (nonatomic,strong) NSArray *aIRecognitionArray;
+@property (nonatomic,strong) NSMutableArray *aIRecognitionArray;
 @property (nonatomic,strong) NSMutableArray *aIRectArr;
 @property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
 @property(nonatomic)CGSize sizeCamera;
 @property (nonatomic, strong)CallBackBlock callBackBlock;
+@property (nonatomic, strong)AIRecognition *clickAIRecognition;
 
 // 起始点
 @property(nonatomic)CGPoint startPoint;
