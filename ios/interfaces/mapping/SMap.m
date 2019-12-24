@@ -1597,8 +1597,8 @@ RCT_REMAP_METHOD(getMaps, getMapsWithResolver:(RCTPromiseResolveBlock)resolve re
         if ([temp isKindOfClass:[LayerGroup class]]) {
             bounds = [SMap getLayerGroupBounds:temp];
         }else{
-            if (!bounds || (bounds.width == 0 && bounds.height == 0 && bounds.center.x == 0 && bounds.center.y == 0)) continue;
             Rectangle2D* tmpBounds =[SMap getLayerBounds:temp];
+            if (!tmpBounds || (tmpBounds.width == 0 && tmpBounds.height == 0 && tmpBounds.center.x == 0 && tmpBounds.center.y == 0)) continue;
             if(!bounds){
                 bounds = [[Rectangle2D alloc]initWithRectangle2D:tmpBounds];
             }else{
