@@ -25,6 +25,8 @@ import com.supermap.data.Recordset;
 import com.supermap.data.Size2D;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Action;
+import com.supermap.mapping.EditHistory;
+import com.supermap.mapping.EditHistoryType;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
@@ -472,6 +474,11 @@ public class SCollector extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
             Layer layer = SMLayer.findLayerByPath(layerPath);
             Recordset recordset = layer.getSelection().toRecordset();
+
+            EditHistory editHistory = sMap.getSmMapWC().getMapControl().getEditHistory();
+            editHistory.batchBegin();
+            editHistory.addHistoryType(EditHistoryType.DELETE, recordset, false);
+            editHistory.batchEnd();
 
             boolean result = true;
             for (int i = 0; i < ids.size(); i++) {
