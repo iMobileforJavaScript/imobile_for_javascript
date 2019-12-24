@@ -157,6 +157,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -2158,56 +2159,48 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 @Override
                 public void geometryMultiSelected(ArrayList<GeometrySelectedEvent> events) {
                     try {
-                        ArrayList<Map> arr = new ArrayList();
+                        String layerNames = "";
                         WritableArray array = Arguments.createArray();
                         for (int i = 0; i < events.size(); i++) {
                             GeometrySelectedEvent event = events.get(i);
-                            int id = event.getGeometryID();
                             Layer layer = event.getLayer();
-
-                            boolean isExist = false;
-                            for (int j = 0; j < arr.size(); j++) {
-                                String name = ((WritableMap) arr.get(j).get("layerInfo")).getString("name");
-                                if (layer.getName().equals(name)) {
-                                    isExist = true;
-                                    WritableArray ids = ((WritableArray) arr.get(j).get("ids"));
-                                    ids.pushInt(id);
-                                }
+                            String layerName = layer.getName();
+                            if(layerNames.indexOf(layerName) > 0){
+                                continue;
                             }
+                            layerNames = layerNames.concat(","+layerName);
 
-
-                            if (!isExist) {
-                                Map<String, Object> layerSelection = new HashMap<>();
-
-//                                WritableMap layerSelection = Arguments.createMap();
-
-                                WritableArray ids = Arguments.createArray();
-                                WritableMap layerInfo = Arguments.createMap();
-
-                                layerInfo.putString("name", layer.getName());
-                                layerInfo.putString("caption", layer.getCaption());
-                                layerInfo.putBoolean("editable", layer.isEditable());
-                                layerInfo.putBoolean("visible", layer.isVisible());
-                                layerInfo.putBoolean("selectable", layer.isSelectable());
-                                layerInfo.putInt("type", layer.getDataset().getType().value());
-                                layerInfo.putString("path", SMLayer.getLayerPath(layer));
-
-//                                layerSelection.putMap("layerInfo", layerInfo);
-//                                layerSelection.putArray("ids", ids);
-
-                                ids.pushInt(id);
-
-                                layerSelection.put("layerInfo", layerInfo);
-                                layerSelection.put("ids", ids);
-
-                                arr.add(layerSelection);
-                            }
-                        }
-
-                        for (int k = 0; k < arr.size(); k++) {
                             WritableMap map = Arguments.createMap();
-                            map.putMap("layerInfo", (WritableMap) arr.get(k).get("layerInfo"));
-                            map.putArray("ids", (WritableArray) arr.get(k).get("ids"));
+                            WritableMap layerInfo = Arguments.createMap();
+                            WritableArray ids = Arguments.createArray();
+
+                            layerInfo.putString("name", layerName);
+                            layerInfo.putString("caption", layer.getCaption());
+                            layerInfo.putBoolean("editable", layer.isEditable());
+                            layerInfo.putBoolean("visible", layer.isVisible());
+                            layerInfo.putBoolean("selectable", layer.isSelectable());
+                            layerInfo.putInt("type", layer.getDataset().getType().value());
+                            layerInfo.putString("path", SMLayer.getLayerPath(layer));
+
+                            Selection selection = layer.getSelection();
+                            Recordset rs = selection.toRecordset();
+                            rs.moveFirst();
+
+                            while(!rs.isEOF()){
+                                Object curId = rs.getFieldValue("SmID");
+                                if(curId != null){
+                                    int rsId = (int)curId;
+                                    ids.pushInt(rsId);
+                                }
+                                rs.moveNext();
+                            }
+
+                            rs.dispose();
+                            rs.close();
+
+                            map.putMap("layerInfo",layerInfo);
+                            map.putArray("ids",ids);
+
                             array.pushMap(map);
                         }
 

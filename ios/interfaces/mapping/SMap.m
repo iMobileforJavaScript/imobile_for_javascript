@@ -4323,6 +4323,19 @@ static BOOL bDouble = false;
     for (id layerAndId in layersAndIds) {
         if ([layerAndId isKindOfClass:[NSArray class]] && [layerAndId[0] isKindOfClass:[Layer class]]) {
             Layer* layer = layerAndId[0];
+            
+            //导航地图返回的id有误，手动去选择集获取ids
+            Selection *selection = [layer getSelection];
+            Recordset *rs = [selection toRecordset];
+            [rs moveFirst];
+            NSMutableArray *ids = [[NSMutableArray alloc] init];
+            while (![rs isEOF]) {
+                NSString *curId = (NSString *)[rs getFieldValueWithString:@"SmID"];
+                if(curId){
+                    [ids addObject:curId];
+                }
+                [rs moveNext];
+            }
             Dataset* dataset = layer.dataset;
             int type = (int)dataset.datasetType;
             NSMutableDictionary *layerInfo = [[NSMutableDictionary alloc] init];
@@ -4335,9 +4348,12 @@ static BOOL bDouble = false;
             
             NSMutableDictionary* layerData = [[NSMutableDictionary alloc] init];
             [layerData setObject:layerInfo forKey:@"layerInfo"];
-            [layerData setObject:layerAndId[1] forKey:@"ids"];
+            [layerData setObject:ids forKey:@"ids"];
             
             [layersIdAndIds addObject:layerData];
+            
+            [rs dispose];
+            [rs close];
         }
     }
     [self sendEventWithName:MAP_GEOMETRY_MULTI_SELECTED body:@{@"geometries":(NSArray*)layersIdAndIds}];

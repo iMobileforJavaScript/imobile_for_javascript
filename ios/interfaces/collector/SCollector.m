@@ -179,9 +179,10 @@ RCT_REMAP_METHOD(setDataset, setDatasetByLayer:(NSDictionary*)info resolver:(RCT
             }
             [collector setDataset:ds];
             
-            resolve([[NSNumber alloc] initWithBool:YES]);
+            NSDictionary* layerInfo = [SMLayer getLayerInfo:layer path:@""];
+            resolve(layerInfo);
         } else {
-            resolve([[NSNumber alloc] initWithBool:NO]);
+            resolve(nil);
         }
 
     } @catch (NSException *exception) {

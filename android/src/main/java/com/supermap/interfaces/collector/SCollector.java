@@ -204,9 +204,11 @@ public class SCollector extends ReactContextBaseJavaModule {
                 layer.setVisible(true);
                 layer.setEditable(true);
                 collector.setDataset(ds);
-                promise.resolve(true);
+
+                WritableMap layerInfo = SMLayer.getLayerInfo(layer, "");
+                promise.resolve(layerInfo);
             } else {
-                promise.resolve(false);
+                promise.resolve(null);
             }
 
         } catch (Exception e) {
