@@ -402,6 +402,11 @@ RCT_REMAP_METHOD(removeByIds, removeByIds:(NSArray *)geoIds layerPath:(NSString 
         
         Recordset* recordset = layer.getSelection.toRecordset;
         
+        EditHistory * editHistory = sMap.smMapWC.mapControl.getEditHistory;
+        [editHistory BatchBegin];
+        [editHistory addHistoryType:EHT_Delete recordset:recordset isCurrentOnly:NO];
+        [editHistory BatchEnd];
+        
         bool result = YES;
         for (int i = 0; i < geoIds.count; i++) {
             [recordset seekID:geoIds[i]];

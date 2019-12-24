@@ -4,6 +4,7 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.data.*;
+import com.supermap.data.Enum;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.*;
 import com.supermap.smNative.SMMapWC;
@@ -755,9 +756,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("RangeExpression")){
                 rangeExpression  = data.get("RangeExpression").toString();
             }
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            if (readableMap.hasKey("RangeMode")){
+                int mode = readableMap.getInt("RangeMode");
+                rangeMode  = (RangeMode)Enum.parse(RangeMode.class, mode);
             }
             if (data.containsKey("RangeParameter")){
                 String rangParam = data.get("RangeParameter").toString();
@@ -2018,9 +2019,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("RangeExpression")){
                 rangeExpression  = data.get("RangeExpression").toString();
             }
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode  = SMThemeCartography.getRangeMode(mode);
+            if (readableMap.hasKey("RangeMode")){
+                int mode = readableMap.getInt("RangeMode");
+                rangeMode  = (RangeMode)Enum.parse(RangeMode.class, mode);
             }
             if (data.containsKey("RangeParameter")){
                 String rangParam = data.get("RangeParameter").toString();
@@ -2121,10 +2122,10 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
             }
 
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode  = SMThemeCartography.getRangeMode(mode);
-                } else {
+            if (readableMap.hasKey("RangeMode")){
+                int mode = readableMap.getInt("RangeMode");
+                rangeMode  = (RangeMode)Enum.parse(RangeMode.class, mode);
+            } else {
                 if (themeRange != null) {
                     rangeMode = themeRange.getRangeMode();
                 }
@@ -2224,12 +2225,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 }
             }
 
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode  = SMThemeCartography.getRangeMode(mode);
-                if(themelabel != null){
-//                    themelabel.setRangeMode(rangeMode);
-                }
+            if (readableMap.hasKey("RangeMode")){
+                int mode = readableMap.getInt("RangeMode");
+                rangeMode = (RangeMode)Enum.parse(RangeMode.class, mode);
             } else {
                 if (themelabel != null) {
                     rangeMode = themelabel.getRangeMode();
@@ -2751,9 +2749,9 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 String index = data.get("LayerIndex").toString();
                 layerIndex = Integer.parseInt(index);
             }
-            if (data.containsKey("RangeMode")){
-                String mode = data.get("RangeMode").toString();
-                rangeMode = SMThemeCartography.getRangeMode(mode);
+            if (readableMap.hasKey("RangeMode")){
+                int mode = readableMap.getInt("RangeMode");
+                rangeMode  = (RangeMode)Enum.parse(RangeMode.class, mode);
             }
             if (data.containsKey("RangeParameter")){
                 String param = data.get("RangeParameter").toString();

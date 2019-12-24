@@ -768,8 +768,8 @@ RCT_REMAP_METHOD(createRangeThemeLabelMap, createRangeThemeLabelMapWithResolver:
             rangeExpression = [dataDic objectForKey:@"RangeExpression"];
         }
         if ([array containsObject:@"RangeMode"]) {
-            NSString* type = [dataDic objectForKey:@"RangeMode"];
-            rangeMode = [SMThemeCartography getRangeMode:type];
+            NSNumber* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = type.intValue;
         }
         if ([array containsObject:@"RangeParameter"]) {
             NSString* param = [dataDic objectForKey:@"RangeParameter"];
@@ -1975,8 +1975,8 @@ RCT_REMAP_METHOD(createThemeRangeMap, createThemeRangeMapMapWithResolver:(NSDict
             rangeExpression = [dataDic objectForKey:@"RangeExpression"];
         }
         if ([array containsObject:@"RangeMode"]) {
-            NSString* mode = [dataDic objectForKey:@"RangeMode"];
-            rangeMode = [SMThemeCartography getRangeMode:mode];
+            NSNumber* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = type.intValue;
             isContainRangeMode = true;
         }
         if ([array containsObject:@"RangeParameter"]) {
@@ -2081,8 +2081,8 @@ RCT_REMAP_METHOD(modifyThemeRangeMap, modifyThemeRangeMapWithResolver:(NSDiction
             }
         }
         if ([array containsObject:@"RangeMode"]) {
-            NSString* mode = [dataDic objectForKey:@"RangeMode"];
-            rangeMode = [SMThemeCartography getRangeMode:mode];
+            NSNumber* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = type.intValue;
             isContainRangeMode = true;
         }
         else
@@ -2186,9 +2186,8 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
             }
         }
         if ([array containsObject:@"RangeMode"]) {
-            NSString* mode = [dataDic objectForKey:@"RangeMode"];
-            rangeMode = [SMThemeCartography getRangeMode:mode];
-            [themeLabel setMRangeMode:rangeMode];
+            NSNumber* mode = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = mode.intValue;
             isContainRangeMode = true;
         } else {
             if (themeLabel != nil) {
@@ -2698,8 +2697,8 @@ RCT_REMAP_METHOD(modifyThemeGridRangeMap,  modifyThemeGridRangeMapWithResolver:(
         NSArray* array = [dataDic allKeys];
 
         if ([array containsObject:@"RangeMode"]) {
-            NSString* type = [dataDic objectForKey:@"RangeMode"];
-            rangeMode = [SMThemeCartography getRangeMode:type];
+            NSNumber* type = [dataDic objectForKey:@"RangeMode"];
+            rangeMode = type.intValue;
         }
         if ([array containsObject:@"RangeParameter"]) {
             NSString* param = [dataDic objectForKey:@"RangeParameter"];
