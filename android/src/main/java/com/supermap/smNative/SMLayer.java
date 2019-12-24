@@ -552,10 +552,19 @@ public class SMLayer {
                     value = info.getString("value");
                     result = recordset.setFieldValue(name, value);
                 }else if (type == FieldType.BOOLEAN) {
-                    value = info.getString("value");
                     boolean boolValue = false;
-                    if (value == "YES" || value  == "true") {
-                        boolValue = true;
+                    ReadableType _type = info.getType("value");
+                    switch (_type) {
+                        case Number:
+                            boolValue = info.getInt("value") == 1;
+                            break;
+                        case String:
+                            value = info.getString("value");
+                            boolValue = value.equals('1') || value.equals("YES") || value.equals("true");
+                            break;
+                        case Boolean:
+                            boolValue = info.getBoolean("value");
+                            break;
                     }
                     result = recordset.setBoolean(name, boolValue);
                 }
