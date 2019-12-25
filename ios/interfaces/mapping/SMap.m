@@ -117,9 +117,9 @@ RCT_EXPORT_MODULE();
         });
    // }
     
-    if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
-        [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
-    }
+//    if (sMap.smMapWC.workspace && sMap.smMapWC.mapControl.map.workspace == nil) {
+//        [sMap.smMapWC.mapControl.map setWorkspace:sMap.smMapWC.workspace];
+//    }
 }
 
 - (void)setDelegate {
@@ -151,31 +151,27 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
 #pragma mark 添加marker
 +(void)showMarkerHelper:(Point2D*)pt tag:(int)tag{
    
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
         
-//        Callout* callout = [[Callout alloc]initWithMapControl:sMap.smMapWC.mapControl];
-//        callout.tag = tag;
-//        callout.width = 25;
-//        callout.height = 25;
-//        UIImageView* image = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"SuperMap.bundle/Contents/Resources/Resource/destination.png"]];
-//        image.frame = CGRectMake(0, 0, 25, 25);
-//        // UIImage* img = ;
-//        [callout addSubview:image];
-//        [callout showAt:pt];
+
         
         GeoPoint* point = [[GeoPoint alloc] initWithPoint2D:pt];//new GeoPoint(mapPt.getX(),mapPt.getY());
         GeoStyle* style = [[GeoStyle alloc]init];
         [style setMarkerSymbolID:118081];
         [style setMarkerSize: [[Size2D alloc]initWithWidth:8 Height:8]];// setMarkerSize(new Size2D(6,6));
-//        style.setLineColor(new Color(255,0,0,255));
         [point setStyle:style];//setStyle(style);
         [sMap.smMapWC.mapControl.map.trackingLayer addGeometry:point WithTag:[NSString stringWithFormat:@"%d",tag]];
-//        sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point,tagStr);
-        //[sMap.smMapWC.mapControl panTo:pt time:200];
-        sMap.smMapWC.mapControl.map.center = pt;
-        if(sMap.smMapWC.mapControl.map.scale < 0.000011947150294723098)
-            sMap.smMapWC.mapControl.map.scale = 0.000011947150294723098;
-        [sMap.smMapWC.mapControl.map refresh];
+        if(sMap.smMapWC.mapControl.map.scale < 1/2785.0){
+                   sMap.smMapWC.mapControl.map.scale = 1/2785.0;
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
+             [sMap.smMapWC.mapControl panTo:pt time:100];
+            [sMap.smMapWC.mapControl.map refresh];
+        });
+       
+//        sMap.smMapWC.mapControl.map.center = pt;
+       
+//        [sMap.smMapWC.mapControl.map refresh];
     });
 }
 RCT_REMAP_METHOD(showMarker,  longitude:(double)longitude latitude:(double)latitude tag:(int)tag showMarkerResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -1965,8 +1961,11 @@ RCT_REMAP_METHOD(removeMeasureListener, removeMeasureListenerWithResolver:(RCTPr
 RCT_REMAP_METHOD(zoom, zoomByScale:(double)scale resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        [mapControl.map zoom:scale];
-        [mapControl.map refresh];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [mapControl zoomTo:mapControl.map.scale*scale time:100];
+                [mapControl.map refresh];
+        });
+
         resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
@@ -2010,40 +2009,35 @@ RCT_REMAP_METHOD(enableSlantTouch, enableSlantTouch:(BOOL)enable resolver:(RCTPr
 #pragma mark 移动到当前位置
 +(void)moveHelper{
     MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-//    Collector* collector = [mapControl getCollector];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        //            [collector moveToCurrentPos];
-        BOOL isMove = NO;
-        GPSData* gpsData = [NativeUtil getGPSData];
-        Point2D* pt = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
-        if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-            Point2Ds *points = [[Point2Ds alloc]init];
-            [points add:pt];
-            PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-            [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-            CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-            
-            //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-            [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-            pt = [points getItem:0];
-        }
+
+    GPSData* gpsData = [NativeUtil getGPSData];
+    Point2D* pt = [[Point2D alloc]initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+    if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+        Point2Ds *points = [[Point2Ds alloc]init];
+        [points add:pt];
+        PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+        [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+        CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
         
-        [SMap deleteMarker:curLocationTag];
-       // [sMap.smMapWC.mapControl removeCalloutWithTag:curLocationTag];
-        Point2D* mapCenter = pt;
-        if (![mapControl.map.bounds containsPoint2D:pt]) {
-            if(defaultMapCenter){
-                mapCenter= defaultMapCenter;
-            }
-        }else{
+        //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+        [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+        pt = [points getItem:0];
+    }
+    
+   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
+       [SMap deleteMarker:curLocationTag];
+         Point2D* mapCenter = pt;
+         if (![mapControl.map.bounds containsPoint2D:pt]) {
+             if(defaultMapCenter){
+                 mapCenter= defaultMapCenter;
+                 mapControl.map.center = mapCenter;
+                 [mapControl.map refresh];
+             }
+         }else{
             [SMap showMarkerHelper:mapCenter tag:curLocationTag];
-        }
-        
-        mapControl.map.center = mapCenter;
-        isMove = YES;
-        [mapControl.map refresh];
-        
-    });
+         }
+   });
+   
 }
 RCT_REMAP_METHOD(moveToCurrent, moveToCurrentWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -2066,60 +2060,52 @@ RCT_REMAP_METHOD(moveToPoint, moveToPointWithPoint:(NSDictionary *)point resolve
             return;
         }
         MapControl* mapControl = [SMap singletonInstance].smMapWC.mapControl;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //            [collector moveToCurrentPos];
-            BOOL isMove = NO;
-            NSNumber* x = [point objectForKey:@"x"];
-            NSNumber* y = [point objectForKey:@"y"];
-            Point2D* pt = [[Point2D alloc] initWithX:x.doubleValue Y:y.doubleValue];
-            if (x.doubleValue <= 180 && x.doubleValue >= -180 && y.doubleValue >= - 90 && y.doubleValue <= 90) {
-                if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-                    Point2Ds *points = [[Point2Ds alloc]init];
-                    [points add:pt];
-                    PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-                    [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-                    CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-                    
-                    //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-                    [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-                    pt = [points getItem:0];
-                }
-            } else {
-                if ([mapControl.map.prjCoordSys type] != PCST_SPHERE_MERCATOR) {//若坐标不是地图坐标则进行转换
-                    Point2Ds *points = [[Point2Ds alloc]init];
-                    [points add:pt];
-                    PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-                    [srcPrjCoorSys setType:PCST_SPHERE_MERCATOR];
-                    CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-                    
-                    [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-                    pt = [points getItem:0];
-                }
+        
+        NSNumber* x = [point objectForKey:@"x"];
+        NSNumber* y = [point objectForKey:@"y"];
+        Point2D* pt = [[Point2D alloc] initWithX:x.doubleValue Y:y.doubleValue];
+        if (x.doubleValue <= 180 && x.doubleValue >= -180 && y.doubleValue >= - 90 && y.doubleValue <= 90) {
+            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
+                Point2Ds *points = [[Point2Ds alloc]init];
+                [points add:pt];
+                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
+                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+                
+                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
+                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                pt = [points getItem:0];
             }
-            //            if ([mapControl.map.prjCoordSys type] != PCST_EARTH_LONGITUDE_LATITUDE) {//若投影坐标不是经纬度坐标则进行转换
-            //                Point2Ds *points = [[Point2Ds alloc]init];
-            //                [points add:pt];
-            //                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
-            //                [srcPrjCoorSys setType:PCST_EARTH_LONGITUDE_LATITUDE];
-            //                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
-            //
-            //                //根据源投影坐标系与目标投影坐标系对坐标点串进行投影转换，结果将直接改变源坐标点串
-            //                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
-            //                pt = [points getItem:0];
-            //            }
-            
-            if ([mapControl.map.bounds containsPoint2D:pt]) {
-                mapControl.map.center = pt;
-                isMove = YES;
-            } else {
-                if(defaultMapCenter){
-                    mapControl.map.center = defaultMapCenter;
-                }
+        }
+        else {
+            if ([mapControl.map.prjCoordSys type] != PCST_SPHERE_MERCATOR) {//若坐标不是地图坐标则进行转换
+                Point2Ds *points = [[Point2Ds alloc]init];
+                [points add:pt];
+                PrjCoordSys *srcPrjCoorSys = [[PrjCoordSys alloc]init];
+                [srcPrjCoorSys setType:PCST_SPHERE_MERCATOR];
+                CoordSysTransParameter *param = [[CoordSysTransParameter alloc]init];
+
+                [CoordSysTranslator convert:points PrjCoordSys:srcPrjCoorSys PrjCoordSys:[mapControl.map prjCoordSys] CoordSysTransParameter:param CoordSysTransMethod:(CoordSysTransMethod)9603];
+                pt = [points getItem:0];
             }
-            
-            [mapControl.map refresh];
-            resolve([NSNumber numberWithBool:isMove]);
-        });
+        }
+        
+        if ([mapControl.map.bounds containsPoint2D:pt]) {
+            mapControl.map.center = pt;
+        } else {
+            if(defaultMapCenter){
+                pt = defaultMapCenter;
+            }
+        }
+        if(pt != nil){
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
+                [mapControl panTo:pt time:200];
+                [mapControl.map refresh];
+                
+            });
+        }
+        resolve([NSNumber numberWithBool:YES]);
+       
     } @catch (NSException *exception) {
         reject(@"MapControl", exception.reason, nil);
     }

@@ -407,16 +407,17 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 point.setStyle(style);
 
                 sMap.smMapWC.getMapControl().getMap().getTrackingLayer().add(point, tagStr);
-
-//                sMap.smMapWC.getMapControl().getMap().getMapView().getContext();
-//                CallOut callout = new CallOut(sMap.smMapWC.getMapControl().getMap().getMapView().getContext());
-//                callout.setLocation(mapPt.getX(), mapPt.getY());
-//                sMap.smMapWC.getMapControl().getMap().getMapView().addCallout(callout,tagStr);
-//                sMap.smMapWC.getMapControl().getMap().getMapView().showCallOut();
-                sMap.smMapWC.getMapControl().panTo(mapPt, 200); //.getMap().setCenter(mapPt);
-                if (sMap.smMapWC.getMapControl().getMap().getScale() < 0.000011947150294723098)
-                    sMap.smMapWC.getMapControl().getMap().setScale(0.000011947150294723098);
-                sMap.smMapWC.getMapControl().getMap().refresh();
+                if (sMap.smMapWC.getMapControl().getMap().getScale() < 1/2785.0) {
+                    sMap.smMapWC.getMapControl().getMap().setScale(1 / 2785.0);
+                }
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sMap.smMapWC.getMapControl().panTo(mapPt, 200); //.getMap().setCenter(mapPt);
+                        sMap.smMapWC.getMapControl().getMap().refresh();
+                    }
+                }, 0);//3秒后执行Runnable中的run方法
             }
         });
     }
@@ -1454,8 +1455,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         try {
             sMap = getInstance();
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            map.zoom(scale);
+            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * scale, 100);
             map.refresh();
+//            Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * scale, 100);
+//                    map.refresh();
+//                }
+//            }, 0);//3秒后执行Runnable中的run方法
+//            map.zoom(scale);
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -1941,16 +1952,14 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 if (pt != null && !mapControl.getMap().getBounds().contains(pt)) {
                     if (defaultMapCenter != null) {
                         mapCenter = defaultMapCenter;
+                        mapControl.getMap().setCenter(mapCenter);
+                        isMove = true;
+                        mapControl.getMap().refresh();
                     }
                 } else {
                     if (this.showMarker) {
                         showMarkerHelper(mapCenter, curLocationTag);
                     }
-                }
-                if (mapCenter != null) {
-                    mapControl.getMap().setCenter(mapCenter);
-                    isMove = true;
-                    mapControl.getMap().refresh();
                 }
                 promise.resolve(isMove);
             } catch (Exception e) {
