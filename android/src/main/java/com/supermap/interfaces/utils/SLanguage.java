@@ -1,11 +1,9 @@
 package com.supermap.interfaces.utils;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.ToolkitNative1;
 
 public class SLanguage extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "SLanguage";
@@ -22,6 +20,8 @@ public class SLanguage extends ReactContextBaseJavaModule {
     public void setLanguage(String language,Promise promise) {
         try {
             m_language  = language;
+            ToolkitNative1.jni_SetLanguage(m_language);
+//            Toolkit.setLanguage(language);
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
