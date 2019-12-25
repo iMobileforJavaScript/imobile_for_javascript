@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.ar.core.Pose;
-import com.supermap.data.Point2Ds;
 import com.supermap.data.Point3D;
 
 import org.rajawali3d.math.Matrix4;
@@ -288,11 +287,11 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
         mRouteTrajectorys.put(mRouteIndex,new Trajectory(Color.GREEN,1.0f));
         getCurrentScene().addChild(mRouteTrajectorys.get(mRouteIndex));
         mInitNewRoute = true;
+        mRouteIndex++;
     }
 
     public void saveCurrentRoute(){
         mInitNewRoute = false;
-        mRouteIndex++;
     }
 
     public void clearCurrentRoute(){

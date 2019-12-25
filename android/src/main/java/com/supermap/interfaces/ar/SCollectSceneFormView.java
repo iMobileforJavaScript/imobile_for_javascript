@@ -526,6 +526,7 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
                     writeMap.putString("name", datasets.get(i).getName());
                     writeMap.putInt("index", i);
                     writeMap.putBoolean("select",false);
+                    writeMap.putString("type", datasets.get(i).getType().toString());
                     arr.pushMap(writeMap);
                 }
                 WritableMap writableMap = Arguments.createMap();
