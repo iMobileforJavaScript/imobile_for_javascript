@@ -222,6 +222,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     map.putString("title", scaleViewHelper.mScaleText);
                     context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                             .emit(EventConst.SCALEVIEW_CHANGE, map);
+
+                    String currentFloorID = "";
+                    if (floorListView != null && floorListView.getVisibility() == View.VISIBLE) {
+                        currentFloorID = floorListView.getCurrentFloorId();
+                    }
+                    WritableMap map2 = Arguments.createMap();
+                    map2.putString("currentFloorID",currentFloorID);
+                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                            .emit(EventConst.IS_FLOOR_HIDDEN, map2);
                 }
 
                 public void boundsChanged(Point2D newMapCenter) {

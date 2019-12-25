@@ -4149,6 +4149,10 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                            body:@{@"width":[NSNumber numberWithDouble:width],
                                   @"title":sMap.scaleViewHelper.mScaleText
                                   }];
+        FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+        NSString *floorID = floorListView.currentFloorId;
+        NSString *currentFloorID = floorID == nil ? @"" : floorID;
+        [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
     });
 }
 
