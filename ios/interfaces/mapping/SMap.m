@@ -3918,11 +3918,32 @@ RCT_REMAP_METHOD(activateNativeLicense, activateNativeLicense:(RCTPromiseResolve
         NSString* nativeOfficalLicensePath=[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/license/Official_License.txt"];
         BOOL isExist=[[NSFileManager defaultManager] fileExistsAtPath:nativeOfficalLicensePath];
         if(!isExist){
+            NSString* nativeOfficalLicenseDic=[NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/license/"];
+            NSArray* subPaths=[[NSFileManager defaultManager] subpathsAtPath:nativeOfficalLicenseDic];
+            for(int i=0;i<[subPaths count];i++){
+                NSString* fileName=[subPaths objectAtIndex:i];
+                NSString* fileNameTemp=[fileName lowercaseString];
+                if([fileNameTemp containsString:@"official"]&&[fileNameTemp containsString:@"license"]){
+                    nativeOfficalLicensePath=[nativeOfficalLicenseDic stringByAppendingString:fileName];
+                    isExist=YES;
+                    break;
+                }
+            }
+        }
+        if(!isExist){
             resolve(@(-1));
             return;
         }
         
         NSString *serialNumber = [NSString stringWithContentsOfFile:nativeOfficalLicensePath encoding:NSUTF8StringEncoding error:nil];
+        if([serialNumber length] == 25){
+            NSMutableString* str=[[NSMutableString alloc] initWithString:serialNumber];
+            [str insertString:@"-" atIndex:5];
+            [str insertString:@"-" atIndex:11];
+            [str insertString:@"-" atIndex:17];
+            [str insertString:@"-" atIndex:23];
+            serialNumber=[[NSString alloc] initWithString:str];
+        }
 
         RecycleLicenseManager* licenseManagers = [RecycleLicenseManager getInstance];
         
