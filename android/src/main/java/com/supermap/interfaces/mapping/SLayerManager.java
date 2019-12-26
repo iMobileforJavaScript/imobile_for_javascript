@@ -856,8 +856,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                                 point2Ds.add(pt);
                             }
                             PrjCoordSys desPrjCoordSys = new PrjCoordSys();
-                            desPrjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                            CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                            desPrjCoordSys.setType(prjCoordSys.getType());
+                            CoordSysTranslator.convert(point2Ds, mapCoordSys, desPrjCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
 
                             GeoStyle geoStyle1 = new GeoStyle();
                             geoStyle1.fromJson(style.toString());

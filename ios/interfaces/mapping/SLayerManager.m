@@ -617,8 +617,8 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                             [point2Ds add:pt];
                         }
                         PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
-                        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
-                        [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                        desPrjCoordSys.type = prj.type;
+                        [CoordSysTranslator convert:point2Ds PrjCoordSys:mapCoordSys PrjCoordSys:desPrjCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
                         
                         GeoStyle *style = [[GeoStyle alloc] init];
                         [style fromJson:styleJsonString];

@@ -450,11 +450,13 @@
             
             switch (fieldInfo.fieldType) {
                 case FT_BOOLEAN: {
-                    BOOL boolValue = NO;
-                    if ([value isEqual:@"YES"] || [value isEqual:@"true"]) {
-                        boolValue = YES;
+                    if ([value isEqual:@""]) {
+                        result = [recordset setFieldValueNULLWithString:name];
+                    } else if ([value isEqual:@"YES"] || [value isEqual:@"true"] || [(NSNumber *)value intValue] > 0) {
+                        result = [recordset setBOOLWithName:name BOOLValue:YES];
+                    } else {
+                        result = [recordset setBOOLWithName:name BOOLValue:NO];
                     }
-                    result = [recordset setBOOLWithName:name BOOLValue:boolValue];
                     break;
                 }
                 case FT_BYTE:
