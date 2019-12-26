@@ -1078,7 +1078,7 @@ RCT_REMAP_METHOD(createUniformThemeLabelMap, createUniformThemeLabelMapWithResol
             }
             if (fontSize != -1) {
                 [textStyle setFontHeight:fontSize];
-                [textStyle setFontWidth:fontSize];
+//                [textStyle setFontWidth:fontSize];
             }
             if (rotation != -1) {
                 [textStyle setRotation:rotation];
@@ -1612,7 +1612,7 @@ RCT_REMAP_METHOD(setLabelFontSize, setLabelFontSizeWithResolver:(NSDictionary*)d
                 }
                 if(count == 0){
                     TextStyle* style = themeLabel.mUniformStyle;
-                    [style setFontWidth:fontSize];
+//                    [style setFontWidth:fontSize];
                     [style setFontHeight:fontSize];
                 }else{
                     for (int i = 0; i < count; i++) {
