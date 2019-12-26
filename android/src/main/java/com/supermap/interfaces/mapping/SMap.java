@@ -1463,18 +1463,18 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public void zoom(double scale, Promise promise) {
         try {
             sMap = getInstance();
+            double dscale = sMap.getSmMapWC().getMapControl().getMap().getScale() * scale;
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
-            sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * scale, 100);
+            sMap.getSmMapWC().getMapControl().zoomTo(dscale, 100);
             map.refresh();
-//            Handler handler = new Handler();
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    sMap.getSmMapWC().getMapControl().zoomTo(sMap.getSmMapWC().getMapControl().getMap().getScale() * scale, 100);
-//                    map.refresh();
-//                }
-//            }, 0);//3秒后执行Runnable中的run方法
-//            map.zoom(scale);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    map.setScale(dscale);
+                }
+            }, 150);//3秒后执行Runnable中的run方法
+
 
             promise.resolve(true);
         } catch (Exception e) {
