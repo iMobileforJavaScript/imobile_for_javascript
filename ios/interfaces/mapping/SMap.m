@@ -4137,6 +4137,7 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                                   @"y":nsY
                                   }];
         FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+        [floorListView reload];
         NSString *floorID = floorListView.currentFloorId;
         NSString *currentFloorID = floorID == nil ? @"" : floorID;
         [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
@@ -4157,6 +4158,7 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
                                   @"title":sMap.scaleViewHelper.mScaleText
                                   }];
         FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+        [floorListView reload];
         NSString *floorID = floorListView.currentFloorId;
         NSString *currentFloorID = floorID == nil ? @"" : floorID;
         [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
