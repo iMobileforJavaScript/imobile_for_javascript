@@ -352,10 +352,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void insertXMLLayer(int index, String xml, Promise promise){
         try{
-            SMap sMap = SMap.getInstance();
-            sMap.getSmMapWC().getMapControl().getMap().getLayers().insert(index, xml);
-
-            promise.resolve(true);
+            boolean result = SMLayer.insertXMLLayer(index, xml);
+            promise.resolve(result);
         }
         catch(Exception e) {
             promise.reject(e);
