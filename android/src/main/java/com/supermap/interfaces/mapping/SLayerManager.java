@@ -700,7 +700,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void selectObjs(ReadableArray data, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
-            WritableArray arr = Arguments.createArray();
+//            WritableArray arr = Arguments.createArray();
 
             for (int i = 0; i < data.size(); i++) {
                 ReadableMap item = data.getMap(i);
@@ -709,7 +709,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
                 Layer layer = SMLayer.findLayerByPath(layerPath);
                 Selection selection = layer.getSelection();
-                Recordset rs = null;
+//                Recordset rs = null;
                 selection.clear();
 
                 boolean selectable = layer.isSelectable();
@@ -723,18 +723,18 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         int id = ids.getInt(j);
                         selection.add(id);
 
-                        rs = selection.toRecordset();
-                        rs.moveTo(i);
-                        Point2D point2D = rs.getGeometry().getInnerPoint();
-
-                        WritableMap idInfo = Arguments.createMap();
-
-                        idInfo.putInt("id", id);
-                        idInfo.putDouble("x", point2D.getX());
-                        idInfo.putDouble("y", point2D.getY());
-
-                        arr.pushMap(idInfo);
-                        rs.dispose();
+//                        rs = selection.toRecordset();
+//                        rs.moveTo(i);
+//                        Point2D point2D = rs.getGeometry().getInnerPoint();
+//
+//                        WritableMap idInfo = Arguments.createMap();
+//
+//                        idInfo.putInt("id", id);
+//                        idInfo.putDouble("x", point2D.getX());
+//                        idInfo.putDouble("y", point2D.getY());
+//
+//                        selectObjs.pushMap(idInfo);
+//                        rs.dispose();
                     }
                 }
 
@@ -748,7 +748,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
-            promise.resolve(arr);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -799,6 +799,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                 Layer layer = SMLayer.findLayerByPath(layerPath);
 
                 int[] ids = new int[_ids.size()];
+                if (ids.length == 0) continue;
 
                 for (int k = 0; k < _ids.size(); k++) {
                     ids[k] = _ids.getInt(k);

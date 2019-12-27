@@ -460,7 +460,7 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
 RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        NSMutableArray* arr = [[NSMutableArray alloc] init];
+//        NSMutableArray* arr = [[NSMutableArray alloc] init];
         
         for (int i = 0; i < data.count; i++) {
             NSDictionary* item = data[i];
@@ -468,7 +468,7 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
             NSArray* ids = [item objectForKey:@"ids"];
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             Selection* selection = [layer getSelection];
-            Recordset* rs = nil;
+//            Recordset* rs = nil;
             [selection clear];
             
             BOOL selectable = layer.selectable;
@@ -484,16 +484,16 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
                     NSNumber* _ID = ids[j];
                     [selection add:_ID.intValue];
                     
-                    rs = [selection toRecordset];
-                    [rs moveTo:i];
-                    Point2D* point2D = [rs.geometry getInnerPoint];
-                    
-                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                    [dic setObject:_ID forKey:@"id"];
-                    [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
-                    [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
-                    [arr addObject:dic];
-                    [rs dispose];
+//                    rs = [selection toRecordset];
+//                    [rs moveTo:i];
+//                    Point2D* point2D = [rs.geometry getInnerPoint];
+//
+//                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+//                    [dic setObject:_ID forKey:@"id"];
+//                    [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
+//                    [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
+//                    [arr addObject:dic];
+//                    [rs dispose];
                 }
             }
             
@@ -506,7 +506,7 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
         }
         
         [sMap.smMapWC.mapControl.map refresh];
-        resolve(arr);
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }
@@ -548,6 +548,7 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             NSDictionary* item = data[i];
             NSString* layerPath = [item objectForKey:@"layerPath"];
             NSArray* ids = [item objectForKey:@"ids"];
+            if (ids.count == 0) continue;
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             
             DatasetVector* dv = (DatasetVector *)layer.dataset;
