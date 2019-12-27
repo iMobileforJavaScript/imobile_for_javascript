@@ -650,7 +650,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             selection.clear();
 
             boolean selectable = layer.isSelectable();
-            WritableArray arr = Arguments.createArray();
+//            WritableArray arr = Arguments.createArray();
 
             if (ids.size() > 0) {
                 if (!layer.isSelectable()) {
@@ -661,19 +661,19 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                     int id = ids.getInt(i);
                     selection.add(id);
 
-                    Recordset rs = selection.toRecordset();
-                    rs.moveTo(i);
-                    Point2D point2D = rs.getGeometry().getInnerPoint();
-
-                    WritableMap idInfo = Arguments.createMap();
-
-                    idInfo.putInt("id", id);
-                    idInfo.putDouble("x", point2D.getX());
-                    idInfo.putDouble("y", point2D.getY());
-
-                    arr.pushMap(idInfo);
-
-                    rs.dispose();
+//                    Recordset rs = selection.toRecordset();
+//                    rs.moveTo(i);
+//                    Point2D point2D = rs.getGeometry().getInnerPoint();
+//
+//                    WritableMap idInfo = Arguments.createMap();
+//
+//                    idInfo.putInt("id", id);
+//                    idInfo.putDouble("x", point2D.getX());
+//                    idInfo.putDouble("y", point2D.getY());
+//
+//                    arr.pushMap(idInfo);
+//
+//                    rs.dispose();
                 }
             }
 
@@ -682,7 +682,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
 
             sMap.getSmMapWC().getMapControl().getMap().refresh();
-            promise.resolve(arr);
+            promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -856,7 +856,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                             }
                             PrjCoordSys desPrjCoordSys = new PrjCoordSys();
                             desPrjCoordSys.setType(prjCoordSys.getType());
-                            CoordSysTranslator.convert(point2Ds, mapCoordSys, desPrjCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                            CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
 
                             GeoStyle geoStyle1 = new GeoStyle();
                             geoStyle1.fromJson(style.toString());
