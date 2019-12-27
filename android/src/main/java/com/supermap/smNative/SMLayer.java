@@ -53,7 +53,9 @@ import com.supermap.smNative.components.InfoCallout;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SMLayer {
     public static WritableArray getLayersByType(int type, String path) {
@@ -469,6 +471,38 @@ public class SMLayer {
             return layer;
         }
         return null;
+    }
+
+    public static boolean insertXMLLayer(int index, String xml) {
+        SMap sMap = SMap.getInstance();
+        Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
+        List<String> layerCaptions = new ArrayList<>();
+        for(int i = 0; i < layers.getCount(); i++) {
+            layerCaptions.add(layers.get(i).getCaption());
+        }
+        Layer insertLayer = layers.insert(index, xml);
+        String insertCaption = insertLayer.getCaption();
+        String newCaption = getUniqueCaption(insertCaption, layerCaptions);
+        if(!insertCaption.equals(newCaption)) {
+            insertLayer.setCaption(newCaption);
+        }
+
+        return true;
+    }
+
+    private static String getUniqueCaption(String insertCaption, List<String> layerCaptions) {
+        if(layerCaptions.contains(insertCaption)) {
+            int i = 1;
+            while(true) {
+                String newCaption = insertCaption + "_" + i;
+                if(!layerCaptions.contains(newCaption)) {
+                    return newCaption;
+                }
+                i++;
+            }
+        } else {
+            return insertCaption;
+        }
     }
 
     public static boolean setLayerFieldInfo(Layer layer, ReadableArray fieldInfos, ReadableMap params) {

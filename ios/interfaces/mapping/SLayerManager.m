@@ -173,9 +173,8 @@ RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML:(NSString *)layerPath resolver:(RC
 #pragma mark 将xml图层插入到当前地图
 RCT_REMAP_METHOD(insertXMLLayer, insertXMLLayer:(int)index xml:(NSString *)xml resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
-        SMap* sMap = [SMap singletonInstance];
-        [sMap.smMapWC.mapControl.map.layers insertLayer:index withXML:xml];
-        resolve([NSNumber numberWithBool:YES]);
+        BOOL result = [SMLayer insertXMLLayer:index xml:xml];
+        resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
     }

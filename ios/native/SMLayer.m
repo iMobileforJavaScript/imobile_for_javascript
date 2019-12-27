@@ -390,6 +390,38 @@
     return nil;
 }
 
++ (BOOL)insertXMLLayer:(int)index xml:(NSString *)xml {
+    SMap* sMap = [SMap singletonInstance];
+    Layers* layers = sMap.smMapWC.mapControl.map.layers;
+    NSMutableArray* layserCaptions = [NSMutableArray array];
+    for(int i = 0; i < [layers getCount]; i++) {
+        [layserCaptions addObject:[layers getLayerAtIndex:i].caption];
+    }
+    Layer * insertLayer = [layers insertLayer:index withXML:xml];
+    NSString* insertCaption = insertLayer.caption;
+    NSString* newCaption = [self getUniqueCaption:insertCaption layerCaptions:layserCaptions];
+    if(![insertCaption isEqualToString:newCaption]) {
+        insertLayer.caption = newCaption;
+    }
+    
+    return YES;
+}
+
++ (NSString*)getUniqueCaption:(NSString*)insertCaption layerCaptions:(NSMutableArray*)layerCaptions {
+    if([layerCaptions containsObject:insertCaption]) {
+        int i = 1;
+        while(true) {
+            NSString* newCaption = [NSString stringWithFormat:@"%@_%d", insertCaption, i];
+            if(![layerCaptions containsObject:newCaption]) {
+                return newCaption;
+            }
+            i++;
+        }
+    } else {
+        return insertCaption;
+    }
+}
+
 + (BOOL)setLayerFieldInfo:(Layer *)layer fieldInfos:(NSArray *)fieldInfos params:(NSDictionary *)params {
     if (!layer) return NO;
     Layers* layers = [SMap singletonInstance].smMapWC.mapControl.map.layers;
