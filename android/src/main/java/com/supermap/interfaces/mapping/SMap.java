@@ -194,56 +194,81 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     private InfoCallout m_callout;
     String rootPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
     private String lcenseSerialNumberFilePath;
-
+    private boolean hasScaleChangeTask = false;
+    private boolean hasBoundsChangeTask = false;
     private ScaleViewHelper getScaleViewHelper() {
         if (scaleViewHelper == null) {
             MapControl mapControl = SMap.getInstance().smMapWC.getMapControl();
             scaleViewHelper = new ScaleViewHelper(context, mapControl);
         }
         if (scaleViewHelper.mapParameterChangedListener == null) {
+
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
-                    FloorListView floorListView = SMap.getInstance().smMapWC.getFloorListView();
-                    double pointScale = 1.0/2500;
-                    if(floorListView != null){
-                        if(newScale < pointScale && floorListView.getVisibility() == View.VISIBLE){
-                            floorListView.setVisibility(View.INVISIBLE);
-                        }else if(newScale > pointScale && floorListView.getVisibility() == View.INVISIBLE){
-                            floorListView.setVisibility(View.VISIBLE);
-                        }
-                    }
-                    if (scaleViewHelper == null)
-                        return;
-                    scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
-                    scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
-                    scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
-                    WritableMap map = Arguments.createMap();
-                    map.putDouble("width", scaleViewHelper.mScaleWidth);
-                    map.putString("title", scaleViewHelper.mScaleText);
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.SCALEVIEW_CHANGE, map);
+                    if(!hasScaleChangeTask){
+                        hasScaleChangeTask = true;
+                        TimerTask scaleChangeTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                FloorListView floorListView = SMap.getInstance().smMapWC.getFloorListView();
+                                double pointScale = 1.0/2500;
+                                if(floorListView != null){
+                                    if(newScale < pointScale && floorListView.getVisibility() == View.VISIBLE){
+                                        floorListView.setVisibility(View.INVISIBLE);
+                                    }else if(newScale > pointScale && floorListView.getVisibility() == View.INVISIBLE){
+                                        floorListView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                                if (scaleViewHelper == null)
+                                    return;
+                                scaleViewHelper.mScaleLevel = scaleViewHelper.getScaleLevel();
+                                scaleViewHelper.mScaleText = scaleViewHelper.getScaleText(scaleViewHelper.mScaleLevel);
+                                scaleViewHelper.mScaleWidth = scaleViewHelper.getScaleWidth(scaleViewHelper.mScaleLevel);
+                                WritableMap map = Arguments.createMap();
+                                map.putDouble("width", scaleViewHelper.mScaleWidth);
+                                map.putString("title", scaleViewHelper.mScaleText);
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.SCALEVIEW_CHANGE, map);
 
-                    String currentFloorID = "";
-                    if (floorListView != null && floorListView.getVisibility() == View.VISIBLE) {
-                        currentFloorID = floorListView.getCurrentFloorId();
+                                String currentFloorID = "";
+                                if (floorListView != null && floorListView.getVisibility() == View.VISIBLE) {
+                                    currentFloorID = floorListView.getCurrentFloorId();
+                                }
+                                WritableMap map2 = Arguments.createMap();
+                                map2.putString("currentFloorID",currentFloorID);
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.IS_FLOOR_HIDDEN, map2);
+                                hasScaleChangeTask = false;
+                            }
+                        };
+                        Timer timer = new Timer();
+                        timer.schedule(scaleChangeTask,200);
                     }
-                    WritableMap map2 = Arguments.createMap();
-                    map2.putString("currentFloorID",currentFloorID);
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.IS_FLOOR_HIDDEN, map2);
                 }
 
                 public void boundsChanged(Point2D newMapCenter) {
-                    sMap = SMap.getInstance();
-                    FloorListView floorListView = sMap.smMapWC.getFloorListView();
-                    String currentFloorID = "";
-                    if (floorListView != null && floorListView.getVisibility() == View.VISIBLE) {
-                        currentFloorID = floorListView.getCurrentFloorId();
+                    if(!hasBoundsChangeTask){
+                        hasBoundsChangeTask = true;
+                        TimerTask boundsChangeTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                sMap = SMap.getInstance();
+                                FloorListView floorListView = sMap.smMapWC.getFloorListView();
+                                String currentFloorID = "";
+                                if (floorListView != null && floorListView.getVisibility() == View.VISIBLE) {
+                                    currentFloorID = floorListView.getCurrentFloorId();
+                                }
+                                WritableMap map = Arguments.createMap();
+                                map.putString("currentFloorID",currentFloorID);
+                                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                        .emit(EventConst.IS_FLOOR_HIDDEN, map);
+                                hasBoundsChangeTask = false;
+                            }
+                        };
+                        Timer timer = new Timer();
+                        timer.schedule(boundsChangeTask,200);
                     }
-                    WritableMap map = Arguments.createMap();
-                    map.putString("currentFloorID",currentFloorID);
-                    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit(EventConst.IS_FLOOR_HIDDEN, map);
+
                 }
 
                 public void angleChanged(double newAngle) {
