@@ -162,9 +162,9 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
         [point setStyle:style];//setStyle(style);
         [sMap.smMapWC.mapControl.map.trackingLayer addGeometry:point WithTag:[NSString stringWithFormat:@"%d",tag]];
         if(sMap.smMapWC.mapControl.map.scale < 1/2785.0){
-                   sMap.smMapWC.mapControl.map.scale = 1/2785.0;
+            sMap.smMapWC.mapControl.map.scale = 1/2785.0;
         }
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
              [sMap.smMapWC.mapControl panTo:pt time:100];
             [sMap.smMapWC.mapControl.map refresh];
         });
