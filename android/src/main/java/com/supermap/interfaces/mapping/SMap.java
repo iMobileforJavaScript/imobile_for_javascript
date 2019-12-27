@@ -1466,12 +1466,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             double dscale = sMap.getSmMapWC().getMapControl().getMap().getScale() * scale;
             com.supermap.mapping.Map map = sMap.smMapWC.getMapControl().getMap();
             sMap.getSmMapWC().getMapControl().zoomTo(dscale, 100);
-            map.refresh();
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     map.setScale(dscale);
+                    map.refresh();
                 }
             }, 150);//3秒后执行Runnable中的run方法
 
