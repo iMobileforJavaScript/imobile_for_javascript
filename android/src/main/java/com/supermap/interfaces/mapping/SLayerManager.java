@@ -30,6 +30,7 @@ import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
+import com.supermap.data.Rectangle2D;
 import com.supermap.data.Size2D;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
@@ -791,12 +792,19 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
             WritableArray arr = Arguments.createArray();
 
+            Rectangle2D mapBounds = map.getViewBounds();
             for (int i = 0; i < data.size(); i++) {
                 ReadableMap item = data.getMap(i);
                 String layerPath = item.getString("layerPath");
                 ReadableArray _ids = item.getArray("ids");
 
                 Layer layer = SMLayer.findLayerByPath(layerPath);
+                //处理图层属性关联时，图层bounds超出当前Viewbounds
+                Rectangle2D layerBounds = layer.getDataset().getBounds();
+                if(mapBounds.getLeft() > layerBounds.getLeft() || mapBounds.getRight() < layerBounds.getRight() || mapBounds.getTop() > layerBounds.getTop() || mapBounds.getBottom() < layerBounds.getBottom()){
+                    Rectangle2D rect = new Rectangle2D(layerBounds.getLeft() - 5000, layerBounds.getBottom() + 5000, layerBounds.getRight() + 5000, layerBounds.getTop() - 5000);
+                    map.setViewBounds(rect);
+                }
 
                 int[] ids = new int[_ids.size()];
                 if (ids.length == 0) continue;
