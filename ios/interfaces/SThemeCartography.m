@@ -3823,7 +3823,7 @@ RCT_REMAP_METHOD(modifyGraduatedSymbolThemeMap, modifyGraduatedSymbolThemeMapWit
         int symbolID = -1;
         double symbolSize = -1;
         GraduatedMode graduatedMode = GM_Constant;
-
+        
         if ([array containsObject:@"GraduatedMode"]){
             NSString* mode = [dataDic objectForKey: @"GraduatedMode" ];
             graduatedMode = [SMThemeCartography getGraduatedMode:mode];
@@ -3856,7 +3856,9 @@ RCT_REMAP_METHOD(modifyGraduatedSymbolThemeMap, modifyGraduatedSymbolThemeMapWit
                 [themeGraduatedSymbol setExpression:graSymbolExpression];
             }
            
-            [themeGraduatedSymbol setGraduatedMode:graduatedMode];
+            if ([array containsObject:@"GraduatedMode"]) {
+                [themeGraduatedSymbol setGraduatedMode:graduatedMode];
+            }
             
             if (baseValue != -1) {
                 [themeGraduatedSymbol setBaseValue:baseValue];
