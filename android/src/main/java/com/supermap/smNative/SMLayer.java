@@ -53,7 +53,9 @@ import com.supermap.smNative.components.InfoCallout;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SMLayer {
     public static WritableArray getLayersByType(int type, String path) {
@@ -471,6 +473,38 @@ public class SMLayer {
         return null;
     }
 
+    public static boolean insertXMLLayer(int index, String xml) {
+        SMap sMap = SMap.getInstance();
+        Layers layers = sMap.getSmMapWC().getMapControl().getMap().getLayers();
+        List<String> layerCaptions = new ArrayList<>();
+        for(int i = 0; i < layers.getCount(); i++) {
+            layerCaptions.add(layers.get(i).getCaption());
+        }
+        Layer insertLayer = layers.insert(index, xml);
+        String insertCaption = insertLayer.getCaption();
+        String newCaption = getUniqueCaption(insertCaption, layerCaptions);
+        if(!insertCaption.equals(newCaption)) {
+            insertLayer.setCaption(newCaption);
+        }
+
+        return true;
+    }
+
+    private static String getUniqueCaption(String insertCaption, List<String> layerCaptions) {
+        if(layerCaptions.contains(insertCaption)) {
+            int i = 1;
+            while(true) {
+                String newCaption = insertCaption + "_" + i;
+                if(!layerCaptions.contains(newCaption)) {
+                    return newCaption;
+                }
+                i++;
+            }
+        } else {
+            return insertCaption;
+        }
+    }
+
     public static boolean setLayerFieldInfo(Layer layer, ReadableArray fieldInfos, ReadableMap params) {
         if (layer == null) return false;
         Layers layers = SMap.getInstance().getSmMapWC().getMapControl().getMap().getLayers();
@@ -553,20 +587,29 @@ public class SMLayer {
                     result = recordset.setFieldValue(name, value);
                 }else if (type == FieldType.BOOLEAN) {
                     boolean boolValue = false;
+                    value = "";
                     ReadableType _type = info.getType("value");
                     switch (_type) {
                         case Number:
-                            boolValue = info.getInt("value") == 1;
+                            boolValue = info.getInt("value") > 0;
                             break;
                         case String:
                             value = info.getString("value");
-                            boolValue = value.equals('1') || value.equals("YES") || value.equals("true");
+                            if (!value.equals("")) {
+                                boolValue = value.equals('1') || value.equals("YES") || value.equals("true");
+                            }
                             break;
                         case Boolean:
                             boolValue = info.getBoolean("value");
                             break;
+                        default:
+                            value = "";
                     }
-                    result = recordset.setBoolean(name, boolValue);
+                    if (_type == ReadableType.String && value.equals("")) {
+                        result = recordset.setFieldValueNull(name);
+                    } else {
+                        result = recordset.setBoolean(name, boolValue);
+                    }
                 }
             } catch (Exception e) {
                continue;

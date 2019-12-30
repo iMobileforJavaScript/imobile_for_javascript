@@ -26,6 +26,7 @@ import com.supermap.data.DatasourceConnectionInfo;
 import com.supermap.data.Datasources;
 import com.supermap.data.EncodeType;
 import com.supermap.data.EngineType;
+import com.supermap.data.Enum;
 import com.supermap.data.FieldInfo;
 import com.supermap.data.FieldInfos;
 import com.supermap.data.FieldType;
@@ -475,13 +476,7 @@ public class SDatasource extends ReactContextBaseJavaModule {
                 datasetVector= (DatasetVector) datasets.get(datasetName);
             } else {
                 DatasetType datasetType;
-                if(type == 5){
-                    datasetType = DatasetType.REGION;
-                } else if (type == 3) {
-                    datasetType = DatasetType.LINE;
-                } else {
-                    datasetType = DatasetType.POINT;
-                }
+                datasetType = (DatasetType) Enum.parse(DatasetType.class, type);
 
                 DatasetVectorInfo datasetVectorInfo = new DatasetVectorInfo();
                 datasetVectorInfo.setType(datasetType);

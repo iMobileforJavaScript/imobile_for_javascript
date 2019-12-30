@@ -173,9 +173,8 @@ RCT_REMAP_METHOD(getLayerAsXML, getLayerAsXML:(NSString *)layerPath resolver:(RC
 #pragma mark 将xml图层插入到当前地图
 RCT_REMAP_METHOD(insertXMLLayer, insertXMLLayer:(int)index xml:(NSString *)xml resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try{
-        SMap* sMap = [SMap singletonInstance];
-        [sMap.smMapWC.mapControl.map.layers insertLayer:index withXML:xml];
-        resolve([NSNumber numberWithBool:YES]);
+        BOOL result = [SMLayer insertXMLLayer:index xml:xml];
+        resolve([NSNumber numberWithBool:result]);
     } @catch (NSException *exception) {
         reject(@"LayerManager", exception.reason, nil);
     }
@@ -416,7 +415,7 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
         Selection* selection = [layer getSelection];
         [selection clear];
         
-        NSMutableArray* arr = [[NSMutableArray alloc] init];
+//        NSMutableArray* arr = [[NSMutableArray alloc] init];
         
         BOOL selectable = layer.selectable;
         
@@ -431,17 +430,17 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
                 NSNumber* _ID = ids[i];
                 [selection add:_ID.intValue];
                 
-                Recordset* rs = [selection toRecordset];
-                [rs moveTo:i];
-                Point2D* point2D = [rs.geometry getInnerPoint];
-                
-                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                [dic setObject:_ID forKey:@"id"];
-                [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
-                [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
-                
-                [arr addObject:dic];
-                [rs dispose];
+//                Recordset* rs = [selection toRecordset];
+//                [rs moveTo:i];
+//                Point2D* point2D = [rs.geometry getInnerPoint];
+//
+//                NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+//                [dic setObject:_ID forKey:@"id"];
+//                [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
+//                [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
+//
+//                [arr addObject:dic];
+//                [rs dispose];
             }
         }
         
@@ -450,7 +449,7 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
         }
         
         [sMap.smMapWC.mapControl.map refresh];
-        resolve(arr);
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }
@@ -460,7 +459,7 @@ RCT_REMAP_METHOD(selectObj, selectObjWith:(NSString *)layerPath ids:(NSArray *)i
 RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         SMap* sMap = [SMap singletonInstance];
-        NSMutableArray* arr = [[NSMutableArray alloc] init];
+//        NSMutableArray* arr = [[NSMutableArray alloc] init];
         
         for (int i = 0; i < data.count; i++) {
             NSDictionary* item = data[i];
@@ -468,7 +467,7 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
             NSArray* ids = [item objectForKey:@"ids"];
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             Selection* selection = [layer getSelection];
-            Recordset* rs = nil;
+//            Recordset* rs = nil;
             [selection clear];
             
             BOOL selectable = layer.selectable;
@@ -484,16 +483,16 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
                     NSNumber* _ID = ids[j];
                     [selection add:_ID.intValue];
                     
-                    rs = [selection toRecordset];
-                    [rs moveTo:i];
-                    Point2D* point2D = [rs.geometry getInnerPoint];
-                    
-                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                    [dic setObject:_ID forKey:@"id"];
-                    [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
-                    [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
-                    [arr addObject:dic];
-                    [rs dispose];
+//                    rs = [selection toRecordset];
+//                    [rs moveTo:i];
+//                    Point2D* point2D = [rs.geometry getInnerPoint];
+//
+//                    NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+//                    [dic setObject:_ID forKey:@"id"];
+//                    [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
+//                    [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
+//                    [arr addObject:dic];
+//                    [rs dispose];
                 }
             }
             
@@ -506,7 +505,7 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
         }
         
         [sMap.smMapWC.mapControl.map refresh];
-        resolve(arr);
+        resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"SMap", exception.reason, nil);
     }
@@ -548,6 +547,7 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             NSDictionary* item = data[i];
             NSString* layerPath = [item objectForKey:@"layerPath"];
             NSArray* ids = [item objectForKey:@"ids"];
+            if (ids.count == 0) continue;
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             
             DatasetVector* dv = (DatasetVector *)layer.dataset;
@@ -617,7 +617,7 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                             [point2Ds add:pt];
                         }
                         PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
-                        desPrjCoordSys.type = PCST_EARTH_LONGITUDE_LATITUDE;
+                        desPrjCoordSys.type = prj.type;
                         [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
                         
                         GeoStyle *style = [[GeoStyle alloc] init];
