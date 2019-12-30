@@ -54,7 +54,7 @@ public class FlyHelper {
     private Routes routes;
     private int routeIndex=-1;
     public boolean isFlying = false;
-    private boolean isStop = false;
+    private boolean isStop = true;
     private boolean routPasue=false;
     private Timer flyProgressTimer;
     private TimerTask flyProgressTimerTask;
