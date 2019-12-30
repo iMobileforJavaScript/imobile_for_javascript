@@ -6079,6 +6079,40 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
     }
 
+    /**
+     * 地图转XML
+     * @param promise
+     */
+    @ReactMethod
+    public void mapToXml(Promise promise) {
+        try {
+            String xml = SMap.getInstance().getSmMapWC().getMapControl().getMap().toXML();
+            promise.resolve(xml);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
+
+    /**
+     * XML转地图
+     * @param xml
+     * @param promise
+     */
+    @ReactMethod
+    public void mapFromXml(String xml, Promise promise) {
+        try {
+            boolean result = SMap.getInstance().getSmMapWC().getMapControl().getMap().fromXML(xml);
+            if (result) {
+                SMap.getInstance().getSmMapWC().getMapControl().getMap().refresh();
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+
+    }
+
     public interface OneArg<T> {
         void handle(T arg);
     }

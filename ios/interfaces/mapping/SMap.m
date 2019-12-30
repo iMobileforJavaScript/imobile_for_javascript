@@ -4096,6 +4096,28 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
     }
 }
 
+#pragma mark 地图转XML
+RCT_REMAP_METHOD(mapToXml, mapToXmlWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* xml = [SMap.singletonInstance.smMapWC.mapControl.map toXML];
+        resolve(xml);
+    } @catch (NSException *exception) {
+        reject(@"mapToXml",exception.reason,nil);
+    }
+}
+
+#pragma mark XML转地图
+RCT_REMAP_METHOD(mapFromXml, mapFromXml:(NSString *)xml resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        BOOL result = [SMap.singletonInstance.smMapWC.mapControl.map fromXML:xml];
+        if (result) {
+            [SMap.singletonInstance.smMapWC.mapControl.map refresh];
+        }
+        resolve(@(result));
+    } @catch (NSException *exception) {
+        reject(@"mapFromXml",exception.reason,nil);
+    }
+}
 
 #pragma mark /************************************************ 监听事件 ************************************************/
 #pragma mark 监听事件
