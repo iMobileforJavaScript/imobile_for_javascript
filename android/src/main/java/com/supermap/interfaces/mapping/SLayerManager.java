@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.supermap.data.Color;
 import com.supermap.data.CoordSysTransMethod;
 import com.supermap.data.CoordSysTransParameter;
 import com.supermap.data.CoordSysTranslator;
@@ -29,6 +30,7 @@ import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
+import com.supermap.data.Size2D;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
 import com.supermap.mapping.LayerSettingVector;
@@ -842,36 +844,47 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         if(geometry.getType()==GeometryType.GEOGRAPHICOBJECT){
                             trackingLayer.add(geometry.clone(), "");
                         }else {
-                            String jsonString = geometry.toJson();
-                            JSONObject jsonObject = new JSONObject(jsonString);
-                            JSONObject style = jsonObject.getJSONObject("style");
-                            JSONArray pointsArr = jsonObject.getJSONArray("points");
-                            Point2Ds point2Ds = new Point2Ds();
-                            for (int index = 0; index < pointsArr.length(); index++) {
-                                JSONObject object = pointsArr.getJSONObject(index);
-                                double x = object.getDouble("x");
-                                double y = object.getDouble("y");
-                                Point2D pt = new Point2D(x, y);
-                                point2Ds.add(pt);
-                            }
-                            PrjCoordSys desPrjCoordSys = new PrjCoordSys();
-                            desPrjCoordSys.setType(prjCoordSys.getType());
-                            CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-
-                            GeoStyle geoStyle1 = new GeoStyle();
-                            geoStyle1.fromJson(style.toString());
+                            GeoStyle selectStyle = new GeoStyle();
+                            selectStyle.setFillForeColor(new Color(0, 255, 0, 128));
+                            selectStyle.setLineColor(new Color(70, 128, 223));
+                            selectStyle.setLineWidth(1);
+                            selectStyle.setMarkerSize(new Size2D(5, 5));
 
                             GeometryType geoType = recordset.getGeometry().getType();
                             Geometry newGeometry = null;
+
                             if (geoType == GeometryType.GEOPOINT) {
+                                Point2Ds point2Ds = new Point2Ds();
+                                point2Ds.add(geometry.getInnerPoint());
+                                PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                                desPrjCoordSys.setType(prjCoordSys.getType());
+                                CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
                                 newGeometry = new GeoPoint(point2Ds.getItem(0).getX(), point2Ds.getItem(0).getY());
                             } else if (geoType == GeometryType.GEOLINE) {
-                                newGeometry = new GeoLine(point2Ds);
+                                GeoLine line = (GeoLine)geometry;
+                                Point2Ds point2Ds;
+                                newGeometry = new GeoLine();
+                                for (int j = 0; j < line.getPartCount(); j++) {
+                                    point2Ds = line.getPart(j);
+                                    PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                                    desPrjCoordSys.setType(prjCoordSys.getType());
+                                    CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                                    ((GeoLine) newGeometry).addPart(point2Ds);
+                                }
                             } else if (geoType == GeometryType.GEOREGION) {
-                                newGeometry = new GeoRegion(point2Ds);
+                                GeoRegion region = (GeoRegion)geometry;
+                                Point2Ds point2Ds;
+                                newGeometry = new GeoRegion();
+                                for (int j = 0; j < region.getPartCount(); j++) {
+                                    point2Ds = region.getPart(j);
+                                    PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                                    desPrjCoordSys.setType(prjCoordSys.getType());
+                                    CoordSysTranslator.convert(point2Ds, desPrjCoordSys, mapCoordSys, new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+                                    ((GeoRegion) newGeometry).addPart(point2Ds);
+                                }
                             }
                             if (newGeometry != null) {
-                                newGeometry.setStyle(geoStyle1);
+                                newGeometry.setStyle(selectStyle);
                                 trackingLayer.add(newGeometry, "");
                             }
                         }
