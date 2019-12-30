@@ -40,7 +40,10 @@ public class MediaUtil {
     public static Bitmap getScreenShotImageFromVideoPath(String filePath, int width, int height) {
         Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.MICRO_KIND);
 
-        return Bitmap.createBitmap(bitmap, 0, 0, width, height);
+        int newWidth = bitmap.getWidth() >= width ? width : bitmap.getWidth();
+        int newheight = bitmap.getHeight() >= height ? height : bitmap.getHeight();
+
+        return Bitmap.createBitmap(bitmap, 0, 0, newWidth, newheight);
     }
 
     public static Bitmap getLocalBitmap(String url) {
