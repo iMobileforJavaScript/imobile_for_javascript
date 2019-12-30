@@ -301,88 +301,95 @@ RCT_REMAP_METHOD(sendFile, connectInfo:(NSString*)connectInfo message:(NSString*
 RCT_REMAP_METHOD(sendFileWithThirdServer, serverUrl:(NSString*)servelUrl file:(NSString*)filePath userId:(NSString*)userId talkId:(NSString*)talkId msgId:(int)msgId disconnectionServiceResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSString* fileName=[filePath lastPathComponent];
-            
-            NSOutputStream* outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:YES];
-            [outputStream open];
-            
-            NSDictionary *fileDic = [fileManager attributesOfItemAtPath:filePath error:nil];//获取文件的属性
-            //文件大小
-            unsigned long long fileSize = [[fileDic objectForKey:NSFileSize] longLongValue];
-            //单个文件大小
-            unsigned int singleFileSize= FILE_BLOCK_SIZE;
-            //2M为单位切割文件后的总个数
-            long total = (long)ceil((double)fileSize / ((double) singleFileSize));
-            
-            //BASE64编码的单个文件
-            NSString* sFileBlock;
-            
-            NSString* md5=[self getFileMD5StrFromPath:filePath];
-            
-            NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath:filePath];
-            
-            NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
-            [sub_messageDic setObject:md5 forKey:@"md5"];
-            [sub_messageDic setObject:userId forKey:@"userId"];
-            
-            int prevPercentage = 0;
-            long startPos = 0;
-            long length;
-            for(int index=1;index<=total;index++,startPos += length){
-                NSData* data;
-                if(index==total){
-                    data=[fh readDataToEndOfFile];
-                    length = data.length;
-                }else{
-                    data=[fh readDataOfLength:singleFileSize];
-                    length = singleFileSize;
-                }
-                NSString * decodeStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-                sFileBlock=decodeStr;
-                [sub_messageDic setObject:sFileBlock forKey:@"data"];
-                [sub_messageDic setValue:@(index) forKey:@"index"];
-                [sub_messageDic setValue:@(length) forKey:@"dataLength"];
-                [sub_messageDic setValue:@(startPos) forKey:@"startPos"];
+            @try {
+                NSFileManager *fileManager = [NSFileManager defaultManager];
+                NSString* fileName=[filePath lastPathComponent];
                 
-                NSURL *url =[NSURL URLWithString:servelUrl];
-                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-                                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                                   timeoutInterval:15.0];
-                [request setHTTPMethod:@"POST"];
-                NSData *message_data=[NSJSONSerialization dataWithJSONObject:sub_messageDic options:NSJSONWritingPrettyPrinted error:nil];
-                NSString *message_str=[[NSString alloc]initWithData:message_data encoding:NSUTF8StringEncoding];
-                NSData *body = [message_str dataUsingEncoding:NSUTF8StringEncoding];
+                NSOutputStream* outputStream = [NSOutputStream outputStreamToFileAtPath:filePath append:YES];
+                [outputStream open];
                 
-                [request setHTTPBody:body];
+                NSDictionary *fileDic = [fileManager attributesOfItemAtPath:filePath error:nil];//获取文件的属性
+                //文件大小
+                unsigned long long fileSize = [[fileDic objectForKey:NSFileSize] longLongValue];
+                //单个文件大小
+                unsigned int singleFileSize= FILE_BLOCK_SIZE;
+                //2M为单位切割文件后的总个数
+                long total = (long)ceil((double)fileSize / ((double) singleFileSize));
                 
-                NSURLResponse * response;
-                NSError * error;
-                NSData * backData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-                if(error == nil){
-                    int percentage=(index*100)/total;
-                    if(percentage != prevPercentage) {
-                        prevPercentage = percentage;
-                        NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
-                        [infoDic setObject:talkId forKey:@"talkId"];
-                        [infoDic setValue:@(msgId) forKey:@"msgId"];
-                        [infoDic setValue:@(percentage) forKey:@"percentage"];
-                        
-                        [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
-                    }
-                    
+                //BASE64编码的单个文件
+                NSString* sFileBlock;
+                
+                NSString* md5=[self getFileMD5StrFromPath:filePath];
+                
+                NSFileHandle* fh = [NSFileHandle fileHandleForReadingAtPath:filePath];
+                
+                NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
+                [sub_messageDic setObject:md5 forKey:@"md5"];
+                [sub_messageDic setObject:userId forKey:@"userId"];
+                
+                int prevPercentage = 0;
+                long startPos = 0;
+                long length;
+                for(int index=1;index<=total;index++,startPos += length){
+                    NSData* data;
                     if(index==total){
-                        NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+                        data=[fh readDataToEndOfFile];
+                        length = data.length;
+                    }else{
+                        data=[fh readDataOfLength:singleFileSize];
+                        length = singleFileSize;
+                    }
+                    NSString * decodeStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+                    sFileBlock=decodeStr;
+                    [sub_messageDic setObject:sFileBlock forKey:@"data"];
+                    [sub_messageDic setValue:@(index) forKey:@"index"];
+                    [sub_messageDic setValue:@(length) forKey:@"dataLength"];
+                    [sub_messageDic setValue:@(startPos) forKey:@"startPos"];
+                    
+                    NSURL *url =[NSURL URLWithString:servelUrl];
+                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                                       timeoutInterval:15.0];
+                    [request setHTTPMethod:@"POST"];
+                    NSData *message_data=[NSJSONSerialization dataWithJSONObject:sub_messageDic options:NSJSONWritingPrettyPrinted error:nil];
+                    NSString *message_str=[[NSString alloc]initWithData:message_data encoding:NSUTF8StringEncoding];
+                    NSData *body = [message_str dataUsingEncoding:NSUTF8StringEncoding];
+                    
+                    [request setHTTPBody:body];
+                    
+                    NSURLResponse * response;
+                    NSError * error;
+                    NSData * backData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+                    if(error == nil){
+                        int percentage=(index*100)/total;
+                        if(percentage != prevPercentage) {
+                            prevPercentage = percentage;
+                            NSMutableDictionary* infoDic = [[NSMutableDictionary alloc] init];
+                            [infoDic setObject:talkId forKey:@"talkId"];
+                            [infoDic setValue:@(msgId) forKey:@"msgId"];
+                            [infoDic setValue:@(percentage) forKey:@"percentage"];
+                            
+                            [self sendEventWithName:MESSAGE_SERVICE_SEND_FILE body:infoDic];
+                        }
                         
-                        [dic setObject:md5 forKey:@"queueName"];
-                        [dic setObject:fileName forKey:@"fileName"];
-                        [dic setValue:@(fileSize) forKey:@"fileSize"];
-                        
-                        [fh closeFile];
-                        resolve(dic);
+                        if(index==total){
+                            NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+                            
+                            [dic setObject:md5 forKey:@"queueName"];
+                            [dic setObject:fileName forKey:@"fileName"];
+                            [dic setValue:@(fileSize) forKey:@"fileSize"];
+                            
+                            [fh closeFile];
+                            resolve(dic);
+                        }
+                    } else {
+                        NSLog(@"error : %@",[error localizedDescription]);
+                        reject(@"SMessageService", [error localizedDescription], nil);
+                        return;
                     }
                 }
+            } @catch (NSException *exception) {
+                reject(@"SMessageService", exception.reason, nil);
             }
         });
     } @catch (NSException *exception) {
@@ -494,81 +501,87 @@ RCT_REMAP_METHOD(receiveFileWithThirdServer, serverUrl:(NSString*)serverUrl file
     @try {
         dispatch_queue_t urls_queue = dispatch_queue_create("receiveFile", NULL);
         dispatch_async(urls_queue, ^{
-            BOOL result = YES;
-            BOOL isDir = NO;
-            BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:receivePath isDirectory:&isDir];
-            if (!isExist || !isDir) {
-                [[NSFileManager defaultManager] createDirectoryAtPath:receivePath withIntermediateDirectories:YES attributes:nil error:nil];
-            }
-            NSString* filePath=[NSString stringWithFormat:@"%@/%@",receivePath,fileName];
-            if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]){
-                [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes:nil];
-            }
-            
-            NSFileHandle* fh = [NSFileHandle fileHandleForWritingAtPath:filePath];
-            //单个文件大小
-            unsigned int singleFileSize= FILE_BLOCK_SIZE;
-            int count=(int)ceil((double)fileSize / ((double) singleFileSize));
-            
-            NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
-            [sub_messageDic setValue:md5 forKey:@"md5"];
-            [sub_messageDic setValue:@(singleFileSize) forKey:@"dataLength"];
-            [sub_messageDic setObject:fileOwnerId forKey:@"userID"];
-            
-            long  start=0;
-            int prevPercentage = 0;
-            for(int index=1;index<=count;index++) {
-                [sub_messageDic setObject:@(start) forKey:@"startPos"];
-                NSURL *url =[NSURL URLWithString:serverUrl];
-                
-                NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
-                                                                       cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                                   timeoutInterval:60.0];
-                [request setHTTPMethod:@"POST"];
-                
-                NSData *message_data=[NSJSONSerialization dataWithJSONObject:sub_messageDic options:NSJSONWritingPrettyPrinted error:nil];
-                NSString *message_str=[[NSString alloc]initWithData:message_data encoding:NSUTF8StringEncoding];
-                
-                NSString *httpBody = message_str;
-                
-                NSString *percentEncoding = [httpBody stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-                [request setHTTPBody:[percentEncoding dataUsingEncoding:NSUTF8StringEncoding]];
-                //                NSURLSessionDataTask *dataTask = nil;
-                
-                [request setHTTPBody:message_data];
-                
-                NSURLResponse * response;
-                NSError * error;
-                NSData * backData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-                if (error) {
-                    NSLog(@"error : %@",[error localizedDescription]);
-                }else{
-                    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:backData options:NSJSONReadingMutableContainers error:nil];
-                    long dataLength=[[dic valueForKey:@"dataLength"] longValue];
-                    NSString* dataStr=[dic objectForKey:@"value"];
-                    NSData *data = [[NSData alloc]initWithBase64EncodedString:dataStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    if(data.length == 0) {
-                        result = NO;
-                        break;
-                    }
-                    [fh writeData:data];
-                    start+=dataLength;
-                    
-                    int percentage = (int)((float) index / count * 100);
-                    if(percentage != prevPercentage) {
-                        prevPercentage = percentage;
-                        NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
-                        [infoMap setObject:talkId forKey:@"talkId"];
-                        [infoMap setObject:@(msgId) forKey:@"msgId"];
-                        [infoMap setObject:@(percentage) forKey:@"percentage"];
-                        
-                        [self sendEventWithName:MESSAGE_SERVICE_RECEIVE_FILE body:infoMap];
-                    }
-                    
+            @try {
+                BOOL result = YES;
+                BOOL isDir = NO;
+                BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:receivePath isDirectory:&isDir];
+                if (!isExist || !isDir) {
+                    [[NSFileManager defaultManager] createDirectoryAtPath:receivePath withIntermediateDirectories:YES attributes:nil error:nil];
                 }
+                NSString* filePath=[NSString stringWithFormat:@"%@/%@",receivePath,fileName];
+                if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]){
+                    [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes:nil];
+                }
+                
+                NSFileHandle* fh = [NSFileHandle fileHandleForWritingAtPath:filePath];
+                //单个文件大小
+                unsigned int singleFileSize= FILE_BLOCK_SIZE;
+                int count=(int)ceil((double)fileSize / ((double) singleFileSize));
+                
+                NSMutableDictionary *sub_messageDic=[[NSMutableDictionary alloc] init];
+                [sub_messageDic setValue:md5 forKey:@"md5"];
+                [sub_messageDic setValue:@(singleFileSize) forKey:@"dataLength"];
+                [sub_messageDic setObject:fileOwnerId forKey:@"userID"];
+                
+                long  start=0;
+                int prevPercentage = 0;
+                for(int index=1;index<=count;index++) {
+                    [sub_messageDic setObject:@(start) forKey:@"startPos"];
+                    NSURL *url =[NSURL URLWithString:serverUrl];
+                    
+                    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                                       timeoutInterval:60.0];
+                    [request setHTTPMethod:@"POST"];
+                    
+                    NSData *message_data=[NSJSONSerialization dataWithJSONObject:sub_messageDic options:NSJSONWritingPrettyPrinted error:nil];
+                    NSString *message_str=[[NSString alloc]initWithData:message_data encoding:NSUTF8StringEncoding];
+                    
+                    NSString *httpBody = message_str;
+                    
+                    NSString *percentEncoding = [httpBody stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+                    [request setHTTPBody:[percentEncoding dataUsingEncoding:NSUTF8StringEncoding]];
+                    //                NSURLSessionDataTask *dataTask = nil;
+                    
+                    [request setHTTPBody:message_data];
+                    
+                    NSURLResponse * response;
+                    NSError * error;
+                    NSData * backData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+                    if (error) {
+                        NSLog(@"error : %@",[error localizedDescription]);
+                        reject(@"SMessageService", [error localizedDescription], nil);
+                        return;
+                    }else{
+                        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:backData options:NSJSONReadingMutableContainers error:nil];
+                        long dataLength=[[dic valueForKey:@"dataLength"] longValue];
+                        NSString* dataStr=[dic objectForKey:@"value"];
+                        NSData *data = [[NSData alloc]initWithBase64EncodedString:dataStr options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                        if(data.length == 0) {
+                            result = NO;
+                            break;
+                        }
+                        [fh writeData:data];
+                        start+=dataLength;
+                        
+                        int percentage = (int)((float) index / count * 100);
+                        if(percentage != prevPercentage) {
+                            prevPercentage = percentage;
+                            NSMutableDictionary* infoMap = [[NSMutableDictionary alloc] init];
+                            [infoMap setObject:talkId forKey:@"talkId"];
+                            [infoMap setObject:@(msgId) forKey:@"msgId"];
+                            [infoMap setObject:@(percentage) forKey:@"percentage"];
+                            
+                            [self sendEventWithName:MESSAGE_SERVICE_RECEIVE_FILE body:infoMap];
+                        }
+                        
+                    }
+                }
+                [fh closeFile];
+                resolve([NSNumber numberWithBool:result]);
+            } @catch (NSException *exception) {
+                reject(@"SMessageService", exception.reason, nil);
             }
-            [fh closeFile];
-            resolve([NSNumber numberWithBool:result]);
         });
     } @catch (NSException *exception) {
         reject(@"SMessageService", exception.reason, nil);
