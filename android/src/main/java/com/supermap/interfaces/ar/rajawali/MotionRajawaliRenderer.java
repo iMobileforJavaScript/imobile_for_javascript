@@ -287,6 +287,9 @@ public class MotionRajawaliRenderer extends RajawaliRenderer {
         mRouteTrajectorys.put(mRouteIndex,new Trajectory(Color.GREEN,1.0f));
         getCurrentScene().addChild(mRouteTrajectorys.get(mRouteIndex));
         mInitNewRoute = true;
+    }
+
+    public void routeAdd(){
         mRouteIndex++;
     }
 
