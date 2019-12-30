@@ -560,97 +560,81 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             
             [recordset moveFirst];
             
-            PrjCoordSys *prj =  recordset.datasetVector.prjCoordSys;
+            PrjCoordSys *prjCoordSys =  recordset.datasetVector.prjCoordSys;
             PrjCoordSys *mapCoordSys = sMap.smMapWC.mapControl.map.prjCoordSys;
-            
-            while (![recordset isEOF]) {
-                NSString* geoStyleJSON = [item objectForKey:@"style"];
-                GeoStyle* geoStyle = nil;
-                if (geoStyleJSON) {
-                    geoStyle = [[GeoStyle alloc] init];
-                    [geoStyle fromJson:geoStyleJSON];
+            while(![recordset isEOF]){
+                GeoStyle *geoStyle = [[GeoStyle alloc] init];
+                NSString *itemStyle = [item valueForKey:@"style"];
+                if(itemStyle != nil){
+                    [geoStyle fromJson:itemStyle];
                 }
-                
-                Geometry* geometry = recordset.geometry;
-                if (geoStyle) {
+                Geometry *geometry = recordset.geometry;
+                if(geometry != nil){
                     [geometry setStyle:geoStyle];
                 }
                 
-                if (ids.count > 0) {
-                    for (int j = 0; j < ids.count; j++) {
-                        NSNumber* _ID = ids[j];
-                        Point2D* point2D = [geometry getInnerPoint];
-                        
-                        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
-                        [dic setObject:_ID forKey:@"id"];
-                        [dic setObject:[NSNumber numberWithDouble:point2D.x] forKey:@"x"];
-                        [dic setObject:[NSNumber numberWithDouble:point2D.y] forKey:@"y"];
-                        [arr addObject:dic];
-                    }
+                for(int j = 0; j < ids.count; j++){
+                    NSNumber *curId = ids[j];
+                    Point2D *point2D = [geometry getInnerPoint];
+                    NSDictionary *idInfo = @{
+                                             @"id":curId,
+                                             @"x":[NSNumber numberWithDouble:point2D.x],
+                                             @"y":[NSNumber numberWithDouble:point2D.y],
+                                             };
+                    [arr addObject:idInfo];
                 }
-                NSDictionary *dic;
-                if(prj.type != mapCoordSys.type){
-                    NSString *jsonString = [geometry toJson];
-                    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-                    NSError *err;
-                    dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];
-                    if(!err){
+                if(prjCoordSys.type != mapCoordSys.type){
+                    if([geometry getType] == GT_PLOT){
+                        [trackingLayer addGeometry:[geometry clone] WithTag:@""];
+                    }else{
+                        GeoStyle *selectStyle = [[GeoStyle alloc] init];
+                        [selectStyle setFillForeColor:[[Color alloc] initWithR:0 G:255 B:0 A:128]];
+                        [selectStyle setLineColor:[[Color alloc] initWithR:70 G:128 B:223]];
+                        [selectStyle setLineWidth:1];
+                        [selectStyle setMarkerSize:[[Size2D alloc] initWithWidth:5 Height:5]];
                         
-                        NSDictionary *styleDic = [dic valueForKey:@"style"];
-                        NSData *styleJsonData = [NSJSONSerialization dataWithJSONObject:styleDic options:NSJSONWritingPrettyPrinted error:&err];
-                        NSString *styleJsonString;
-                        if(!err){
-                            styleJsonString = [[NSString alloc] initWithData:styleJsonData encoding:NSUTF8StringEncoding];
+                        GeometryType geoType = [geometry getType];
+                        Geometry *newGeometry = nil;
+                        if(geoType == GT_GEOPOINT){
+                            Point2Ds *point2Ds = [[Point2Ds alloc] init];
+                            [point2Ds add:[geometry getInnerPoint]];
+                            PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc] init];
+                            desPrjCoordSys.type = prjCoordSys.type;
+                            [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                            double x = [point2Ds getItem:0].x;
+                            double y = [point2Ds getItem:0].y;
+                            newGeometry = [[GeoPoint alloc] initWithX:x Y:y];
+                        }else if(geoType == GT_GEOLINE){
+                            GeoLine *line = (GeoLine *)geometry;
+                            Point2Ds *point2Ds;
+                            newGeometry = [[GeoLine alloc] init];
+                            for(int j = 0; j < [line getPartCount]; j++){
+                                point2Ds = [line getPart:j];
+                                PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc] init];
+                                desPrjCoordSys.type = prjCoordSys.type;
+                                [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                                [((GeoLine *)newGeometry) addPart:point2Ds];
+                            }
+                        }else if(geoType == GT_GEOREGION){
+                            GeoRegion *region = (GeoRegion *)geometry;
+                            Point2Ds *point2Ds;
+                            newGeometry = [[GeoRegion alloc] init];
+                            for(int k = 0; k < [region getPartCount]; k++){
+                                point2Ds = [region getPart:k];
+                                PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc] init];
+                                desPrjCoordSys.type = prjCoordSys.type;
+                                [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                                [((GeoRegion *)newGeometry) addPart:point2Ds];
+                            }
                         }
-                        NSMutableArray *pointsArr = [[NSMutableArray alloc] init];
-                        if([dic objectForKey:@"points"]){
-                            pointsArr = [dic valueForKey:@"points"];
-                        }else if([dic objectForKey:@"center"]){
-                            [pointsArr addObject:[dic objectForKey:@"center"]];
-                        }
-                        Point2Ds *point2Ds = [[Point2Ds alloc] init];
-                        for(int index = 0; index < pointsArr.count; index++){
-                            NSDictionary *curDic = pointsArr[index];
-                            double x = [[curDic valueForKey:@"x"] doubleValue];
-                            double y = [[curDic valueForKey:@"y"] doubleValue];
-                            Point2D *pt = [[Point2D alloc] initWithX:x Y:y];
-                            [point2Ds add:pt];
-                        }
-                        PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]init];
-                        desPrjCoordSys.type = prj.type;
-                        [CoordSysTranslator convert:point2Ds PrjCoordSys:desPrjCoordSys PrjCoordSys:mapCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
-                        
-                        GeoStyle *style = [[GeoStyle alloc] init];
-                        [style fromJson:styleJsonString];
-                        Geometry* newGeometry = nil;
-                        switch (recordset.geometry.getType) {
-                            case GT_GEOPOINT:
-                                newGeometry = [[GeoPoint alloc] initWithPoint2D:[point2Ds getItem:0]];
-                                break;
-                            case GT_GEOLINE:
-                                newGeometry = [[GeoLine alloc] initWithPoint2Ds:point2Ds];
-                                break;
-                            case GT_GEOREGION:
-                                newGeometry = [[GeoRegion alloc] initWithPoint2Ds:point2Ds];
-                                break;
-                            case GT_PLOT:
-                                newGeometry=[((GeoGraphicObject*)geometry) clone];
-                                break;
-                            default:
-                                break;
-                        }
-                        
-                        if (newGeometry) {
-                            [newGeometry setStyle:style];
+                        if(newGeometry != nil){
+                            [newGeometry setStyle:selectStyle];
                             [trackingLayer addGeometry:newGeometry WithTag:@""];
                         }
-                    }else{
-                        NSLog(@"String to json failed");
                     }
                 }else{
                     [trackingLayer addGeometry:geometry WithTag:@""];
                 }
-
                 [recordset moveNext];
             }
             [recordset dispose];

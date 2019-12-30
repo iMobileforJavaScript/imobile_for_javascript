@@ -1030,13 +1030,9 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                     }
                 }
             }
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("isindoor", isindoor);
-            promise.resolve(map);
+            promise.resolve(isindoor);
         } catch (Exception e) {
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("isindoor", false);
-            promise.resolve(map);
+            promise.resolve(false);
             Log.e("navigation error:",e.toString());
 //            promise.reject(e);
         }

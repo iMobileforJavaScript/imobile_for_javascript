@@ -154,6 +154,14 @@ reNameDataSource = (name,rename) => {
     }
 }
 
+routeAdd = () => {
+    try {
+        return SCollectSceneFormView.routeAdd()
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export default {
     startRecording,
     stopRecording,
@@ -173,4 +181,5 @@ export default {
     clearAllData,
     getSystemTime,
     reNameDataSource,
+    routeAdd,
 }

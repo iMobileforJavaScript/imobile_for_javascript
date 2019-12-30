@@ -269,6 +269,21 @@ public class SCollectSceneFormView extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 场景数增加
+     *
+     * @param promise
+     */
+    @ReactMethod
+    public void routeAdd(Promise promise) {
+        try {
+            mRenderer.routeAdd();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
      * 删除指定数据
      *
      * @param promise

@@ -710,12 +710,9 @@ RCT_REMAP_METHOD(isIndoorPoint, isIndoorPointWithX:(double)x Y:(double) y resolv
                 }
             }
         }
-        NSDictionary *dic = @{@"isindoor":@(isIndoor)};
-        resolve(dic);
+        resolve(@(isIndoor));
     }@catch(NSException *exception){
-        resolve(@{
-                  @"isindoor":@(NO),
-                  });
+        resolve(@(NO));
         NSLog(@"navigation error: %@", exception.reason);
 //        reject(@"isIndoorPoint",exception.reason,nil);
     }
