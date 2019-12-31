@@ -236,6 +236,23 @@ RCT_REMAP_METHOD(saveDataset, saveDataset:(RCTPromiseResolveBlock)resolve reject
         //新增面对象
         [recordset addNew:geoRegion];
         
+        Rectangle2D* rectangle2D=[[geoRegion getBounds] clone];
+        double offsetX=(rectangle2D.right-rectangle2D.left)/6;
+        double offsetY=(rectangle2D.top-rectangle2D.bottom)/6;
+        [rectangle2D setLeft:rectangle2D.left-offsetX];
+        [rectangle2D setRight:rectangle2D.right+offsetX];
+        [rectangle2D setBottom:rectangle2D.bottom-offsetY*1.5];
+        [rectangle2D setTop:rectangle2D.top+offsetY*0.5];
+        
+        [mapControl.map setViewBounds:rectangle2D];
+        Layers* layers=mapControl.map.layers;
+        for (int i=0; i<[layers getCount]; i++) {
+            NSString* name=[layers getLayerAtIndex:i].dataset.name;
+            if([name isEqualToString:mDatasetName]){
+                [[layers getLayerAtIndex:i] setVisible:YES];
+            }
+        }
+        
         FieldInfos* fieldInfos=recordset.fieldInfos;
         if([fieldInfos indexOfWithFieldName:@"ModifiedDate"]!=-1){
             NSObject* ob=[recordset getFieldValueWithString:@"ModifiedDate"];
@@ -283,6 +300,8 @@ RCT_REMAP_METHOD(saveDataset, saveDataset:(RCTPromiseResolveBlock)resolve reject
         [recordset update];
         [recordset close];
         [recordset dispose];
+        [mapControl.map refresh];
+        
         
         resolve(@(YES));
     } @catch (NSException *exception) {

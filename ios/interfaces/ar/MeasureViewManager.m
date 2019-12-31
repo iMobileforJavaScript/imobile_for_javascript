@@ -18,26 +18,10 @@
 
 static ARMeasureView* mARMeasureView = nil;
 
-
-NSString *const onCurrentLengthChanged  = @"onCurrentLengthChanged";
-NSString *const onTotalLengthChanged  = @"onTotalLengthChanged";
-NSString *const onCurrentToLastPntDstChanged  = @"onCurrentToLastPntDstChanged";
-NSString *const onSearchingSurfaces  = @"onSearchingSurfaces";
-NSString *const onSearchingSurfacesSucceed  = @"onSearchingSurfacesSucceed";
-
 @implementation MeasureViewManager
 
 RCT_EXPORT_MODULE(RCTMeasureView)
 
-- (NSArray<NSString *> *)supportedEvents {
-    return @[
-             onCurrentLengthChanged,
-             onTotalLengthChanged,
-             onCurrentToLastPntDstChanged,
-             onSearchingSurfaces,
-             onSearchingSurfacesSucceed,
-             ];
-}
 
 - (UIView *)view
 {
