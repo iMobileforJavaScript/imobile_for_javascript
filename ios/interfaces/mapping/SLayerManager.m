@@ -543,19 +543,15 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
         
         NSMutableArray* arr = [[NSMutableArray alloc] init];
         
-        Rectangle2D *mapBounds = map.viewBounds;
+        Rectangle2D *bounds  = nil;
+        Rectangle2D *mapViewBounds = map.viewBounds;
         for (int i = 0; i < data.count; i++) {
             NSDictionary* item = data[i];
             NSString* layerPath = [item objectForKey:@"layerPath"];
             NSArray* ids = [item objectForKey:@"ids"];
             if (ids.count == 0) continue;
             Layer* layer = [SMLayer findLayerByPath:layerPath];
-             //处理图层属性关联时，图层bounds超出当前Viewbounds
-            Rectangle2D *layerBounds = layer.dataset.bounds;
-            if(mapBounds.left >layerBounds.left || mapBounds.right < layerBounds.right || mapBounds.top > layerBounds.top || mapBounds.bottom < layerBounds.bottom){
-                Rectangle2D *rect = [[Rectangle2D alloc] initWith:layerBounds.left - 5000 bottom:layerBounds.bottom + 5000 right:layerBounds.right + 5000 top:layerBounds.top - 5000];
-                map.viewBounds = rect;
-            }
+     
             DatasetVector* dv = (DatasetVector *)layer.dataset;
             NSArray* pathParams = [layerPath componentsSeparatedByString:@"/"];
             if ([pathParams[pathParams.count - 1] containsString:@"_Node"] && dv.childDataset) {
@@ -568,6 +564,7 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             
             PrjCoordSys *prjCoordSys =  recordset.datasetVector.prjCoordSys;
             PrjCoordSys *mapCoordSys = sMap.smMapWC.mapControl.map.prjCoordSys;
+            
             while(![recordset isEOF]){
                 GeoStyle *geoStyle = [[GeoStyle alloc] init];
                 NSString *itemStyle = [item valueForKey:@"style"];
@@ -635,17 +632,32 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                         }
                         if(newGeometry != nil){
                             [newGeometry setStyle:selectStyle];
-                            [trackingLayer addGeometry:newGeometry WithTag:@""];
                         }
+                        geometry = newGeometry;
                     }
-                }else{
+                }
+                if([geometry getType] != GT_PLOT){
                     [trackingLayer addGeometry:geometry WithTag:@""];
+                }
+                Rectangle2D* tmpBounds =[geometry getBounds];
+                //判断 地图bounds和图层bounds
+                if (tmpBounds &&
+                    (tmpBounds.width != 0 && tmpBounds.height != 0 && tmpBounds.center.x != 0 && tmpBounds.center.y != 0)){
+                    if(!bounds){
+                        bounds = [[Rectangle2D alloc]initWithRectangle2D:tmpBounds];
+                    }else{
+                        [bounds unions:tmpBounds];
+                    }
                 }
                 [recordset moveNext];
             }
             [recordset dispose];
         }
-        
+        if(bounds != nil){
+           map.viewBounds = bounds;
+           map.scale *= 0.8;
+        }
+
         [sMap.smMapWC.mapControl.map refresh];
         resolve(arr);
     } @catch (NSException *exception) {
