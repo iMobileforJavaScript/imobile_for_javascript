@@ -776,28 +776,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 //                    rs.moveFirst();
 //                }
             }
-            if(bounds != null){
-                //如果bounds是经纬度 转换称地理坐标
-                if(bounds.getLeft() >= -180 && bounds.getRight() <= 180 &&
-                        bounds.getBottom() >= -90 && bounds.getTop() <= 90){
-
-                    Point2Ds point2Ds = new Point2Ds();
-                    Point2D leftBottom = new Point2D(bounds.getLeft(),bounds.getBottom());
-                    Point2D rightTop = new Point2D(bounds.getRight(),bounds.getTop());
-                    point2Ds.add(leftBottom);
-                    point2Ds.add(rightTop);
-                    PrjCoordSys desPrjCoordSys = new PrjCoordSys();
-                    desPrjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
-                    CoordSysTranslator.convert(point2Ds, desPrjCoordSys, map.getPrjCoordSys(), new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
-
-                    leftBottom = point2Ds.getItem(0);
-                    rightTop = point2Ds.getItem(1);
-                    bounds = new Rectangle2D(leftBottom,rightTop);
-                }
-
-                map.setViewBounds(bounds);
-                map.setScale(map.getScale() * 0.8);
-            }
             map.refresh();
             promise.resolve(true);
         } catch (Exception e) {
