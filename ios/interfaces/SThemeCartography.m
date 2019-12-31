@@ -774,6 +774,8 @@ RCT_REMAP_METHOD(createRangeThemeLabelMap, createRangeThemeLabelMapWithResolver:
         if ([array containsObject:@"RangeParameter"]) {
             NSString* param = [dataDic objectForKey:@"RangeParameter"];
             rangeParameter = [param doubleValue];
+        } else {
+            rangeParameter = 5;
         }
         if ([array containsObject:@"ColorGradientType"]){
             NSString* type = [dataDic objectForKey: @"ColorGradientType" ];
@@ -802,7 +804,7 @@ RCT_REMAP_METHOD(createRangeThemeLabelMap, createRangeThemeLabelMapWithResolver:
         BOOL result = false;
         if (dataset != nil && ![rangeExpression isEqualToString:@""] && rangeMode!=RM_None && rangeParameter!=-1) {
             JoinItems *joinItems = nil;
-            ThemeLabel *themeLabel = [ThemeLabel makeDefault:(DatasetVector*)dataset rangeExpression:rangeExpression rangeMode:rangeMode rangeParameter:5 colorGradientType:colorGradientType];
+            ThemeLabel *themeLabel = [ThemeLabel makeDefault:(DatasetVector*)dataset rangeExpression:rangeExpression rangeMode:rangeMode rangeParameter:rangeParameter colorGradientType:colorGradientType];
             
             if (themeLabel!=nil) {
                 [themeLabel setMaxLabelLength:8];
@@ -2161,6 +2163,15 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
         double rangeParameter = -1;
         ColorGradientType colorGradientType;
         bool isContainColorGradientType = false;
+        double fontSize = -1;
+        NSString* fontName = nil;//字体名称
+        bool isBold = NO;
+        bool isItalic = NO;
+        bool isUnderline = NO;
+        bool isStrikeout = NO;
+        bool isShadow = NO;
+        bool isOutline = NO;
+        
         NSString* layerName = @"";
         NSArray* array = [dataDic allKeys];
         if ([array containsObject:@"LayerName"]) {
@@ -2214,6 +2225,19 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
             colorGradientType = CGT_GREENWHITE;
             isContainColorGradientType = true;
         }
+        
+        if (themeLabel && themeLabel.getRangeCount > 0) {
+            TextStyle* style = [themeLabel getRangeItem:0].mTextStyle;
+            fontSize = style.getFontHeight;
+            fontName = style.getFontName;
+            isBold = style.isBold;
+            isItalic = style.getItalic;
+            isUnderline = style.getUnderline;
+            isStrikeout = style.getStrikeout;
+            isShadow = style.getShadow;
+            isOutline = style.getOutline;
+        }
+        
         bool result = false;
 
         if (dataset != nil && themeLabel != nil && ![rangeExpression isEqualToString:@""] && isContainRangeMode && rangeParameter != -1 && isContainColorGradientType) {
@@ -2245,6 +2269,17 @@ RCT_REMAP_METHOD(modifyThemeLabelRangeMap, modifyThemeLabelRangeMapWithResolver:
                 
                 [themeLabel clear];
                 for (int i=0; i<tl.getRangeCount; i++) {
+                    ThemeLabelItem* item =  [tl getRangeItem:i];
+                    TextStyle* itemStyle = item.mTextStyle;
+                    [itemStyle setFontName:fontName];
+                    [itemStyle setFontHeight:fontSize];
+                    [itemStyle setBold:isBold];
+                    [itemStyle setItalic:isItalic];
+                    [itemStyle setUnderline:isUnderline];
+                    [itemStyle setStrikeout:isStrikeout];
+                    [itemStyle setShadow:isShadow];
+                    [itemStyle setOutline:isOutline];
+                    if (isOutline) [itemStyle setBackColor:[[Color alloc] initWithR:255 G:255 B:255]];
                     [themeLabel addToTail:[tl getRangeItem:i] normalise:YES];
                 }
                 
