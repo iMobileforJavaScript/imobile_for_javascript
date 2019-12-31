@@ -2343,6 +2343,31 @@ export default (function () {
       console.error(error);
     }
   }
+  
+  /**
+   * 地图转XML
+   * @returns {*}
+   */
+  function mapToXml(){
+    try {
+      return SMap.mapToXml()
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  /**
+   * XML转地图
+   * @param xml
+   * @returns {*}
+   */
+  function mapFromXml(xml){
+    try {
+      return SMap.mapFromXml(xml)
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
 
 
@@ -2373,6 +2398,8 @@ export default (function () {
     saveMap,
     saveAsMap,
     isDatasourceOpen,
+    mapToXml,
+    mapFromXml,
 
     /** 地图工具 **/
     zoom,
