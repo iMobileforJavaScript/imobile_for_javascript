@@ -844,14 +844,17 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                         arr.pushMap(idInfo);
                     }
                     if(!SMap.safeGetType(prjCoordSys,mapCoordSys)){
-                        if(geometry.getType()==GeometryType.GEOGRAPHICOBJECT){
-                            trackingLayer.add(geometry.clone(), "");
-                        }else {
-                            GeoStyle selectStyle = new GeoStyle();
-                            selectStyle.setFillForeColor(new Color(0, 255, 0, 128));
-                            selectStyle.setLineColor(new Color(70, 128, 223));
-                            selectStyle.setLineWidth(1);
-                            selectStyle.setMarkerSize(new Size2D(5, 5));
+                        GeoStyle selectStyle = new GeoStyle();
+                        selectStyle.setFillForeColor(new Color(0, 255, 0, 128));
+                        selectStyle.setLineColor(new Color(70, 128, 223));
+                        selectStyle.setLineWidth(1);
+                        selectStyle.setMarkerSize(new Size2D(5, 5));
+
+//                        if(geometry.getType()==GeometryType.GEOGRAPHICOBJECT){
+//                            GeoGraphicObject obj = (GeoGraphicObject)geometry.clone();
+//                            trackingLayer.add(geometry.clone(), "");
+//                        }else
+                            {
 
                             GeometryType geoType = recordset.getGeometry().getType();
                             Geometry newGeometry = null;
@@ -888,16 +891,16 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                             }
                             if (newGeometry != null) {
                                 newGeometry.setStyle(selectStyle);
+                                geometry = newGeometry;
                             }
-                            geometry = newGeometry;
                         }
                     }
-                    if(geometry.getType()!=GeometryType.GEOGRAPHICOBJECT){
+                //    if(geometry.getType()!=GeometryType.GEOGRAPHICOBJECT)
+                    {
                         trackingLayer.add(geometry, "");
                     }
                     Rectangle2D tmpBounds = geometry.getBounds();
-                    if(tmpBounds != null &&
-                            (tmpBounds.getWidth() != 0 && tmpBounds.getHeight() != 0 && tmpBounds.getCenter().getX() != 0 && tmpBounds.getCenter().getY() != 0)){
+                    if(tmpBounds != null ){
                         if(bounds == null){
                             bounds = new Rectangle2D(tmpBounds);
                         }else{
@@ -910,8 +913,13 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             }
 
             if(bounds != null){
-                map.setViewBounds(bounds);
-                map.setScale(map.getScale() * 0.8);
+                if(bounds.getHeight()>0 && bounds.getWidth()>0){
+                    map.setViewBounds(bounds);
+                    map.setScale(map.getScale() * 0.8);
+                }else{
+                    map.setCenter(bounds.getCenter());
+                }
+
             }
             sMap.getSmMapWC().getMapControl().getMap().refresh();
             promise.resolve(arr);

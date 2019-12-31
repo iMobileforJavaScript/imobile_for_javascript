@@ -587,9 +587,10 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                     [arr addObject:idInfo];
                 }
                 if(prjCoordSys.type != mapCoordSys.type){
-                    if([geometry getType] == GT_PLOT){
-                        [trackingLayer addGeometry:[geometry clone] WithTag:@""];
-                    }else{
+//                    if([geometry getType] == GT_PLOT){
+//                        [trackingLayer addGeometry:[geometry clone] WithTag:@""];
+//                    }else
+                    {
                         GeoStyle *selectStyle = [[GeoStyle alloc] init];
                         [selectStyle setFillForeColor:[[Color alloc] initWithR:0 G:255 B:0 A:128]];
                         [selectStyle setLineColor:[[Color alloc] initWithR:70 G:128 B:223]];
@@ -636,13 +637,13 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
                         geometry = newGeometry;
                     }
                 }
-                if([geometry getType] != GT_PLOT){
+                //if([geometry getType] != GT_PLOT)
+                {
                     [trackingLayer addGeometry:geometry WithTag:@""];
                 }
                 Rectangle2D* tmpBounds =[geometry getBounds];
                 //判断 地图bounds和图层bounds
-                if (tmpBounds &&
-                    (tmpBounds.width != 0 && tmpBounds.height != 0 && tmpBounds.center.x != 0 && tmpBounds.center.y != 0)){
+                if (tmpBounds){
                     if(!bounds){
                         bounds = [[Rectangle2D alloc]initWithRectangle2D:tmpBounds];
                     }else{
@@ -654,8 +655,13 @@ RCT_REMAP_METHOD(setTrackingLayer, setTrackingLayerWith:(NSArray *)data isClear:
             [recordset dispose];
         }
         if(bounds != nil){
-           map.viewBounds = bounds;
-           map.scale *= 0.8;
+            if(bounds.width>0 && bounds.height>0){
+                map.viewBounds = bounds;
+                map.scale *= 0.8;
+            }else{
+                map.center = bounds.center;
+            }
+           
         }
 
         [sMap.smMapWC.mapControl.map refresh];
