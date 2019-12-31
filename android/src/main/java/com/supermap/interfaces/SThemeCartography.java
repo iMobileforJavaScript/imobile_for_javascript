@@ -763,6 +763,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             if (data.containsKey("RangeParameter")){
                 String rangParam = data.get("RangeParameter").toString();
                 rangeParameter  = Double.parseDouble(rangParam);
+            } else {
+                rangeParameter = 5;
             }
             if (data.containsKey("ColorGradientType")){
                 String type = data.get("ColorGradientType").toString();
@@ -790,7 +792,7 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
 
             boolean result = false;
             if (dataset != null && rangeExpression != null && rangeMode != null && rangeParameter != -1) {
-                ThemeLabel themeLabel = ThemeLabel.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, 5, colorGradientType);
+                ThemeLabel themeLabel = ThemeLabel.makeDefault((DatasetVector) dataset, rangeExpression, rangeMode, rangeParameter, colorGradientType);
                 if (themeLabel != null) {
                     themeLabel.setMaxLabelLength(8);
                     themeLabel.setNumericPrecision(1);
@@ -2196,6 +2198,14 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
             double rangeParameter = -1;//分段参数--当分段方法为标准差时，此参数无效，因为标准差分段方法所得的“段数”由计算结果决定，用户不可控制。
             ColorGradientType colorGradientType = null;
             String layerName = null;
+            double fontSize = -1;
+            String fontName = null;//字体名称
+            boolean isBold = false;
+            boolean isItalic = false;
+            boolean isUnderline = false;
+            boolean isStrikeout = false;
+            boolean isShadow = false;
+            boolean isOutline = false;
 
             if (data.containsKey("LayerName")) {
                 layerName = data.get("LayerName").toString();
@@ -2250,6 +2260,18 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                 colorGradientType = ColorGradientType.GREENWHITE;
             }
 
+            if (themelabel != null && themelabel.getCount() > 0) {
+                TextStyle style = themelabel.getItem(0).getStyle();
+                fontSize = style.getFontHeight();
+                fontName = style.getFontName();
+                isBold = style.isBold();
+                isItalic = style.getItalic();
+                isUnderline = style.getUnderline();
+                isStrikeout = style.getStrikeout();
+                isShadow = style.getShadow();
+                isOutline = style.getOutline();
+            }
+
             boolean result = false;
             if (dataset != null && themeLayer.getTheme() != null && rangeExpression != null && rangeMode != null && rangeParameter != -1 && colorGradientType != null) {
                 MapControl mapControl = SMap.getSMWorkspace().getMapControl();
@@ -2262,7 +2284,8 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                         if(colors == null){
                             colors = new Color[themelabel.getCount()];
                             for (int i = 0; i < themelabel.getCount(); i++) {
-                                Color c = themelabel.getItem(i).getStyle().getForeColor();
+                                TextStyle itemStyle = themelabel.getItem(i).getStyle();
+                                Color c = itemStyle.getForeColor();
                                 colors[i] = c;
                             }
 
@@ -2279,6 +2302,16 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
                     themelabel.clear();
                     for(int i=0;i<tr.getCount();i++){
                         ThemeLabelItem itemTemp = tr.getItem(i);
+                        TextStyle itemStyle = itemTemp.getStyle();
+                        itemStyle.setFontHeight(fontSize);
+                        itemStyle.setFontName(fontName);
+                        itemStyle.setBold(isBold);
+                        itemStyle.setItalic(isItalic);
+                        itemStyle.setUnderline(isUnderline);
+                        itemStyle.setStrikeout(isStrikeout);
+                        itemStyle.setShadow(isShadow);
+                        itemStyle.setOutline(isOutline);
+                        if (isOutline) itemStyle.setBackColor(new Color(255,255,255));
                         themelabel.addToTail(itemTemp,true);
                     }
 
