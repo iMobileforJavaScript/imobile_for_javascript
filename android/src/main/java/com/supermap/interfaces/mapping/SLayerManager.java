@@ -703,6 +703,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             SMap sMap = SMap.getInstance();
 //            WritableArray arr = Arguments.createArray();
 
+            Rectangle2D bounds = null;
             for (int i = 0; i < data.size(); i++) {
                 ReadableMap item = data.getMap(i);
                 String layerPath = item.getString("layerPath");
@@ -710,7 +711,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
                 Layer layer = SMLayer.findLayerByPath(layerPath);
                 Selection selection = layer.getSelection();
-//                Recordset rs = null;
+
                 selection.clear();
 
                 boolean selectable = layer.isSelectable();
@@ -737,6 +738,19 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 //                        selectObjs.pushMap(idInfo);
 //                        rs.dispose();
                     }
+
+                    Recordset rs = selection.toRecordset();
+                    Rectangle2D selectionBounds = rs.getBounds();
+                    if(selectionBounds != null &&
+                            (selectionBounds.getWidth() != 0 && selectionBounds.getHeight() != 0 && selectionBounds.getCenter().getX() != 0 && selectionBounds.getCenter().getY() != 0)){
+                        if(bounds == null){
+                            bounds = new Rectangle2D(selectionBounds);
+                        }else{
+                            bounds.union(selectionBounds);
+                        }
+                    }
+                    rs.dispose();
+                    rs.close();
                 }
 
                 if (!selectable) {
@@ -747,8 +761,30 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 //                    rs.moveFirst();
 //                }
             }
+            Map map = sMap.getSmMapWC().getMapControl().getMap();
+            if(bounds != null){
+                //如果bounds是经纬度 转换称地理坐标
+                if(bounds.getLeft()>-180 && bounds.getRight() < 180 &&
+                        bounds.getBottom() > -90 && bounds.getTop() < 90){
 
-            sMap.getSmMapWC().getMapControl().getMap().refresh();
+                    Point2Ds point2Ds = new Point2Ds();
+                    Point2D leftBottom = new Point2D(bounds.getLeft(),bounds.getBottom());
+                    Point2D rightTop = new Point2D(bounds.getRight(),bounds.getTop());
+                    point2Ds.add(leftBottom);
+                    point2Ds.add(rightTop);
+                    PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                    desPrjCoordSys.setType(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE);
+                    CoordSysTranslator.convert(point2Ds, desPrjCoordSys, map.getPrjCoordSys(), new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+                    leftBottom = point2Ds.getItem(0);
+                    rightTop = point2Ds.getItem(1);
+                    bounds = new Rectangle2D(leftBottom,rightTop);
+                }
+
+                map.setViewBounds(bounds);
+                map.setScale(map.getScale() * 0.8);
+            }
+            map.refresh();
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject(e);
@@ -792,7 +828,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 
             WritableArray arr = Arguments.createArray();
 
-            Rectangle2D mapViewBounds = map.getViewBounds();
             Rectangle2D bounds = null;
             for (int i = 0; i < data.size(); i++) {
                 ReadableMap item = data.getMap(i);

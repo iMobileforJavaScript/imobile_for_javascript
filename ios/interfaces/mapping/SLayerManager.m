@@ -461,13 +461,13 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
         SMap* sMap = [SMap singletonInstance];
 //        NSMutableArray* arr = [[NSMutableArray alloc] init];
         
+        Rectangle2D *bounds = nil;
         for (int i = 0; i < data.count; i++) {
             NSDictionary* item = data[i];
             NSString* layerPath = [item objectForKey:@"layerPath"];
             NSArray* ids = [item objectForKey:@"ids"];
             Layer* layer = [SMLayer findLayerByPath:layerPath];
             Selection* selection = [layer getSelection];
-//            Recordset* rs = nil;
             [selection clear];
             
             BOOL selectable = layer.selectable;
@@ -494,6 +494,19 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
 //                    [arr addObject:dic];
 //                    [rs dispose];
                 }
+                
+                Recordset* rs = [selection toRecordset];
+                Rectangle2D *selectionBounds = rs.bounds;
+                if(selectionBounds && (selectionBounds.width != 0 && selectionBounds.height != 0 && selectionBounds.center.x != 0 && selectionBounds.center.y != 0)){
+                    if(bounds == nil){
+                        bounds = [[Rectangle2D alloc] initWithRectangle2D:selectionBounds];
+                    }else{
+                        [bounds unions:selectionBounds];
+                    }
+                }
+                [rs dispose];
+                [rs close];
+                
             }
             
             if (!selectable) {
@@ -503,7 +516,23 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
 //                [rs moveFirst];
 //            }
         }
-        
+        Map *map = sMap.smMapWC.mapControl.map;
+        if(bounds != nil){
+            if(bounds.left > -180 && bounds.right < 180 && bounds.bottom > -90 && bounds.top < 90){
+                Point2Ds *point2ds = [[Point2Ds alloc] init];
+                Point2D *leftBottom = [[Point2D alloc] initWithX:bounds.left Y:bounds.bottom];
+                Point2D *rightTop = [[Point2D alloc] initWithX:bounds.right Y:bounds.top];
+                [point2ds add:leftBottom];
+                [point2ds add:rightTop];
+                PrjCoordSys *desPrjCoordSys = [[PrjCoordSys alloc]initWithType:PCST_EARTH_LONGITUDE_LATITUDE];
+                [CoordSysTranslator convert:point2ds PrjCoordSys:desPrjCoordSys PrjCoordSys:map.prjCoordSys CoordSysTransParameter:[[CoordSysTransParameter alloc]init] CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+                leftBottom = [point2ds getItem:0];
+                rightTop = [point2ds getItem:1];
+                bounds = [[Rectangle2D alloc] initWithLeftBottom:leftBottom RightTop:rightTop];
+            }
+            sMap.smMapWC.mapControl.map.viewBounds = bounds;
+            sMap.smMapWC.mapControl.map.scale *= 0.8;
+        }
         [sMap.smMapWC.mapControl.map refresh];
         resolve(@(YES));
     } @catch (NSException *exception) {
