@@ -701,6 +701,7 @@ public class SLayerManager extends ReactContextBaseJavaModule {
     public void selectObjs(ReadableArray data, Promise promise) {
         try {
             SMap sMap = SMap.getInstance();
+            Map map = sMap.getSmMapWC().getMapControl().getMap();
 //            WritableArray arr = Arguments.createArray();
 
             Rectangle2D bounds = null;
@@ -743,6 +744,20 @@ public class SLayerManager extends ReactContextBaseJavaModule {
                     Rectangle2D selectionBounds = rs.getBounds();
                     if(selectionBounds != null &&
                             (selectionBounds.getWidth() != 0 && selectionBounds.getHeight() != 0 && selectionBounds.getCenter().getX() != 0 && selectionBounds.getCenter().getY() != 0)){
+                        if(!SMap.safeGetType(rs.getDataset().getPrjCoordSys(),map.getPrjCoordSys())){
+                            Point2Ds point2Ds = new Point2Ds();
+                            Point2D leftBottom = new Point2D(selectionBounds.getLeft(),selectionBounds.getBottom());
+                            Point2D rightTop = new Point2D(selectionBounds.getRight(),selectionBounds.getTop());
+                            point2Ds.add(leftBottom);
+                            point2Ds.add(rightTop);
+                            PrjCoordSys desPrjCoordSys = new PrjCoordSys();
+                            desPrjCoordSys.setType(rs.getDataset().getPrjCoordSys().getType());
+                            CoordSysTranslator.convert(point2Ds, desPrjCoordSys, map.getPrjCoordSys(), new CoordSysTransParameter(), CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION);
+
+                            leftBottom = point2Ds.getItem(0);
+                            rightTop = point2Ds.getItem(1);
+                            selectionBounds = new Rectangle2D(leftBottom,rightTop);
+                        }
                         if(bounds == null){
                             bounds = new Rectangle2D(selectionBounds);
                         }else{
@@ -761,7 +776,6 @@ public class SLayerManager extends ReactContextBaseJavaModule {
 //                    rs.moveFirst();
 //                }
             }
-            Map map = sMap.getSmMapWC().getMapControl().getMap();
             if(bounds != null){
                 //如果bounds是经纬度 转换称地理坐标
                 if(bounds.getLeft() >= -180 && bounds.getRight() <= 180 &&
