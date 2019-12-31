@@ -764,8 +764,8 @@ public class SLayerManager extends ReactContextBaseJavaModule {
             Map map = sMap.getSmMapWC().getMapControl().getMap();
             if(bounds != null){
                 //如果bounds是经纬度 转换称地理坐标
-                if(bounds.getLeft()>-180 && bounds.getRight() < 180 &&
-                        bounds.getBottom() > -90 && bounds.getTop() < 90){
+                if(bounds.getLeft() >= -180 && bounds.getRight() <= 180 &&
+                        bounds.getBottom() >= -90 && bounds.getTop() <= 90){
 
                     Point2Ds point2Ds = new Point2Ds();
                     Point2D leftBottom = new Point2D(bounds.getLeft(),bounds.getBottom());

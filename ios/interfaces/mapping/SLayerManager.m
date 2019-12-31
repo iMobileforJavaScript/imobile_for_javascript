@@ -518,7 +518,7 @@ RCT_REMAP_METHOD(selectObjs, selectObjsWith:(NSArray *)data resolver:(RCTPromise
         }
         Map *map = sMap.smMapWC.mapControl.map;
         if(bounds != nil){
-            if(bounds.left > -180 && bounds.right < 180 && bounds.bottom > -90 && bounds.top < 90){
+            if(bounds.left >= -180 && bounds.right <= 180 && bounds.bottom >= -90 && bounds.top <= 90){
                 Point2Ds *point2ds = [[Point2Ds alloc] init];
                 Point2D *leftBottom = [[Point2D alloc] initWithX:bounds.left Y:bounds.bottom];
                 Point2D *rightTop = [[Point2D alloc] initWithX:bounds.right Y:bounds.top];
