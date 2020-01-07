@@ -4085,6 +4085,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 delegate = new GeometryAddedListener() {
                     @Override
                     public void geometryAdded(GeometryEvent event) {
+                        //判断是否是标绘图层
+                        if(event.getLayer().getName().startsWith("PlotEdit_")){
+                            delegate = null;
+                            return;
+                        }
                         int id[] = new int[1];
                         id[0] = event.getID();
                         DatasetVector dataset = (DatasetVector) event.getLayer().getDataset();

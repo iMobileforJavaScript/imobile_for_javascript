@@ -4125,7 +4125,12 @@ RCT_REMAP_METHOD(mapFromXml, mapFromXml:(NSString *)xml resolver:(RCTPromiseReso
  * 对象添加事件代理
  */
 -(void)aftergeometryAddedCallBack:(GeometryArgs*)geometryArgs{
-    
+    //判断是否是标绘图层
+    if([geometryArgs.layer.name hasPrefix:@"PlotEdit_"]){
+        SMap.singletonInstance.smMapWC.mapControl.geometryAddedDelegate = nil;
+        return;
+    }
+
     NSArray *ids =[[NSArray alloc]initWithObjects:[NSNumber numberWithInt:geometryArgs.id], nil];
     DatasetVector* dataset = (DatasetVector *)geometryArgs.layer.dataset;
     Recordset *recordset = [dataset queryWithID:ids Type:DYNAMIC];
