@@ -1034,8 +1034,14 @@ RCT_REMAP_METHOD(isInBounds, isInBoundsWithPoint:(NSDictionary *)point DatasetNa
             Datasource *datasource = [datasources get:i];
             Datasets *datasets = datasource.datasets;
             Dataset *dataset = [datasets getWithName:datasetName];
-            if(dataset != nil && [dataset.bounds containsX:x Y:y]){
-                inBounds = YES;
+            if(dataset != nil){
+                Point2D *pt = [[Point2D alloc] initWithX:x Y:y];
+                if(dataset.prjCoordSys.type != PCST_EARTH_LONGITUDE_LATITUDE){
+                     pt = [SNavigationManager getMapPointWithX:x Y:y];
+                }
+                if([dataset.bounds containsPoint2D:pt]){
+                     inBounds = YES;
+                }
             }
         }
         resolve(@(inBounds));

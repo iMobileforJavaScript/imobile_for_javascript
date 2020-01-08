@@ -1445,8 +1445,14 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 Datasource datasource = datasources.get(i);
                 Datasets datasets = datasource.getDatasets();
                 Dataset dataset = datasets.get(datasetName);
-                if(dataset != null && dataset.getBounds().contains(x,y)){
-                    inBounds = true;
+                if(dataset != null){
+                    Point2D point2D = new Point2D(x,y);
+                    if(!SMap.safeGetType(dataset.getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)){
+                        point2D = getMapPoint(x,y);
+                    }
+                    if(dataset.getBounds().contains(point2D)){
+                        inBounds = true;
+                    }
                 }
             }
             promise.resolve(inBounds);
