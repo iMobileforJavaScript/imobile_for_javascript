@@ -205,8 +205,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
-                    if(!hasScaleChangeTask){
-                        hasScaleChangeTask = true;
+                    boolean bHasBoundsChangeTask = false;
+                    synchronized (this){
+                        bHasBoundsChangeTask = hasScaleChangeTask;
+                    }
+                    if(!bHasBoundsChangeTask){
+                        synchronized (this){
+                            hasScaleChangeTask = true;
+                        }
+
                         TimerTask scaleChangeTask = new TimerTask() {
                             @Override
                             public void run() {
@@ -238,7 +245,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 map2.putString("currentFloorID",currentFloorID);
                                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                         .emit(EventConst.IS_FLOOR_HIDDEN, map2);
-                                hasScaleChangeTask = false;
+                                synchronized (this) {
+                                    hasScaleChangeTask = false;
+                                }
                             }
                         };
                         Timer timer = new Timer();
@@ -247,8 +256,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
                 public void boundsChanged(Point2D newMapCenter) {
-                    if(!hasBoundsChangeTask){
-                        hasBoundsChangeTask = true;
+                    boolean bHasBoundsChangeTask = false;
+                    synchronized (this){
+                        bHasBoundsChangeTask = hasBoundsChangeTask;
+                    }
+
+                    if(!bHasBoundsChangeTask){
+                        synchronized (this){
+                            hasBoundsChangeTask = true;
+                        }
+
                         TimerTask boundsChangeTask = new TimerTask() {
                             @Override
                             public void run() {
@@ -262,7 +279,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 map.putString("currentFloorID",currentFloorID);
                                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                         .emit(EventConst.IS_FLOOR_HIDDEN, map);
-                                hasBoundsChangeTask = false;
+                                synchronized (this){
+                                    hasBoundsChangeTask = false;
+                                }
+
                             }
                         };
                         Timer timer = new Timer();

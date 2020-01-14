@@ -4156,27 +4156,43 @@ RCT_REMAP_METHOD(mapFromXml, mapFromXml:(NSString *)xml resolver:(RCTPromiseReso
 
 
 -(void) boundsChanged:(Point2D*) newMapCenter{
-    if(hasBoundsTimer){
+    BOOL bHasBoundsTimer = false;
+    @synchronized (self) {
+        // 加锁操作
+        bHasBoundsTimer = hasBoundsTimer;
+    }
+    if(bHasBoundsTimer){
         return;
     }else{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            hasBoundsTimer = YES;
+            @synchronized (self) {
+                hasBoundsTimer = YES;
+            }
+            
            // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // Do the work in background
-                double x = newMapCenter.x;
-                NSNumber* nsX = [NSNumber numberWithDouble:x];
-                double y = newMapCenter.y;
-                NSNumber* nsY = [NSNumber numberWithDouble:y];
-                [self sendEventWithName:MAP_BOUNDS_CHANGED
-                                   body:@{@"x":nsX,
-                                          @"y":nsY
-                                          }];
-                FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+            double x = newMapCenter.x;
+            NSNumber* nsX = [NSNumber numberWithDouble:x];
+            double y = newMapCenter.y;
+            NSNumber* nsY = [NSNumber numberWithDouble:y];
+            [self sendEventWithName:MAP_BOUNDS_CHANGED
+                               body:@{@"x":nsX,
+                                      @"y":nsY
+                                      }];
+            FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+            @try {
                 [floorListView reload];
+            } @catch (NSException *exception) {
+                NSLog(@"%@",exception);
+            } @finally {
                 NSString *floorID = floorListView.currentFloorId;
                 NSString *currentFloorID = floorID == nil ? @"" : floorID;
                 [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
-                hasBoundsTimer = NO;
+                @synchronized (self) {
+                    hasBoundsTimer = NO;
+                }
+                
+            }
           //  });
         });
     }
@@ -4184,27 +4200,41 @@ RCT_REMAP_METHOD(mapFromXml, mapFromXml:(NSString *)xml resolver:(RCTPromiseReso
 
 
 -(void) scaleChanged:(double)newscale{
-    if(hasScaleTimer){
+    BOOL bhasScaleTimer = false;
+    @synchronized (self) {
+        // 加锁操作
+        bhasScaleTimer = hasScaleTimer;
+    }
+    if(bhasScaleTimer){
         return;
     }else{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            hasScaleTimer = YES;
+            @synchronized (self) {
+                hasScaleTimer = YES;
+            }
 //            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                sMap = [SMap singletonInstance];
-                sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
-                sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
-                sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
-                double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
-                [self sendEventWithName:MAP_SCALEVIEW_CHANGED
-                                   body:@{@"width":[NSNumber numberWithDouble:width],
-                                          @"title":sMap.scaleViewHelper.mScaleText
-                                          }];
+            sMap = [SMap singletonInstance];
+            sMap.scaleViewHelper.mScaleLevel =[sMap.scaleViewHelper getScaleLevel];
+            sMap.scaleViewHelper.mScaleText = [sMap.scaleViewHelper getScaleText:sMap.scaleViewHelper.mScaleLevel];
+            sMap.scaleViewHelper.mScaleWidth = [sMap.scaleViewHelper getScaleWidth:sMap.scaleViewHelper.mScaleLevel];
+            double width = sMap.scaleViewHelper.mScaleWidth;///[[[NSNumber alloc]initWithFloat:] doubleValue];
+            [self sendEventWithName:MAP_SCALEVIEW_CHANGED
+                               body:@{@"width":[NSNumber numberWithDouble:width],
+                                      @"title":sMap.scaleViewHelper.mScaleText
+                                      }];
                 FloorListView *floorListView = [SMap singletonInstance].smMapWC.floorListView;
+            @try {
                 [floorListView reload];
-                NSString *floorID = floorListView.currentFloorId;
-                NSString *currentFloorID = floorID == nil ? @"" : floorID;
-                [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
-                hasScaleTimer = NO;
+            } @catch (NSException *exception) {
+                NSLog(@"%@",exception);
+            } @finally {
+               NSString *floorID = floorListView.currentFloorId;
+               NSString *currentFloorID = floorID == nil ? @"" : floorID;
+               [self sendEventWithName:IS_FLOOR_HIDDEN body:@{@"currentFloorID":currentFloorID}];
+                @synchronized (self) {
+                    hasScaleTimer = NO;
+                }
+            }
 //            });
         });
         

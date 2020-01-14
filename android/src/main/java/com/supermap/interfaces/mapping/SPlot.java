@@ -30,6 +30,7 @@ import com.supermap.data.GeoLine;
 import com.supermap.data.GeoPoint;
 import com.supermap.data.GeoStyle;
 import com.supermap.data.Geometry;
+import com.supermap.data.GeometryType;
 import com.supermap.data.Point;
 import com.supermap.data.Point2D;
 import com.supermap.data.Point2Ds;
@@ -821,9 +822,12 @@ public class SPlot extends ReactContextBaseJavaModule {
                 Recordset recordset = dataset.query("SmID=" + geoId, CursorType.STATIC);
                 Geometry geometry = recordset.getGeometry();
                 if (geometry != null) {
-                    GeoGraphicObject geoGraphicObject = (GeoGraphicObject) geometry;
-                    GraphicObjectType graphicObjectType = geoGraphicObject.getSymbolType();
-                    type = graphicObjectType.value();
+                    if(geometry.getType() == GeometryType.GEOGRAPHICOBJECT){
+                        GeoGraphicObject geoGraphicObject = (GeoGraphicObject) geometry;
+                        GraphicObjectType graphicObjectType = geoGraphicObject.getSymbolType();
+                        type = graphicObjectType.value();
+                    }
+
                     geometry.dispose();
                 }
                 recordset.dispose();
