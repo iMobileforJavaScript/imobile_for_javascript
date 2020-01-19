@@ -25,6 +25,7 @@ import com.supermap.ar.*;
 import com.supermap.data.Rectangle2D;
 import com.supermap.data.Workspace;
 import com.supermap.interfaces.mapping.SMap;
+import com.supermap.interfaces.utils.SLanguage;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapView;
 import com.supermap.rnsupermap.R;
@@ -93,7 +94,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAidetectViewInfo.assetManager = mContext.getAssets();
 
         mModelType = AIDetectViewInfo.FileType.ASSETS_FILE;
-        prepareAiDetectViewInfo("detect.tflite", "labelmap.txt",AIDetectViewInfo.FileType.ASSETS_FILE,true);
+        String labelName="labelmap_cn.txt";
+        if(SLanguage.getLanguage().equals("EN")){
+            labelName="labelmap.txt";
+        }
+        prepareAiDetectViewInfo("detect.tflite", labelName,AIDetectViewInfo.FileType.ASSETS_FILE,true);
 
         mAIDetectView.init();
 
@@ -101,21 +106,55 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAIDetectView.setDetectInfo(mAidetectViewInfo);//设置数据
 
         if (mStrToUse.isEmpty()) {
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.LAPTOP));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
-            mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+            if(SLanguage.getLanguage().equals("EN")) {
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.PERSON));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BICYCLE));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CAR));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOTORCYCLE));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BUS));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TRUCK));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CUP));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CHAIR));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.POTTEDPLANT));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.LAPTOP));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.MOUSE));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.TV));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.KEYBOARD));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.CELLPHONE));
+                mStrToUse.add(AIDetectModel2.getEnglishName(AIDetectModel2.BOTTLE));
+            }else {
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.PERSON));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.BICYCLE));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.CAR));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.MOTORCYCLE));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.BUS));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.TRUCK));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.CUP));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.CHAIR));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.POTTEDPLANT));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.LAPTOP));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.MOUSE));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.TV));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.KEYBOARD));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.CELLPHONE));
+                mStrToUse.add(AIDetectModel2.getChineseName(AIDetectModel2.BOTTLE));
+            }
+        }else {
+            if(AIDetectModel2.getChineseName(mStrToUse.get(0)).equals("unknown")&&SLanguage.getLanguage().equals("EN")){
+                Vector<String> tempStrToUse = new Vector<>();
+                tempStrToUse.addAll(mStrToUse);
+                mStrToUse.clear();
+                for (int i=0;i<tempStrToUse.size();i++){
+                    mStrToUse.add(AIDetectModel2.getEnglishName(tempStrToUse.get(i)));
+                }
+            }else if(AIDetectModel2.getEnglishName(mStrToUse.get(0)).equals("unknown")&&SLanguage.getLanguage().equals("CN")){
+                Vector<String> tempStrToUse = new Vector<>();
+                tempStrToUse.addAll(mStrToUse);
+                mStrToUse.clear();
+                for (int i=0;i<tempStrToUse.size();i++){
+                    mStrToUse.add(AIDetectModel2.getChineseName(tempStrToUse.get(i)));
+                }
+            }
         }
 
         mAIDetectView.setDetectArrayToUse(mStrToUse);//设置初始模型
@@ -384,7 +423,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             }else if(modelType == AIDetectViewInfo.FileType.ASSETS_FILE){
                 MODEL_PATH = "";
                 LABEL_PATH = "";
-                prepareAiDetectViewInfo("detect.tflite", "labelmap.txt",modelType,true);
+                String labelName="labelmap_cn.txt";
+                if(SLanguage.getLanguage().equals("EN")){
+                    labelName="labelmap.txt";
+                }
+                prepareAiDetectViewInfo("detect.tflite", labelName ,modelType,true);
             }
 
             mModelType = modelType;
@@ -474,7 +517,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
 
             ArrayList<String> list = new ArrayList<>();
             for (int i = 0; i < detectArrayToUse.size(); i++) {
-                list.add(AIDetectModel2.getChineseName(detectArrayToUse.get(i)));
+                if(SLanguage.getLanguage().equals("EN")) {
+                    list.add(AIDetectModel2.getChineseName(detectArrayToUse.get(i)));
+                }else {
+                    list.add(detectArrayToUse.get(i));
+                }
             }
 
             WritableArray array = Arguments.createArray();
@@ -818,8 +865,10 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     public void setDetectItemEnable(final String name, final boolean value, Promise promise) {
         try {
             Log.d(REACT_CLASS, "----------------SAIDetectView--setDetectItemEnable--------RN--------");
-            String englishName = AIDetectModel2.getEnglishName(name);
-
+            String englishName = name;
+            if(SLanguage.getLanguage().equals("EN")){
+                englishName = AIDetectModel2.getEnglishName(name);
+            }
             if (value) {
                 if (!mStrToUse.contains(englishName)) {
                     mStrToUse.add(englishName);
@@ -1135,7 +1184,11 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private static void generateArObject(List<AIRecognition> recognitions) {
         for (int i = 0; i < recognitions.size(); i++) {
             AIRecognition recognition = recognitions.get(i);
-            AIDetectModel2 modelType = AIDetectModel2.getModelType(recognition.title);
+            String title=recognition.title;
+            if(SLanguage.getLanguage().equals("CN")){
+                title=AIDetectModel2.getEnglishName(title);
+            }
+            AIDetectModel2 modelType = AIDetectModel2.getModelType(title);
             createScreenCoordPoi((int) (recognition.location.left + recognition.location.right) / 2,
                     (int) (recognition.location.top + recognition.location.bottom) / 2, modelType, recognition.trackedID);
         }
