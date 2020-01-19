@@ -230,6 +230,16 @@
 		4AF967A721B5283A00105B74 /* SCartography.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AF967A621B5283A00105B74 /* SCartography.m */; };
 		4EE4616C239A3F5900775A76 /* SLanguage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EE4616B239A3F5900775A76 /* SLanguage.m */; };
 		611AE55923177F96009A0B9A /* SMMapFixColors.mm in Sources */ = {isa = PBXBuildFile; fileRef = 611AE55823177F96009A0B9A /* SMMapFixColors.mm */; };
+		614D850C23C7059500BDEC31 /* AIPlateCollectionView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 614D850823C7059400BDEC31 /* AIPlateCollectionView.mm */; };
+		614D850D23C7059500BDEC31 /* Utility.mm in Sources */ = {isa = PBXBuildFile; fileRef = 614D850B23C7059400BDEC31 /* Utility.mm */; };
+		614D851823C7067700BDEC31 /* libOpencv2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 614D850E23C7067700BDEC31 /* libOpencv2.a */; };
+		614D851923C7067700BDEC31 /* PlateSegmentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851023C7067700BDEC31 /* PlateSegmentation.cpp */; };
+		614D851A23C7067700BDEC31 /* PlateDetection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851123C7067700BDEC31 /* PlateDetection.cpp */; };
+		614D851B23C7067700BDEC31 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851223C7067700BDEC31 /* Pipeline.cpp */; };
+		614D851C23C7067700BDEC31 /* FastDeskew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851323C7067700BDEC31 /* FastDeskew.cpp */; };
+		614D851D23C7067700BDEC31 /* Recognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851423C7067700BDEC31 /* Recognizer.cpp */; };
+		614D851E23C7067700BDEC31 /* FineMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851523C7067700BDEC31 /* FineMapping.cpp */; };
+		614D851F23C7067700BDEC31 /* CNNRecognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851723C7067700BDEC31 /* CNNRecognizer.cpp */; };
 		B7B85EA223A7193E00D5E7CF /* SNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B85EA123A7193E00D5E7CF /* SNavigationManager.m */; };
 		B7B9A5FB2399F67500718E4F /* SNavigation2.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B9A5FA2399F67500718E4F /* SNavigation2.m */; };
 		D82C65AB214208DC00E9EEC5 /* JSWorkspaceType.m in Sources */ = {isa = PBXBuildFile; fileRef = D82C65A9214208DB00E9EEC5 /* JSWorkspaceType.m */; };
@@ -699,6 +709,19 @@
 		610C41C42314F852001EC84A /* libpython2.7.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpython2.7.a; path = "python/starcore_for_ios/python-2.7/libpython2.7.a"; sourceTree = "<group>"; };
 		611AE55723177F96009A0B9A /* SMMapFixColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapFixColors.h; sourceTree = "<group>"; };
 		611AE55823177F96009A0B9A /* SMMapFixColors.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SMMapFixColors.mm; sourceTree = "<group>"; };
+		614D850823C7059400BDEC31 /* AIPlateCollectionView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AIPlateCollectionView.mm; sourceTree = "<group>"; };
+		614D850923C7059400BDEC31 /* AIPlateCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIPlateCollectionView.h; sourceTree = "<group>"; };
+		614D850A23C7059400BDEC31 /* Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
+		614D850B23C7059400BDEC31 /* Utility.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Utility.mm; sourceTree = "<group>"; };
+		614D850E23C7067700BDEC31 /* libOpencv2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOpencv2.a; path = AI/OpenCV/libOpencv2.a; sourceTree = "<group>"; };
+		614D851023C7067700BDEC31 /* PlateSegmentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlateSegmentation.cpp; sourceTree = "<group>"; };
+		614D851123C7067700BDEC31 /* PlateDetection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlateDetection.cpp; sourceTree = "<group>"; };
+		614D851223C7067700BDEC31 /* Pipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
+		614D851323C7067700BDEC31 /* FastDeskew.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastDeskew.cpp; sourceTree = "<group>"; };
+		614D851423C7067700BDEC31 /* Recognizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Recognizer.cpp; sourceTree = "<group>"; };
+		614D851523C7067700BDEC31 /* FineMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FineMapping.cpp; sourceTree = "<group>"; };
+		614D851623C7067700BDEC31 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		614D851723C7067700BDEC31 /* CNNRecognizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CNNRecognizer.cpp; sourceTree = "<group>"; };
 		61786D45230A71E300D92877 /* SMMapRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMMapRender.h; sourceTree = "<group>"; };
 		61786D46230A71E300D92877 /* SMMapRender.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SMMapRender.mm; sourceTree = "<group>"; };
 		617D9BEE230FE37E00ADCCCA /* _imagingmath.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = _imagingmath.a; path = "python/Pillow-master/_imagingmath.a"; sourceTree = "<group>"; };
@@ -781,6 +804,7 @@
 				0AEFC1F42316867B006FEDD8 /* libpython2.7.a in Frameworks */,
 				0AEFC1F22316867B006FEDD8 /* libstarcore.a in Frameworks */,
 				2A5299552386814A0071AD06 /* Accelerate.framework in Frameworks */,
+				614D851823C7067700BDEC31 /* libOpencv2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,6 +827,7 @@
 			children = (
 				0A03BDD82395F4D400A90044 /* CameraManager.h */,
 				0A03BDC92395F4D400A90044 /* CameraManager.m */,
+				614D850723C7059400BDEC31 /* PlateCollection */,
 				0A03BDCE2395F4D400A90044 /* Classifier */,
 				0A03BDBE2395F4D400A90044 /* Detect */,
 				0A03BDD12395F4D400A90044 /* Headers */,
@@ -1081,9 +1106,38 @@
 			);
 			sourceTree = "<group>";
 		};
+		614D850723C7059400BDEC31 /* PlateCollection */ = {
+			isa = PBXGroup;
+			children = (
+				614D850923C7059400BDEC31 /* AIPlateCollectionView.h */,
+				614D850823C7059400BDEC31 /* AIPlateCollectionView.mm */,
+				614D850A23C7059400BDEC31 /* Utility.h */,
+				614D850B23C7059400BDEC31 /* Utility.mm */,
+			);
+			path = PlateCollection;
+			sourceTree = "<group>";
+		};
+		614D850F23C7067700BDEC31 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				614D851023C7067700BDEC31 /* PlateSegmentation.cpp */,
+				614D851123C7067700BDEC31 /* PlateDetection.cpp */,
+				614D851223C7067700BDEC31 /* Pipeline.cpp */,
+				614D851323C7067700BDEC31 /* FastDeskew.cpp */,
+				614D851423C7067700BDEC31 /* Recognizer.cpp */,
+				614D851523C7067700BDEC31 /* FineMapping.cpp */,
+				614D851623C7067700BDEC31 /* util.h */,
+				614D851723C7067700BDEC31 /* CNNRecognizer.cpp */,
+			);
+			name = src;
+			path = AI/OpenCV/src;
+			sourceTree = "<group>";
+		};
 		617D9BD1230FE17300ADCCCA /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				614D850F23C7067700BDEC31 /* src */,
+				614D850E23C7067700BDEC31 /* libOpencv2.a */,
 				617D9BEF230FE37E00ADCCCA /* _imaging.a */,
 				617D9BF0230FE37F00ADCCCA /* _imagingft.a */,
 				617D9BEE230FE37E00ADCCCA /* _imagingmath.a */,
@@ -1663,6 +1717,7 @@
 				0A332E22211D623E00F56F26 /* JSLayerManager.m in Sources */,
 				0A332E58211D623E00F56F26 /* JSSystemUtil.m in Sources */,
 				0A27E31B2284293900227B8C /* MediaUtil.m in Sources */,
+				614D850C23C7059500BDEC31 /* AIPlateCollectionView.mm in Sources */,
 				0A332E6B211D623E00F56F26 /* JSWorkspace.m in Sources */,
 				0A332E16211D623E00F56F26 /* JSGeoLine.m in Sources */,
 				0A332E45211D623E00F56F26 /* JSRecordset.m in Sources */,
@@ -1672,7 +1727,9 @@
 				0A332E1A211D623E00F56F26 /* JSGeoRegion.m in Sources */,
 				0A332E3F211D623E00F56F26 /* JSPrjCoordSys.m in Sources */,
 				D8FB9D40219AB0B800597AE5 /* SMSymbolTable.m in Sources */,
+				614D851B23C7067700BDEC31 /* Pipeline.cpp in Sources */,
 				0A6F7CBA23A22D53002BDBE7 /* MultiBoxTracker.mm in Sources */,
+				614D851F23C7067700BDEC31 /* CNNRecognizer.cpp in Sources */,
 				D8DD420C2174874D009D80E9 /* JSSymbolType.m in Sources */,
 				0A332E1D211D623E00F56F26 /* JSGridHotChart.m in Sources */,
 				D8DD42392175D06C009D80E9 /* JSSymbolFillLibrary.m in Sources */,
@@ -1731,9 +1788,11 @@
 				0A332E40211D623E00F56F26 /* JSPrjCoordSysType.m in Sources */,
 				0A332DF9211D623E00F56F26 /* JSChartLegend.m in Sources */,
 				0A332E09211D623E00F56F26 /* JSDatasetVectorInfo.m in Sources */,
+				614D851D23C7067700BDEC31 /* Recognizer.cpp in Sources */,
 				0A332DF2211D623E00F56F26 /* JSBarChartViewManager.m in Sources */,
 				2A5299DF2387C6290071AD06 /* SAIClassifyView.m in Sources */,
 				0A332E19211D623E00F56F26 /* JSGeoPoint.m in Sources */,
+				614D851A23C7067700BDEC31 /* PlateDetection.cpp in Sources */,
 				0A332E3A211D623E00F56F26 /* JSPoint.m in Sources */,
 				4EE4616C239A3F5900775A76 /* SLanguage.m in Sources */,
 				0A332E13211D623E00F56F26 /* JSFacilityAnalystSetting.m in Sources */,
@@ -1746,6 +1805,7 @@
 				2A15228B2396652700CBC452 /* ARMeasureView.m in Sources */,
 				0A6F014E231E0AAC004D5290 /* FixColorMode.m in Sources */,
 				0A332E17211D623E00F56F26 /* JSGeoLineM.m in Sources */,
+				614D851C23C7067700BDEC31 /* FastDeskew.cpp in Sources */,
 				0A332E32211D623E00F56F26 /* JSNavigation2.m in Sources */,
 				D83F3C42218BDA97001C56BE /* SMMapWC.m in Sources */,
 				0A2858D822E06305001048A8 /* LocationTransfer.m in Sources */,
@@ -1760,6 +1820,7 @@
 				0A03BDDD2395F4D400A90044 /* AIRecognition.m in Sources */,
 				0A51675621AF7EF7003C77BE /* MapTool.m in Sources */,
 				182832BB22F98190006586BF /* SIPortalService.m in Sources */,
+				614D851E23C7067700BDEC31 /* FineMapping.cpp in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,
@@ -1815,6 +1876,7 @@
 				0A332E4B211D623E00F56F26 /* JSSceneControl.m in Sources */,
 				0A332E11211D623E00F56F26 /* JSEnvironment.m in Sources */,
 				0A332DF6211D623E00F56F26 /* JSBufferEndType.m in Sources */,
+				614D851923C7067700BDEC31 /* PlateSegmentation.cpp in Sources */,
 				0A332E26211D623E00F56F26 /* JSLegendViewManager.m in Sources */,
 				0A332E72211D623E00F56F26 /* RCTConvert+RadiusUnit.m in Sources */,
 				0A332E44211D623E00F56F26 /* JSRadiusUnit.m in Sources */,
@@ -1829,6 +1891,7 @@
 				0A332E12211D623E00F56F26 /* JSFacilityAnalyst.m in Sources */,
 				0AEFC1F523168697006FEDD8 /* SMMapRender.mm in Sources */,
 				0A332E4C211D623E00F56F26 /* JSSceneView.m in Sources */,
+				614D850D23C7059500BDEC31 /* Utility.mm in Sources */,
 				0A22980F22BA3643001B2356 /* STransportationAnalyst.m in Sources */,
 				0AD551A122389E9E00D24453 /* SMessageService.m in Sources */,
 			);
@@ -1923,6 +1986,7 @@
 					ENV_IOS,
 					"$(inherited)",
 				);
+				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1932,6 +1996,8 @@
 					"$(PROJECT_DIR)/extern/Headers",
 					./python/starcore_for_ios/include,
 					/usr/include/libxml2,
+					"$(PROJECT_DIR)/AI/OpenCV/Headers",
+					"$(PROJECT_DIR)/AI/OpenCV/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1942,9 +2008,11 @@
 					"$(PROJECT_DIR)/AI",
 					"$(PROJECT_DIR)/AI/SuperMapAI.framework",
 					"$(PROJECT_DIR)/AI/TensorFlowLiteC.framework",
+					"$(PROJECT_DIR)/AI/OpenCV",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
+				PRELINK_LIBS = "$(PROJECT_DIR)/AI/OpenCV/libOpencv2.a";
 				PRODUCT_NAME = Supermap;
 				SKIP_INSTALL = YES;
 				VALID_ARCHS = "arm64 armv7";
@@ -1960,6 +2028,7 @@
 					"$(PROJECT_DIR)/interfaces",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = ENV_IOS;
+				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1969,6 +2038,8 @@
 					"$(PROJECT_DIR)/extern/Headers",
 					./python/starcore_for_ios/include,
 					/usr/include/libxml2,
+					"$(PROJECT_DIR)/AI/OpenCV/Headers",
+					"$(PROJECT_DIR)/AI/OpenCV/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1979,9 +2050,11 @@
 					"$(PROJECT_DIR)/AI",
 					"$(PROJECT_DIR)/AI/SuperMapAI.framework",
 					"$(PROJECT_DIR)/AI/TensorFlowLiteC.framework",
+					"$(PROJECT_DIR)/AI/OpenCV",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
+				PRELINK_LIBS = "$(PROJECT_DIR)/AI/OpenCV/libOpencv2.a";
 				PRODUCT_NAME = Supermap;
 				SKIP_INSTALL = YES;
 				VALID_ARCHS = "arm64 armv7";
