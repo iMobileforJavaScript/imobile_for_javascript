@@ -30,6 +30,8 @@ import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapView;
 import com.supermap.rnsupermap.R;
 
+import org.tensorflow.demo.tracking.MultiBoxTracker;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -177,6 +179,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mAIDetectView.startCameraPreview();
         mAIDetectView.resumeDetect();
         mAIDetectView.startCountTrackedObjs();//默认开启计数
+        mAIDetectView.setClickTrackedRecognitionListener(clickObjectListener);
     }
 
     public static void setArView(ArView arView) {
@@ -198,6 +201,21 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
         mArView.setPOIOverlapEnable(mIsPOIOverlap);
     }
 
+    private static AIDetectView.OnClickRecognitionObjectListener clickObjectListener = new AIDetectView.OnClickRecognitionObjectListener() {
+        @Override
+        public void onClickRecognitionObject(MultiBoxTracker.TrackedRecognition rackedRecognition) {
+            //向JS传递检测框的点击事件
+            WritableMap info = Arguments.createMap();
+            info.putInt("id", ((int) rackedRecognition.trackedID));
+            info.putString("name", rackedRecognition.title+"_"+System.currentTimeMillis());
+            info.putString("info", rackedRecognition.toString());
+            mReactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                    mCustomRelativeLayout.getId(),
+                    "onArObjectClick",
+                    info
+            );
+        }
+    };
 
     private static OnClickArObjectListener arObjectListener = new OnClickArObjectListener() {
         @Override

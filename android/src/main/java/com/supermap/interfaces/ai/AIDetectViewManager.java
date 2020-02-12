@@ -52,7 +52,7 @@ public class AIDetectViewManager extends SimpleViewManager<CustomRelativeLayout>
         SAIDetectView.setArView(mArView);
 
         mCustomRelativeLayout.addView(mAIdetectView);
-        mCustomRelativeLayout.addView(mArView);
+//        mCustomRelativeLayout.addView(mArView);
 
         return mCustomRelativeLayout;
     }
