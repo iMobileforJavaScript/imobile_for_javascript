@@ -667,7 +667,6 @@ RCT_REMAP_METHOD(animationSave,animationSave:(NSString*) savePath fileName:(NSSt
         reject(@"animationSave", exception.reason, nil);
     }
 }
-
 #pragma mark 获取标号对象type
 RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName geoId:(int)geoId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
@@ -684,11 +683,15 @@ RCT_REMAP_METHOD(getGeometryTypeById,getGeometryTypeById:(NSString*) layerName g
             [queryParameter setQueryType:IDS];
             Recordset* recordset=[dataset query:queryParameter];
             Geometry* geometry=[recordset geometry];
-            if(geometry){
-                GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
-                type=[geoGraphicObject getSymbolType];
+            if(geometry != nil){
+                if([geometry getType] == GT_PLOT){
+                    GeoGraphicObject* geoGraphicObject=(GeoGraphicObject*)geometry;
+                    type=[geoGraphicObject getSymbolType];
+                    [geometry dispose];
+                }
                 [geometry dispose];
             }
+            
             [recordset dispose];
         }
         resolve(@(type));

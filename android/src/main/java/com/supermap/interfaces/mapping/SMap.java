@@ -205,8 +205,15 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 
             scaleViewHelper.addScaleChangeListener(new MapParameterChangedListener() {
                 public void scaleChanged(double newScale) {
-                    if(!hasScaleChangeTask){
-                        hasScaleChangeTask = true;
+                    boolean bHasBoundsChangeTask = false;
+                    synchronized (this){
+                        bHasBoundsChangeTask = hasScaleChangeTask;
+                    }
+                    if(!bHasBoundsChangeTask){
+                        synchronized (this){
+                            hasScaleChangeTask = true;
+                        }
+
                         TimerTask scaleChangeTask = new TimerTask() {
                             @Override
                             public void run() {
@@ -238,7 +245,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 map2.putString("currentFloorID",currentFloorID);
                                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                         .emit(EventConst.IS_FLOOR_HIDDEN, map2);
-                                hasScaleChangeTask = false;
+                                synchronized (this) {
+                                    hasScaleChangeTask = false;
+                                }
                             }
                         };
                         Timer timer = new Timer();
@@ -247,8 +256,16 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 }
 
                 public void boundsChanged(Point2D newMapCenter) {
-                    if(!hasBoundsChangeTask){
-                        hasBoundsChangeTask = true;
+                    boolean bHasBoundsChangeTask = false;
+                    synchronized (this){
+                        bHasBoundsChangeTask = hasBoundsChangeTask;
+                    }
+
+                    if(!bHasBoundsChangeTask){
+                        synchronized (this){
+                            hasBoundsChangeTask = true;
+                        }
+
                         TimerTask boundsChangeTask = new TimerTask() {
                             @Override
                             public void run() {
@@ -262,7 +279,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                                 map.putString("currentFloorID",currentFloorID);
                                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                         .emit(EventConst.IS_FLOOR_HIDDEN, map);
-                                hasBoundsChangeTask = false;
+                                synchronized (this){
+                                    hasBoundsChangeTask = false;
+                                }
+
                             }
                         };
                         Timer timer = new Timer();
@@ -4085,6 +4105,11 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 delegate = new GeometryAddedListener() {
                     @Override
                     public void geometryAdded(GeometryEvent event) {
+                        //判断是否是标绘图层
+                        if(event.getLayer().getName().startsWith("PlotEdit_")){
+                            delegate = null;
+                            return;
+                        }
                         int id[] = new int[1];
                         id[0] = event.getID();
                         DatasetVector dataset = (DatasetVector) event.getLayer().getDataset();
@@ -5985,16 +6010,12 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
 //                serialNumberFile.createNewFile();
                 promise.resolve("");
             } else {
-                try {
-                    InputStream inputStream = new FileInputStream(serialNumberFile);
-                    InputStreamReader reader = new InputStreamReader(inputStream);
-                    BufferedReader bufferedReader = new BufferedReader(reader);
-                    serialNumber = bufferedReader.readLine().split("&&")[0];
-                    inputStream.close();
-                    promise.resolve(serialNumber);
-                } catch (Exception e) {
-                    promise.reject(e);
-                }
+                InputStream inputStream = new FileInputStream(serialNumberFile);
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                serialNumber = bufferedReader.readLine().split("&&")[0];
+                inputStream.close();
+                promise.resolve(serialNumber);
             }
             // context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"
         } catch (Exception e) {
@@ -6015,23 +6036,19 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             if (!serialNumberFile.exists()) {
                 promise.resolve(null);
             } else {
-                try {
-                    InputStream inputStream = new FileInputStream(serialNumberFile);
-                    InputStreamReader reader = new InputStreamReader(inputStream);
-                    BufferedReader bufferedReader = new BufferedReader(reader);
-                    String[] serialNumberAndModules = bufferedReader.readLine().split("&&");
-                    WritableMap writableMap = Arguments.createMap();
-                    if (serialNumberAndModules.length == 2) {
-                        writableMap.putString("serialNumber", serialNumberAndModules[0]);
-                        String[] modules = serialNumberAndModules[1].split(",");
-                        WritableArray array = Arguments.fromArray(modules);
-                        writableMap.putArray("modulesArray", array);
-                    }
-                    inputStream.close();
-                    promise.resolve(writableMap);
-                } catch (Exception e) {
-                    promise.reject(e);
+                InputStream inputStream = new FileInputStream(serialNumberFile);
+                InputStreamReader reader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String[] serialNumberAndModules = bufferedReader.readLine().split("&&");
+                WritableMap writableMap = Arguments.createMap();
+                if (serialNumberAndModules.length == 2) {
+                    writableMap.putString("serialNumber", serialNumberAndModules[0]);
+                    String[] modules = serialNumberAndModules[1].split(",");
+                    WritableArray array = Arguments.fromArray(modules);
+                    writableMap.putArray("modulesArray", array);
                 }
+                inputStream.close();
+                promise.resolve(writableMap);
             }
         } catch (Exception e) {
             promise.reject(e);
