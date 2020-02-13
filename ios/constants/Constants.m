@@ -86,6 +86,7 @@ NSString * const MATCH_IMAGE_RESULT = @"com.supermap.RN.match_image_result";
 
 /** 导航路线 **/
 NSString * const INDUSTRYNAVIAGTION = @"com.supermap.RN.Navigation.industry_navigation";
+NSString * const STOPNAVIAGTION = @"com.supermap.RN.Navigation.stop_navigation";
 NSString * const MAPSELECTPOINTNAMESTART = @"com.supermap.RN.Navigation.mapselectpointnamestart";
 NSString * const MAPSELECTPOINTNAMEEND = @"com.supermap.RN.Navigation.mapselectpointnameend";
 

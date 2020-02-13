@@ -281,7 +281,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
     public void startNavigation(ReadableMap selectedItem, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            String networkDatasetName = selectedItem.getString("name");
+            String networkDatasetName = selectedItem.getString("datasetName");
             String datasourceName = selectedItem.getString("datasourceName");
             String netModelFileName = selectedItem.getString("modelFileName");
 
@@ -306,12 +306,11 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                 sNavigation2.getNavigation().addNaviInfoListener(new NaviListener() {
                     @Override
                     public void onStopNavi() {
-                        clearOutdoorPoint();
                         mSpeakPlugin.stopPlay();
                         // TODO Auto-generated method stub
                         Log.e("+++++++++++++", "-------------****************");
                         mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit(EventConst.INDUSTRYNAVIAGTION, true);
+                                .emit(EventConst.STOPNAVIAGTION, true);
                     }
 
                     @Override
@@ -328,7 +327,6 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
 
                     @Override
                     public void onAarrivedDestination() {
-                        clearOutdoorPoint();
                         // TODO Auto-generated method stub
                         Log.e("+++++++++++++", "-------------****************");
                         mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -496,7 +494,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
                         mSpeakPlugin.stopPlay();
                         // TODO Auto-generated method stub
                         mReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit(EventConst.INDUSTRYNAVIAGTION, true);
+                                .emit(EventConst.STOPNAVIAGTION, true);
                     }
 
                     @Override
@@ -550,7 +548,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
      * @param promise
      */
     @ReactMethod
-    public void beginIndoorNavigation(double x, double y, double x2, double y2, Promise promise) {
+    public void beginIndoorNavigation(Promise promise) {
         try {
             sMap = SMap.getInstance();
             boolean result = sMap.getSmMapWC().getMapControl().getNavigation3().routeAnalyst();
@@ -843,35 +841,35 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
-     * 判断当前工作空间是否存在网络数据集（导航前置条件）
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void hasNetworkDataset(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
-
-            boolean hasNetworkDataset = false;
-            for (int i = 0, count = datasources.getCount(); i < count; i++) {
-                Datasets datasets = datasources.get(i).getDatasets();
-                for (int j = 0, len = datasets.getCount(); j < len; j++) {
-                    Dataset dataset = datasets.get(j);
-                    if (dataset.getType() == DatasetType.NETWORK) {
-                        hasNetworkDataset = true;
-                        break;
-                    }
-                }
-            }
-            promise.resolve(hasNetworkDataset);
-        } catch (Exception e) {
-            promise.resolve(false);
-            Log.e("navigation error:",e.toString());
-//            promise.reject(e);
-        }
-    }
+//    /**
+//     * 判断当前工作空间是否存在网络数据集（导航前置条件）
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void hasNetworkDataset(Promise promise) {
+//        try {
+//            sMap = SMap.getInstance();
+//            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+//
+//            boolean hasNetworkDataset = false;
+//            for (int i = 0, count = datasources.getCount(); i < count; i++) {
+//                Datasets datasets = datasources.get(i).getDatasets();
+//                for (int j = 0, len = datasets.getCount(); j < len; j++) {
+//                    Dataset dataset = datasets.get(j);
+//                    if (dataset.getType() == DatasetType.NETWORK) {
+//                        hasNetworkDataset = true;
+//                        break;
+//                    }
+//                }
+//            }
+//            promise.resolve(hasNetworkDataset);
+//        } catch (Exception e) {
+//            promise.resolve(false);
+//            Log.e("navigation error:",e.toString());
+////            promise.reject(e);
+//        }
+//    }
 
     /**
      * 生成路网
@@ -997,7 +995,180 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 获取点所在的所有导航数据源（室内）数据集（室外）相关信息
+     * @param x
+     * @param y
+     * @param promise
+     */
+    @ReactMethod
+    public void getPointBelongs(double x, double y, Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            WritableArray array = Arguments.createArray();
+            for (int i = 0; i < datasources.getCount(); i++) {
+                Datasource datasource = datasources.get(i);
+                Datasets datasets = datasource.getDatasets();
+                boolean isIndoor = datasets.contains("FloorRelationTable");
+                boolean isOutdoor = datasets.contains("ModelFileLinkTable");
+                if(isIndoor || isOutdoor){
+                    WritableMap map = Arguments.createMap();
+                    boolean needPush = false;
+                    for (int j = 0; j < datasets.getCount(); j++) {
+                        Dataset dataset = datasets.get(j);
+                        //经纬度点
+                        Point2D point2D = new Point2D(x,y);
+                        if(!SMap.safeGetType(dataset.getPrjCoordSys(),PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE)){
+                            point2D = getMapPoint(x,y);
+                        }
+                        if(dataset.getType() == DatasetType.NETWORK && dataset.getBounds().contains(point2D)){
+                            if(isIndoor){
+                                map.putString("datasourceName",datasource.getAlias());
+                                map.putBoolean("isIndoor",true);
+                                needPush = true;
+                                break;
+                            }else if(isOutdoor){
+                                Dataset linkTable = datasets.get("ModelFileLinkTable");
+                                if(linkTable != null){
+                                    DatasetVector datasetVector = (DatasetVector)linkTable;
+                                    Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+                                    while (!recordset.isEOF()){
+                                        String networkDatasetName = (String) recordset.getFieldValue("NetworkDataset");
+                                        String netModelFileName = (String) recordset.getFieldValue("NetworkModelFile");
+                                        if(networkDatasetName.equals(dataset.getName())){
+                                            map.putString("modelFileName",netModelFileName);
+                                            map.putString("datasourceName",datasource.getAlias());
+                                            map.putString("datasetName",networkDatasetName);
+                                            map.putBoolean("isIndoor",false);
+                                            needPush = true;
+                                            break;
+                                        }
+                                        recordset.moveNext();
+                                    }
+                                    recordset.close();
+                                    recordset.dispose();
+                                }
+                            }
+                        }
+                    }
+                    if(needPush){
+                        array.pushMap(map);
+                    }
+                }
+            }
+            promise.resolve(array);
+        }catch (Exception e){
+            promise.resolve(Arguments.createArray());
+            Log.e("navigation error:",e.toString());
+        }
+    }
 
+
+    /**
+     * 获取到起始点距离最近的门的位置
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void getDoorPoint(ReadableMap params, Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            String datasourceName =  params.getString("datasourceName");
+            double startX = params.getDouble("startX");
+            double startY = params.getDouble("startY");
+            double endX = params.getDouble("endX");
+            double endY = params.getDouble("endY");
+            double doorX = 0.0;
+            double doorY = 0.0;
+            String floorID = "";
+            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+            Datasource datasource = datasources.get(datasourceName);
+            WritableMap map = Arguments.createMap();
+            if(datasource != null){
+                Dataset connectionInfoTable = datasource.getDatasets().get("connectionInfoTable");
+                if(connectionInfoTable != null){
+                    DatasetVector datasetVector = (DatasetVector)connectionInfoTable;
+                    Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+                    double dLen = 1000000.0;
+                    while (!recordset.isEOF()){
+                        double latitude = Double.parseDouble(recordset.getFieldValue("latitude").toString());
+                        double longtitude = Double.parseDouble(recordset.getFieldValue("longtitude").toString());
+                        String FL_ID = recordset.getFieldValue("FL_ID").toString();
+                        double curLen1 = Math.sqrt( Math.pow((longtitude - startX),2) + Math.pow((latitude-startY),2) );
+                        double curLen2 = Math.sqrt( Math.pow((longtitude - endX),2) + Math.pow((latitude-endY),2) );
+                        if(curLen1 + curLen2 < dLen){
+                            dLen = curLen1 + curLen2;
+                            doorX = longtitude;
+                            doorY = latitude;
+                            floorID = FL_ID;
+                        }
+                        recordset.moveNext();
+                    }
+                    recordset.close();
+                    recordset.dispose();
+                    map.putDouble("x",doorX);
+                    map.putDouble("y",doorY);
+                    map.putString("floorID",floorID);
+                    promise.resolve(map);
+                }else{
+                    promise.resolve(map);
+                }
+            }else{
+                promise.resolve(map);
+            }
+        }catch (Exception e){
+            WritableMap map = Arguments.createMap();
+            promise.resolve(map);
+            Log.e("navigation error:",e.toString());
+        }
+    }
+
+    /**
+     * 添加引导线吗
+     * @param startPoint
+     * @param endPoint
+     * @param promise
+     */
+    @ReactMethod
+    public void addLineOnTrackingLayer(ReadableMap startPoint, ReadableMap endPoint, Promise promise){
+        try{
+            mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sMap = SMap.getInstance();
+                    TrackingLayer trackingLayer = sMap.smMapWC.getMapControl().getMap().getTrackingLayer();
+
+                    double startX = startPoint.getDouble("x");
+                    double startY = startPoint.getDouble("y");
+                    double endX = endPoint.getDouble("x");
+                    double endY = endPoint.getDouble("y");
+
+                    Point2D start = getMapPoint(startX,startY);
+                    Point2D end = getMapPoint(endX,endY);
+
+                    Point2Ds point2Ds = new Point2Ds();
+                    point2Ds.add(start);
+                    point2Ds.add(end);
+
+                    GeoStyle guideLineStyle = new GeoStyle();
+                    guideLineStyle.setLineWidth(2.0);
+                    guideLineStyle.setLineColor(new Color(82,198,233));
+                    guideLineStyle.setLineSymbolID(2);
+
+                    GeoLine geoLine = new GeoLine(point2Ds);
+                    geoLine.setStyle(guideLineStyle);
+
+                    trackingLayer.add(geoLine,"");
+                    sMap.smMapWC.getMapControl().getMap().refresh();
+                    promise.resolve(true);
+                }
+            });
+        }catch (Exception e){
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+        }
+    }
     /**
      * 判断是否是室内点
      *
@@ -1047,7 +1218,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
     public void getStartPoint(double x, double y, boolean isindoor, String floorID, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            if (floorID == null) {
+            if (floorID == null || floorID.equals("")) {
                 floorID = sMap.getSmMapWC().getFloorListView().getCurrentFloorId();
             }
             if (isindoor) {
@@ -1074,11 +1245,12 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
     public void getEndPoint(double x, double y, boolean isindoor, String floorID, Promise promise) {
         try {
             sMap = SMap.getInstance();
-            if (floorID == null) {
+            if (floorID == null || floorID.equals("")) {
                 floorID = sMap.getSmMapWC().getFloorListView().getCurrentFloorId();
             }
             if (isindoor) {
                 sMap.getSmMapWC().getMapControl().getNavigation3().setDestinationPoint(x, y, floorID);
+                sMap.getSmMapWC().getMapControl().getNavigation3().setCurrentFloorId(floorID);
             } else {
                 Point2D point2d = getMapPoint(x,y);
                 showPointByCallout(point2d.getX(), point2d.getY(), "endpoint");
@@ -1091,6 +1263,32 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         }
     }
 
+
+    /**
+     * 清除导航路径 保留起始点
+     * @param promise
+     */
+    @ReactMethod
+    public void clearPath(Promise promise){
+        try{
+            sMap = SMap.getInstance();
+            mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(sNavigation2 != null){
+                        sNavigation2.getNavigation().cleanPath();
+                    }
+                    sMap.smMapWC.getMapControl().getMap().getTrackingLayer().clear();
+                    sMap.smMapWC.getMapControl().getNavigation3().cleanPath();
+                    sMap.smMapWC.getMapControl().getMap().refresh();
+                }
+            });
+            promise.resolve(true);
+        }catch (Exception e){
+            promise.resolve(false);
+            Log.e("navigation error:",e.toString());
+        }
+    }
 
     /**
      * 清除起终点
@@ -1232,11 +1430,11 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
     private void showPointByCallout(final double x, final double y, final String pointName) {
         final MapView mapView = SMap.getInstance().getSmMapWC().getMapControl().getMap().getMapView();
 
-        mapView.removeCallOut(pointName);
-
         mReactContext.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                mapView.removeCallOut(pointName);
 
                 m_callout = new InfoCallout(mReactContext);
                 m_callout.setStyle(CalloutAlignment.BOTTOM);
@@ -1402,29 +1600,29 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
-     * 判断当前地图是否是室内地图
-     *
-     * @param promise
-     */
-    @ReactMethod
-    public void isIndoorMap(Promise promise) {
-        try {
-            sMap = SMap.getInstance();
-            boolean isIndoor = false;
-            FloorListView floorListView = sMap.smMapWC.getFloorListView();
-            if (floorListView != null) {
-                if (floorListView.getCurrentFloorId() != null && floorListView.getVisibility() == View.VISIBLE) {
-                    isIndoor = true;
-                }
-            }
-            promise.resolve(isIndoor);
-        } catch (Exception e) {
-            promise.resolve(false);
-            Log.e("navigation error:",e.toString());
-//            promise.reject(e);
-        }
-    }
+//    /**
+//     * 判断当前地图是否是室内地图
+//     *
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void isIndoorMap(Promise promise) {
+//        try {
+//            sMap = SMap.getInstance();
+//            boolean isIndoor = false;
+//            FloorListView floorListView = sMap.smMapWC.getFloorListView();
+//            if (floorListView != null) {
+//                if (floorListView.getCurrentFloorId() != null && floorListView.getVisibility() == View.VISIBLE) {
+//                    isIndoor = true;
+//                }
+//            }
+//            promise.resolve(isIndoor);
+//        } catch (Exception e) {
+//            promise.resolve(false);
+//            Log.e("navigation error:",e.toString());
+////            promise.reject(e);
+//        }
+//    }
 
 
     /**
@@ -1529,69 +1727,69 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         }
     }
 
-    /**
-     * 判断搜索结果的两个点是否在某个路网数据集的bounds内，返回结果用于行业导航。无结果则进行在线路径分析
-     * @param navStartPoint
-     * @param navEndPoint
-     * @param promise
-     */
-    @ReactMethod
-    public void isPointsInMapBounds(ReadableMap navStartPoint, ReadableMap navEndPoint, Promise promise){
-        try {
-
-            WritableMap map = Arguments.createMap();
-
-            double x1 = navStartPoint.getDouble("x");
-            double y1 = navStartPoint.getDouble("y");
-            double x2 = navEndPoint.getDouble("x");
-            double y2 = navEndPoint.getDouble("y");
-
-            Datasource networkDatasource = null;
-            Dataset networkDataset = null;
-
-            sMap = SMap.getInstance();
-            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
-            for(int i = 0; i < datasources.getCount(); i++){
-                Datasource datasource = datasources.get(i);
-                Datasets datasets = datasource.getDatasets();
-                for(int j = 0; j < datasets.getCount(); j++){
-                    Dataset dataset = datasets.get(j);
-                    Rectangle2D bounds = dataset.getBounds();
-                    if(dataset.getType() == DatasetType.NETWORK && bounds.contains(x1,y1) && bounds.contains(x2,y2)){
-                        networkDataset = dataset;
-                        networkDatasource = datasource;
-                        break;
-                    }
-                }
-            }
-            if(networkDataset != null){
-                Datasets datasets = networkDatasource.getDatasets();
-                Dataset linkTable = datasets.get("ModelFileLinkTable");
-                if(linkTable != null){
-                    DatasetVector datasetVector = (DatasetVector)linkTable;
-                    Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
-                    do{
-                        Object networkDatasetObj = recordset.getFieldValue("NetworkDataset");
-                        Object netModelObj = recordset.getFieldValue("NetworkModelFile");
-                        if(netModelObj != null && networkDatasetObj != null){
-                            String networkDatasetName = networkDatasetObj.toString();
-                            String netModelFileName = netModelObj.toString();
-                            map.putString("name",networkDatasetName);
-                            map.putString("modelFileName",netModelFileName);
-                            map.putString("datasourceName",networkDatasource.getAlias());
-                        }
-                    }while(recordset.moveNext());
-                    recordset.close();
-                    recordset.dispose();
-                }
-            }
-            promise.resolve(map);
-        }catch (Exception e){
-            WritableMap map = Arguments.createMap();
-            promise.resolve(map);
-            Log.e("navigation error:",e.toString());
-//            promise.reject(e);
-        }
-    }
+//    /**
+//     * 判断搜索结果的两个点是否在某个路网数据集的bounds内，返回结果用于行业导航。无结果则进行在线路径分析
+//     * @param navStartPoint
+//     * @param navEndPoint
+//     * @param promise
+//     */
+//    @ReactMethod
+//    public void isPointsInMapBounds(ReadableMap navStartPoint, ReadableMap navEndPoint, Promise promise){
+//        try {
+//
+//            WritableMap map = Arguments.createMap();
+//
+//            double x1 = navStartPoint.getDouble("x");
+//            double y1 = navStartPoint.getDouble("y");
+//            double x2 = navEndPoint.getDouble("x");
+//            double y2 = navEndPoint.getDouble("y");
+//
+//            Datasource networkDatasource = null;
+//            Dataset networkDataset = null;
+//
+//            sMap = SMap.getInstance();
+//            Datasources datasources = sMap.smMapWC.getWorkspace().getDatasources();
+//            for(int i = 0; i < datasources.getCount(); i++){
+//                Datasource datasource = datasources.get(i);
+//                Datasets datasets = datasource.getDatasets();
+//                for(int j = 0; j < datasets.getCount(); j++){
+//                    Dataset dataset = datasets.get(j);
+//                    Rectangle2D bounds = dataset.getBounds();
+//                    if(dataset.getType() == DatasetType.NETWORK && bounds.contains(x1,y1) && bounds.contains(x2,y2)){
+//                        networkDataset = dataset;
+//                        networkDatasource = datasource;
+//                        break;
+//                    }
+//                }
+//            }
+//            if(networkDataset != null){
+//                Datasets datasets = networkDatasource.getDatasets();
+//                Dataset linkTable = datasets.get("ModelFileLinkTable");
+//                if(linkTable != null){
+//                    DatasetVector datasetVector = (DatasetVector)linkTable;
+//                    Recordset recordset = datasetVector.getRecordset(false,CursorType.STATIC);
+//                    do{
+//                        Object networkDatasetObj = recordset.getFieldValue("NetworkDataset");
+//                        Object netModelObj = recordset.getFieldValue("NetworkModelFile");
+//                        if(netModelObj != null && networkDatasetObj != null){
+//                            String networkDatasetName = networkDatasetObj.toString();
+//                            String netModelFileName = netModelObj.toString();
+//                            map.putString("name",networkDatasetName);
+//                            map.putString("modelFileName",netModelFileName);
+//                            map.putString("datasourceName",networkDatasource.getAlias());
+//                        }
+//                    }while(recordset.moveNext());
+//                    recordset.close();
+//                    recordset.dispose();
+//                }
+//            }
+//            promise.resolve(map);
+//        }catch (Exception e){
+//            WritableMap map = Arguments.createMap();
+//            promise.resolve(map);
+//            Log.e("navigation error:",e.toString());
+////            promise.reject(e);
+//        }
+//    }
 
 }

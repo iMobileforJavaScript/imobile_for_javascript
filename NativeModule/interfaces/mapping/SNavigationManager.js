@@ -29,6 +29,29 @@ function setIndustryNavigationListener(handlers) {
     }
 }
 
+/**
+ * 主动停止导航监听
+ * @param handlers
+ */
+function setStopNavigationListener(handlers) {
+    try {
+        if (Platform.OS === 'ios' && handlers) {
+            if (typeof handlers.callback === 'function') {
+                nativeEvt.addListener(EventConst.STOPNAVIAGTION, function (e) {
+                    handlers.callback(e);
+                });
+            }
+        } else if (Platform.OS === 'android' && handlers) {
+            if (typeof handlers.callback === "function") {
+                DeviceEventEmitter.addListener(EventConst.STOPNAVIAGTION, function (e) {
+                    handlers.callback(e);
+                });
+            }
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 /**
  * 绘制在线路径分析的路径
@@ -43,19 +66,19 @@ function drawOnlinePath(pathPoints) {
     }
 }
 
-/**
- * 判断在线搜索的起始点是否在地图导航范围内
- * @param startPoint
- * @param endPoint
- * @returns {*}
- */
-function isPointsInMapBounds(startPoint, endPoint) {
-    try {
-        return SNavigationManager.isPointsInMapBounds(startPoint, endPoint)
-    } catch (e) {
-        console.error(e)
-    }
-}
+// /**
+//  * 判断在线搜索的起始点是否在地图导航范围内
+//  * @param startPoint
+//  * @param endPoint
+//  * @returns {*}
+//  */
+// function isPointsInMapBounds(startPoint, endPoint) {
+//     try {
+//         return SNavigationManager.isPointsInMapBounds(startPoint, endPoint)
+//     } catch (e) {
+//         console.error(e)
+//     }
+// }
 
 /**
  * 清除导航路线
@@ -114,9 +137,9 @@ function beginNavigation(x1, y1, x2, y2) {
  * 室内导航路径分析
  * @returns {*|void|Promise<void>}
  */
-function beginIndoorNavigation(x1, y1, x2, y2) {
+function beginIndoorNavigation() {
     try {
-        return SNavigationManager.beginIndoorNavigation(x1, y1, x2, y2)
+        return SNavigationManager.beginIndoorNavigation()
     } catch (e) {
         console.error(e)
     }
@@ -310,17 +333,17 @@ function removeTrafficMap(name) {
     }
 }
 
-/**
- * 判断当前工作空间是否存在网络数据集
- * @returns {*}
- */
-function hasNetworkDataset() {
-    try {
-        return SNavigationManager.hasNetworkDataset()
-    } catch (e) {
-        console.error(e)
-    }
-}
+// /**
+//  * 判断当前工作空间是否存在网络数据集
+//  * @returns {*}
+//  */
+// function hasNetworkDataset() {
+//     try {
+//         return SNavigationManager.hasNetworkDataset()
+//     } catch (e) {
+//         console.error(e)
+//     }
+// }
 
 /**
  * 判断当前工作空间是否存在线数据集
@@ -508,17 +531,17 @@ function getNavPathLength(isIndoor) {
     }
 }
 
-/**
- * 判断当前地图是否是室内地图
- * @returns {*}
- */
-function isIndoorMap() {
-    try {
-        return SNavigationManager.isIndoorMap()
-    } catch (e) {
-        console.error(e)
-    }
-}
+// /**
+//  * 判断当前地图是否是室内地图
+//  * @returns {*}
+//  */
+// function isIndoorMap() {
+//     try {
+//         return SNavigationManager.isIndoorMap()
+//     } catch (e) {
+//         console.error(e)
+//     }
+// }
 
 /**
  * 判断当前点是否在数据集的bounds范围内
@@ -586,10 +609,63 @@ function getNetworkDataset() {
     }
 }
 
+/**
+ * 获取点所在的所有导航数据源（室内）数据集（室外）
+ * @param x
+ * @param y
+ * @returns {*}
+ */
+function getPointBelongs(x,y) {
+    try{
+        return SNavigationManager.getPointBelongs(x,y)
+    }catch (e) {
+        console.error(e)
+    }
+}
+
+/**
+ * 获取到起始点距离最近的门的位置
+ * @param params
+ * @returns {*}
+ */
+function getDoorPoint(params) {
+    try {
+        return SNavigationManager.getDoorPoint(params)
+    }catch (e) {
+        console.error(e)
+    }
+}
+
+/**
+ * 添加引导线（分段导航）
+ * @param startPoint
+ * @param endPoint
+ * @returns {*}
+ */
+function addLineOnTrackingLayer(startPoint, endPoint) {
+    try {
+        return SNavigationManager.addLineOnTrackingLayer(startPoint, endPoint)
+    }catch (e) {
+        console.error(e)
+    }
+}
+
+/**
+ * 清除导航路线和跟踪层，不清除callout点
+ * @returns {*}
+ */
+function clearPath() {
+    try {
+        return SNavigationManager.clearPath()
+    }catch (e) {
+        console.error(e)
+    }
+}
 export {
     setIndustryNavigationListener,
+    setStopNavigationListener,
     drawOnlinePath,
-    isPointsInMapBounds,
+    // isPointsInMapBounds,
     clearTrackingLayer,
     startNavigation,
     startIndoorNavigation,
@@ -611,7 +687,7 @@ export {
     addNetWorkDataset,
     removeNetworkDataset,
     buildNetwork,
-    hasNetworkDataset,
+    // hasNetworkDataset,
     hasLineDataset,
     gpsBegin,
     addGPSRecordset,
@@ -619,7 +695,7 @@ export {
     isGuiding,
     setStartPointNameListener,
     setEndPointNameListener,
-    isIndoorMap,
+    // isIndoorMap,
     getCurrentMapPosition,
     isInBounds,
     openNavDatasource,
@@ -628,4 +704,8 @@ export {
     getNavPathLength,
     initSpeakPlugin,
     destroySpeakPlugin,
+    getPointBelongs,
+    getDoorPoint,
+    addLineOnTrackingLayer,
+    clearPath,
 }

@@ -61,6 +61,7 @@ extern NSString * const ONLINE_ANALYST_RESULT;
 extern NSString * const MATCH_IMAGE_RESULT;
 
 extern NSString * const INDUSTRYNAVIAGTION;
+extern NSString * const STOPNAVIAGTION;
 extern NSString * const MAPSELECTPOINTNAMESTART;
 extern NSString * const MAPSELECTPOINTNAMEEND;
 
