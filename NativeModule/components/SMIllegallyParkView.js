@@ -3,7 +3,7 @@ import {
   requireNativeComponent,
   ViewPropTypes,
   StyleSheet,
-  View, InteractionManager, Platform
+  View, InteractionManager
 } from "react-native";
 import PropTypes from 'prop-types'
 import {
@@ -34,7 +34,9 @@ class SMIllegallyParkView extends React.Component {
 
   componentDidUpdate(prevProps) {
     // SIllegallyParkView.init(this.props.language)
+    SIllegallyParkView.onStart()
   }
+
 
   componentWillUnmount() {
     SIllegallyParkView.onDestroy()
@@ -55,6 +57,8 @@ class SMIllegallyParkView extends React.Component {
       </View>
     );
   }
+
+  
 }
 
 var styles = StyleSheet.create({

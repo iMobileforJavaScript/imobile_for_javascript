@@ -38,7 +38,9 @@
 #import "TensorflowTrackNative.h"
 #import "MultiBoxTracker.h"
 #import <Accelerate/Accelerate.h>
-
+#import "ColorHSB.h"
+#import "SuperMap/Color.h"
+#import "AIPlateCollectionCameraFrame.h"
 
 @interface  AIPlateCollectionView()<UIAlertViewDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 {
@@ -56,6 +58,7 @@
     InfoView *_infoView;
     
     NSTimeInterval _previousInferenceTimeMs;
+    NSTimeInterval _waitTimeMS;
     long _detectInterval;
     
     BOOL _isCollecting;
@@ -77,6 +80,15 @@
      此值在相机初始化中设置，在相机代理中使用，用户若无特殊需求不用修改。
      */
     int _MaxFR;
+    
+    AIPlateCollectionCameraFrame *_cameraFrame;
+    
+    UIImage * _submitImage;
+    NSString* _submitCarType;
+    NSString* _submitCarNum;
+    NSString* _submitCarColor;
+    
+    int _languageFlag; //0-CN / 1-EN
 }
 
 @end
@@ -186,16 +198,64 @@
     _imageDetect=[[ImageDetect alloc]initWithModle:modelPath labels:labelPath andThreadCount:1];
     
     _previousInferenceTimeMs = -1;
+    _waitTimeMS = -1;
     _detectInterval = 100;
+
+    UIButton* submitbnt = [UIButton buttonWithType:UIButtonTypeCustom];
+    [submitbnt setTitle:@"确认" forState:UIControlStateNormal];
+    [submitbnt addTarget:self action:@selector(submit) forControlEvents:UIControlEventTouchUpInside];
+    
+    _cameraFrame = [[AIPlateCollectionCameraFrame alloc]initWithFrame:self.frame];
+    _cameraFrame.backgroundColor = [UIColor clearColor];
+    _cameraFrame.submitBnt = submitbnt;
+    [_cameraFrame collectedPlate:nil carType:nil colorDescription:nil];
+    [self addSubview:_cameraFrame];
+    
+    _submitImage = nil;
+    _submitCarNum = nil;
+    _submitCarType = nil;
+    _submitCarColor = nil;
+    _languageFlag = 0;
     
 }
+
+-(void)setLanguage:(NSString *)type{
+    if ([type isEqualToString:@"CN"]) {
+        _languageFlag = 0;
+    }
+    if ([type isEqualToString:@"EN"]) {
+        _languageFlag = 1;
+    }
+}
+
+-(void)dispose{
+    [self stopCollection];
+    [self removeFromSuperview];
+    
+}
+
+-(void)submit{
+    
+    if(_submitImage!=nil && self.delegate!=nil){
+        [self.delegate collectedPlate:_submitCarNum carType:_submitCarType colorDescription:_submitCarColor andImage:_submitImage];
+    }
+    
+}
+
+//-(void)loadDetectModle:(NSString *)modelPath labels:(NSString *)labelPath{
+//    if (_imageDetect == nil) {
+//        _imageDetect=[[ImageDetect alloc]initWithModle:modelPath labels:labelPath andThreadCount:1];
+//    }
+//}
 
 -(void)layoutSubviews{
     [super layoutSubviews];
     
     _preview.frame = self.bounds;
     _infoView.frame = self.bounds;
+    _cameraFrame.frame = self.bounds;
 }
+
 
 
 //刷新布局
@@ -245,7 +305,11 @@
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
-
+    if (_imageDetect==nil || !_isCollecting) {
+        return;
+    }
+    
+    
     NSDate *date = [NSDate date];
     NSTimeInterval currentTimeMs = [date timeIntervalSince1970]*1000;
     if ( currentTimeMs-_previousInferenceTimeMs < _detectInterval ) {
@@ -253,11 +317,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     _previousInferenceTimeMs = currentTimeMs;
     
-    if (!_isCollecting) {
-        return;
-    }
-    
-    
+
     @try {
         CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         NSArray *resultOriginal = [_imageDetect runModel:pixelBuffer];
@@ -271,8 +331,32 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
         }
         
-        NSArray *result = [_tracker track:arrCar with:pixelBuffer];
+        NSArray *trackerArr = [_tracker track:arrCar with:pixelBuffer];
        
+        NSMutableArray* result = [[NSMutableArray alloc]init];
+        for (int i=0; i<trackerArr.count; i++) {
+            AIRecognition* resultTemp = [trackerArr objectAtIndex:i];
+            //面积更大法
+            double areaTemp = resultTemp.rect.size.width*resultTemp.rect.size.height;
+            //更接近中心法
+//            double xOffTemp = resultTemp.rect.origin.x+resultTemp.rect.size.width*0.5 - 0.5;
+//            double yOffTemp = resultTemp.rect.origin.y+resultTemp.rect.size.height*0.5 - 0.5;
+//            double centerOffTemp = xOffTemp*xOffTemp + yOffTemp*yOffTemp;
+            // 插入排序
+            int j=0;
+            for (; j<arrCar.count;j++) {
+                AIRecognition* carRec = [result objectAtIndex:j];
+                double areaCar = carRec.rect.size.width*carRec.rect.size.height;
+//                double xOffCar = carRec.rect.origin.x+carRec.rect.size.width*0.5 - 0.5;
+//                double yOffCar = carRec.rect.origin.y+carRec.rect.size.height*0.5 - 0.5;
+//                double centerOffCar = xOffCar*xOffCar + yOffCar*yOffCar;
+//                if (centerOffTemp<centerOffCar) {
+                if (areaCar<areaTemp) {
+                    break;
+                }
+            }
+            [result insertObject:resultTemp atIndex:j];
+        }
        
         size_t width = CVPixelBufferGetWidth(pixelBuffer);
         size_t height = CVPixelBufferGetHeight(pixelBuffer);
@@ -284,12 +368,26 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             return;
         }
       
+        
         if (!_adjustingFocus) {  //反差对焦下 非正在对焦状态（相位对焦下self.adjustingFocus此值不会改变）
             if (_isLensChanged == _isIOS8AndFoucePixelLensPosition) {
                 _count++;
-                if (_count >= _MaxFR){
-                    if ([self infoFrom:pixelBuffer withRecognitions:result]) {
+                if ( _count >= _MaxFR){
+                    if (_previousInferenceTimeMs>_waitTimeMS &&
+                        [self infoFrom:pixelBuffer withRecognitions:result]) {
+                        _waitTimeMS = _previousInferenceTimeMs + 5000;//延时5秒进行新的识别
                         _count = 0;
+                    }else{
+                        if (_previousInferenceTimeMs>_waitTimeMS + 20000) {//延时20秒清除识别
+                            dispatch_sync(dispatch_get_main_queue(), ^{
+                                [_cameraFrame collectedPlate:nil carType:nil colorDescription:nil];
+                            });
+                            
+                            _submitImage = nil;
+                            _submitCarType = nil;
+                            _submitCarColor = nil;
+                            _submitCarNum = nil;
+                        }
                     }
                 }else{
                     _isLensChanged = _isIOS8AndFoucePixelLensPosition;
@@ -328,9 +426,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     CGContextRelease(newContext);
     CGColorSpaceRelease(colorSpace);
             
+    UIImage *image = nil;
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-            
-    for(int i=0;i<arrCar.count;i++){
+    switch (deviceOrientation) {
+        case UIDeviceOrientationPortrait:           // Device oriented vertically, home button on the bottom
+            image = [UIImage imageWithCGImage:fullImage scale:1.0 orientation:UIImageOrientationUp];
+            break;
+        case  UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
+            image = [UIImage imageWithCGImage:fullImage scale:1.0 orientation:UIImageOrientationDown];
+            break;
+        case UIDeviceOrientationLandscapeRight:     // Device oriented horizontally, home button on the left
+             image = [UIImage imageWithCGImage:fullImage scale:1.0 orientation:UIImageOrientationRight];
+            break;
+        default:
+             image = [UIImage imageWithCGImage:fullImage scale:1.0 orientation:UIImageOrientationLeft];
+            break;
+    }
+    
+    for(int i=0;i<1;i++){
+   // for(int i=0;i<arrCar.count;i++){
         AIRecognition* resultTemp = [arrCar objectAtIndex:i];
         CGRect rectTemp = CGRectMake(resultTemp.rect.origin.x*width,
                                              resultTemp.rect.origin.y*height,
@@ -338,22 +452,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                              resultTemp.rect.size.height*height);
         CGImageRef carRefImage = CGImageCreateWithImageInRect(fullImage, rectTemp);
         UIImage *carImage = nil;
-                
-    //            switch (deviceOrientation) {
-    //                case UIDeviceOrientationPortrait:           // Device oriented vertically, home button on the bottom
-    //                   carImage = [UIImage imageWithCGImage:carRefImage scale:1.0 orientation:UIImageOrientationRight];
-    //                    break;
-    //                case  UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
-    //                    carImage = [UIImage imageWithCGImage:carRefImage scale:1.0 orientation:UIImageOrientationLeft];
-    //                    break;
-    //                case UIDeviceOrientationLandscapeRight:     // Device oriented horizontally, home button on the left
-    //                    carImage = [UIImage imageWithCGImage:carRefImage scale:1.0 orientation:UIImageOrientationDown];
-    //                    break;
-    //
-    //                default:
-    //                    carImage = [UIImage imageWithCGImage:carRefImage scale:1.0 orientation:UIImageOrientationUp];
-    //                    break;
-    //            }
                 
         switch (deviceOrientation) {
             case UIDeviceOrientationPortrait:           // Device oriented vertically, home button on the bottom
@@ -377,18 +475,40 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         NSString* text = [self simpleRecognition:source_image];
                                        
         if (text.length == 7) { //识别成功            bResult = true;
-            if(self.delegate!=nil){
-                AICARType carType;
-                if([resultTemp.label isEqualToString:@"truck"] ){
-                    carType = AI_TRUCK;
-                }else if( [resultTemp.label isEqualToString:@"bus"] ){
-                    carType = AI_BUS;
-                } else{
-                    carType = AI_CAR;
+           
+
+            if([resultTemp.label isEqualToString:@"truck"] ){
+                if (_languageFlag==1) {
+                    _submitCarType = @"truck";
+                }else{
+                    _submitCarType = @"货车";
                 }
-                
-                [self.delegate collectedPlate:text forCarType:carType andImage:carImage];
+            }else if( [resultTemp.label isEqualToString:@"bus"] ){
+                if (_languageFlag==1) {
+                    _submitCarType = @"bus";
+                }else{
+                    _submitCarType = @"公交车";
+                }
+            } else{
+               if (_languageFlag==1) {
+                    _submitCarType = @"car";
+                }else{
+                    _submitCarType = @"小汽车";
+                }
             }
+            
+            
+            //识别颜色
+            _submitCarColor = [self colorDescriptionForImage:carRefImage];
+            _submitCarNum = text;
+            _submitImage = image;
+            
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                 [_cameraFrame collectedPlate:_submitCarNum carType:_submitCarType colorDescription:_submitCarColor];
+            });
+           
+            
+            bResult = true;
         }
                 
         CGImageRelease(carRefImage);
@@ -487,6 +607,64 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _isIOS8AndFoucePixelLensPosition =[[change objectForKey:NSKeyValueChangeNewKey] floatValue];
         //NSLog(@"监听_isIOS8AndFoucePixelLensPosition == %f",_isIOS8AndFoucePixelLensPosition);
     }
+}
+
+static NSArray* _arrColors =@[@"红色",@"橙红色",@"橙色",@"橙黄色",@"黄色",@"黄绿色",@"绿色",@"蓝绿色",@"蓝色",@"篮紫色",@"紫色",@"紫红色",@"黑色",@"灰色",@"浅灰",@"白色"];
+//0"红色",1"橙红色",2"橙色",3"橙黄色",4"黄色",5"黄绿色",6"绿色",7"蓝绿色",8"蓝色",9"篮紫色",10"紫色",11"紫红色",12"黑色",13"灰色",14"浅灰",15"白色"
+static NSArray* _arrColorsEN =@[@"red",@"orange-red",@"orange",@"orange-yellow",@"yellow",@"olivine",@"green",@"blue-green",@"blue",@"royal-purple",@"purple",@"purplish-red",@"black",@"gray",@"light-gray",@"white"];
+
+-(NSString*)colorDescriptionForImage:(CGImageRef)cgimage{
+    
+    size_t nHeight=CGImageGetHeight(cgimage);
+    size_t nWidth=CGImageGetWidth(cgimage);
+    size_t nBytePerRow=CGImageGetBytesPerRow(cgimage);
+    
+    CGDataProviderRef provider = CGImageGetDataProvider(cgimage);
+    Byte *data =(Byte*) CFDataGetBytePtr(CGDataProviderCopyData(provider));
+    Byte *rgba = data;
+    NSLog(@"___%d",rgba[0]);
+    int colorCount[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    for(int i=0;i<nHeight;i++){
+        for (int j=0; j<nWidth; j+=4) {
+            int r = rgba[2];
+            int g = rgba[1];
+            int b = rgba[0];
+            ColorHSB *color = [[ColorHSB alloc]initWithColor:[[Color alloc]initWithR:r G:g B:b]];
+            
+            if (color.brightness < 0.2) {
+                colorCount[12]++;
+            }else{
+                if (color.saturation<0.1/*0.01*/) {
+                    if (color.brightness>0.7) {
+                        colorCount[15]++;
+                    }else if(color.brightness>0.5){
+                        colorCount[14]++;
+                    }else{
+                        colorCount[13]++;
+                    }
+                }else{
+                    int index = (color.hue-1) / 30;
+                    colorCount[index]++;
+                }
+            }
+        }
+        rgba += nBytePerRow;
+    }
+    int maxIndex = 0;
+    int maxValue = 0;
+    for(int i=0;i<15;i++){
+        if (colorCount[i]>maxValue) {
+            maxIndex = i;
+            maxValue = colorCount[i];
+        }
+    }
+    
+    if(_languageFlag==1){
+        return [_arrColorsEN objectAtIndex:maxIndex];
+    }else{
+        return [_arrColors objectAtIndex:maxIndex];
+    }
+
 }
 
 @end

@@ -2,7 +2,7 @@
 //  SNavigationManager.h
 //  Supermap
 //
-//  Created by jiushuaizhao on 2019/12/16.
+//  Created by Asort on 2019/12/16.
 //  Copyright © 2019 Facebook. All rights reserved.
 //
 

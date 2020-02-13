@@ -190,7 +190,7 @@ public class SNavigation2 {
         endPoints.add(nearEnd);
 
         GeoLine endLine = new GeoLine(endPoints);
-        endLine.setStyle(routeStyle);
+        endLine.setStyle(guideLine);
         layer.add(endLine,"endLine");
 
         mapControl.getMap().refresh();

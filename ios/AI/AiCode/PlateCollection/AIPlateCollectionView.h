@@ -10,18 +10,15 @@
 #import <UIKit/UIKit.h>
 
 
+
 NS_ASSUME_NONNULL_BEGIN
 
-typedef enum{
-    AI_CAR ,
-    AI_BUS ,
-    AI_TRUCK
-}AICARType;
+
 
 
 @protocol AIPlateCollectionDelegate <NSObject>
 
--(void)collectedPlate:(NSString*)strPlate forCarType:(AICARType)carType andImage:(UIImage*)carImage;
+-(void)collectedPlate:(NSString*)strPlate carType:(NSString*)carType colorDescription:(NSString*)strColor andImage:(UIImage*)carImage;
 
 @end
 
@@ -29,9 +26,14 @@ typedef enum{
 
 @property (nonatomic,assign) id<AIPlateCollectionDelegate> delegate;
 
+//-(void)loadDetectModle:(NSString *)modelPath labels:(NSString *)labelPath;
+
 -(void) startCollection;
 -(void) stopCollection;
 
+-(void)setLanguage:(NSString*)type;
+
+-(void)dispose;
 @end
 
 NS_ASSUME_NONNULL_END

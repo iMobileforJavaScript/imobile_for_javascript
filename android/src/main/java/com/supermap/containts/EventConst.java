@@ -75,6 +75,7 @@ public class EventConst {
 
     /** 导航路线 **/
     public static final String INDUSTRYNAVIAGTION = "com.supermap.RN.Navigation.industry_navigation";
+    public static final String STOPNAVIAGTION = "com.supermap.RN.Navigation.stop_navigation";
     public static final String MAPSELECTPOINTNAMESTART = "com.supermap.RN.Navigation.mapselectpointnamestart";
     public static final String MAPSELECTPOINTNAMEEND = "com.supermap.RN.Navigation.mapselectpointnameend";
     public static final String IS_FLOOR_HIDDEN = "com.supermap.RN.FloorListView.isFloorHidden";

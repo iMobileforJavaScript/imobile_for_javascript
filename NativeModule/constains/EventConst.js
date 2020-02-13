@@ -58,6 +58,7 @@ export default {
 
   /** 导航路线 **/
   INDUSTRYNAVIAGTION:"com.supermap.RN.Navigation.industry_navigation",
+  STOPNAVIAGTION:"com.supermap.RN.Navigation.stop_navigation",
   MAPSELECTPOINTNAMESTART:"com.supermap.RN.Navigation.mapselectpointnamestart",
   MAPSELECTPOINTNAMEEND:"com.supermap.RN.Navigation.mapselectpointnameend",
   ILLEGALLYPARK:"com.supermap.RN.Navigation.illegallypark",
