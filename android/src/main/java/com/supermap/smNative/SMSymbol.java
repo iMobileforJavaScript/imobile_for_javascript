@@ -175,7 +175,7 @@ public class SMSymbol {
         }
     }
 
-//    public static List<Symbol> findSymbolsByIDs(Resources resources, String type, List IDs) {
+//    public static List<Symbol> findSymbolsByIDs(Resources commonData, String type, List IDs) {
 //        List<Symbol> symbols = new ArrayList<>();
 //
 //        if (IDs.isEmpty()) {
@@ -192,9 +192,9 @@ public class SMSymbol {
 //                id = (Integer) data;
 //            }
 //            if (type.equals("")) {
-//                symbol = findSymbolsByID(resources, id);
+//                symbol = findSymbolsByID(commonData, id);
 //            } else {
-//                symbol = findSymbolsByTypeAndID(resources, type, id);
+//                symbol = findSymbolsByTypeAndID(commonData, type, id);
 //            }
 //            if (symbol != null) {
 //                symbols.add(symbol);

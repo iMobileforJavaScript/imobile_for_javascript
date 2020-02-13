@@ -2853,7 +2853,7 @@ public class SMMapWC {
         {
             if (desWorkspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().indexOf(strMapName) != -1) {
                 //删除分组
-                //-----??>>>[desWorkspace.resources.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName];
+                //-----??>>>[desWorkspace.commonData.markerLibrary.rootGroup.childSymbolGroups removeGroupWith:strMapName];
                 desWorkspace.getResources().getMarkerLibrary().getRootGroup().getChildGroups().remove(strMapName, false);
             }
             //新建分组

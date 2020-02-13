@@ -113,6 +113,12 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
 
         SIllegallyParkView.setInstanse(mAIdetectView, mSensorManager, mSensor,
                 carColorThread, sensorEventListener, identityCarNumberThread);
+        frameLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                initQRView(v.getWidth(),v.getHeight());
+            }
+        });
 
         return frameLayout;
     }
@@ -156,7 +162,7 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
             public void onAISizeChanged(AISize aiSize) {
                 int aiDetectWidth = aiSize.getWidth();
                 int aiDerectHeight = aiSize.getHeight();
-                initQRView(aiDetectWidth, aiDerectHeight);
+//                initQRView(aiDetectWidth, aiDerectHeight);
             }
         });
         carList = new Vector<String>();
