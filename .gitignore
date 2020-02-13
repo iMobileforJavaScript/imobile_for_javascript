@@ -28,3 +28,4 @@ android/.idea
 android/.gradle
 android/libs
 android/src/main/java/com/supermap/.gradle
+ios/AI/OpenCV/libOpencv2.a

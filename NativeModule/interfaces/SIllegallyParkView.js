@@ -4,11 +4,35 @@
  Description: 违章采集控制类
  **********************************************************************************/
 import {
-  NativeModules,
-  Platform,
+  NativeModules, DeviceEventEmitter, NativeEventEmitter, Platform,
 } from "react-native"
+import { EventConst } from '../constains/index'
 
 let SIllegallyParkView = NativeModules.SIllegallyParkView
+const nativeEvt = new NativeEventEmitter(SIllegallyParkView)
+
+/**
+ * 添加多媒体采集图片点击回调事件
+ * @param handler
+ */
+function setIllegallyParkListener(handlers) {
+  try {
+    if (handlers && typeof handlers.callback === 'function'){
+      if(Platform.OS === 'ios'){
+        nativeEvt.addListener(EventConst.ILLEGALLYPARK, function (e) {
+          handlers.callback(e);
+        });
+      }else {
+        DeviceEventEmitter.addListener(EventConst.ILLEGALLYPARK, function (e) {
+          handlers.callback(e);
+        });
+      }
+    }
+
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 onStart = () => {
   try {
@@ -35,6 +59,7 @@ onDestroy = () => {
 }
 
 export default {
+  setIllegallyParkListener,
   onStart,
   onStop,
   onDestroy,

@@ -89,6 +89,7 @@ NSString * const INDUSTRYNAVIAGTION = @"com.supermap.RN.Navigation.industry_navi
 NSString * const STOPNAVIAGTION = @"com.supermap.RN.Navigation.stop_navigation";
 NSString * const MAPSELECTPOINTNAMESTART = @"com.supermap.RN.Navigation.mapselectpointnamestart";
 NSString * const MAPSELECTPOINTNAMEEND = @"com.supermap.RN.Navigation.mapselectpointnameend";
+NSString * const ILLEGALLYPARK =         @"com.supermap.RN.Navigation.illegallypark";
 
 /** 语音 **/
 NSString * const RECOGNIZE_BEGIN = @"com.supermap.RN.speech.recognize.begin";

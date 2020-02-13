@@ -31,6 +31,7 @@ typedef enum{
     FCM_TB = 11,
 }FixColorsMode;
 
+
 @interface SMMapFixColors : NSObject
 
 +(id)sharedInstance;

@@ -49,6 +49,7 @@ extern NSString * const MAP_GEOMETRY_MULTI_SELECTED;
 extern NSString * const MAP_GEOMETRY_SELECTED;
 extern NSString * const MAP_SCALE_CHANGED;
 extern NSString * const MAP_BOUNDS_CHANGED;
+extern NSString * const ILLEGALLYPARK;
 extern NSString * const IS_FLOOR_HIDDEN;
 extern NSString * const POINTSEARCH2D_KEYWORDS;
 extern NSString * const MAP_SCALEVIEW_CHANGED;
