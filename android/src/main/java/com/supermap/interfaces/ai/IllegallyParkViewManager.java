@@ -235,9 +235,10 @@ public class IllegallyParkViewManager extends SimpleViewManager<CustomFrameLayou
             return;
         }
         int qrWidth = aiDetectWidth * 3 / 4;
-        int qrHeight = aiDerectHeight * 3 / 4;
+        int qrHeight = qrWidth;
+        int height = aiDerectHeight * 3 / 4;
 
-        int top = (aiDerectHeight - qrHeight) / 2;
+        int top = (aiDerectHeight - height) / 2;
         int left = (aiDetectWidth - qrWidth) / 2;
         int bottom = top + qrHeight;
         int right = left + qrWidth;
