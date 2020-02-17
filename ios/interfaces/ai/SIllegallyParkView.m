@@ -72,13 +72,16 @@ static AIPlateCollectionView* aiPlateCollection = nil;
     //如果没有规定formatter的时区，那么formatter默认的就是当前时区，比如现在在北京就是东八区，在东京就是东九区
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     //最结尾的Z表示的是时区，零时区表示+0000，东八区表示+0800
-    [formatter setDateFormat:@"yyyy-MM-dd&HH:mm:ss"];
+    //[formatter setDateFormat:@"yyyy-MM-dd&HH:mm:ss"];
+    [formatter setDateFormat:@"yyyyMMddHHmmss"];
     // 使用formatter转换后的date字符串变成了当前时区的时间
     NSString *dateStr = [formatter stringFromDate:date];
-    NSArray<NSString *> *arrDate =  [dateStr componentsSeparatedByString:@"&"];
+//    NSArray<NSString *> *arrDate =  [dateStr componentsSeparatedByString:@"&"];
     
-    NSString *strDir = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/AIPhoto/%@",arrDate[0]];
+   // NSString *strDir = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/AIPhoto/%@",arrDate[0]];
      
+    NSString *strDir = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/iTablet/User/Customer/Data/Media"];
+    
     NSFileManager *manager = [NSFileManager defaultManager];
     BOOL isDir = false;
     BOOL isExist = [manager fileExistsAtPath:strDir isDirectory:&isDir];
@@ -86,14 +89,16 @@ static AIPlateCollectionView* aiPlateCollection = nil;
         [manager createDirectoryAtPath:strDir withIntermediateDirectories:YES attributes:nil error:nil];
     }
 
-    NSString *strPath = [NSString stringWithFormat:@"%@/IMG_%@.png",strDir,arrDate[1]];
-
+    //NSString *strPath = [NSString stringWithFormat:@"%@/IMG_%@.png",strDir,arrDate[1]];
+    NSString *strPath = [NSString stringWithFormat:@"%@/IMG_%@.png",strDir,dateStr];
+    
     isDir = true;
     isExist = [manager fileExistsAtPath:strPath isDirectory:&isDir];
     if (isExist && !isDir) {
         [manager removeItemAtPath:strPath error:nil];
     }
 
+    //NSString *strNewPath = [NSString stringWithFormat:@"/iTablet/User/Customer/Data/Media/%@.png",dateStr];
     NSData *imgData = UIImagePNGRepresentation(image);
     [imgData writeToFile:strPath atomically:YES];
     
