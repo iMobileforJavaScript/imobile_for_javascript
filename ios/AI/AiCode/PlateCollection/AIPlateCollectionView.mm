@@ -389,11 +389,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                             _submitCarNum = nil;
                         }
                     }
-                }else{
-                    _isLensChanged = _isIOS8AndFoucePixelLensPosition;
-                    _count = 0;
                 }
                 
+            }else{
+                _isLensChanged = _isIOS8AndFoucePixelLensPosition;
+                _count = 0;
             }
         }
         
