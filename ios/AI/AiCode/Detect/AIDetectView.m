@@ -34,6 +34,8 @@
 @property (nonatomic,assign) BOOL isDetecting;
 @property (nonatomic,strong) AIDetectStyle* aIDetectStyle;
 @property (nonatomic,strong) InfoView *infoView;
+@property (nonatomic,strong) NSMutableArray* mArrayStrToUse;
+
 @end
 
 @implementation AIDetectView
@@ -92,9 +94,25 @@
 //刷新布局
 -(void)setaIRecognitionArrayAndUpdateView:(NSArray *)aIRecognitionArray withSize:(CGSize)size{
 
-    _infoView.sizeCamera = size;
-    _infoView.aIRecognitionArray=aIRecognitionArray;
-    [_infoView refresh];
+    NSMutableArray* array=[[NSMutableArray alloc] init];
+    [array addObjectsFromArray:aIRecognitionArray];
+    if(self.mArrayStrToUse){
+        int count=[array count];
+        for (int i=0; i<count; i++) {
+            AIRecognition* aIRecognition=[array objectAtIndex:i];
+            if(![self.mArrayStrToUse containsObject:[aIRecognition.label lowercaseString]]){
+                [array removeObject:aIRecognition];
+            }
+        }
+    }
+    @try {
+
+        _infoView.sizeCamera = size;
+        _infoView.aIRecognitionArray=array;
+        [_infoView refresh];
+    } @catch (NSException *exception) {
+        NSLog(@"__@", exception.reason);
+    }
 }
 
 
@@ -128,6 +146,13 @@
     _infoView.clickAIRecognition=nil;
 }
 
+-(void)setDetectArrayToUse:(NSMutableArray*)arrayToUse{
+    self.mArrayStrToUse=arrayToUse;
+}
+
+-(NSArray*)getDetectArrayToUse{
+    return self.mArrayStrToUse;
+}
 
 -(void)didOutput:(CVPixelBufferRef)pixelBuffer{
     if(!_isDetecting){

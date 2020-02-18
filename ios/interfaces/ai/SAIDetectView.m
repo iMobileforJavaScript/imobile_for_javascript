@@ -14,6 +14,7 @@
 #import "AIRecognition.h"
 #import "RCTViewManager.h"
 #import "SLanguage.h"
+#import "AIDetectModel2.h"
 
 typedef enum {
     ASSETS_FILE,
@@ -42,6 +43,8 @@ static ModelType mModelType = ASSETS_FILE;
 static NSString* MODEL_PATH=@"";
 static NSString* LABEL_PATH=@"";
 
+static NSMutableArray* mStrToUse=nil;
+
 RCT_EXPORT_MODULE();
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -65,6 +68,60 @@ RCT_EXPORT_MODULE();
     [mAIDetectView initData];
     [mAIDetectView setDetectInfo:info];
     mAIDetectView.detectInterval=200;
+    
+    if(!mStrToUse){
+        mStrToUse=[[NSMutableArray alloc] init];
+        if([self isEnglishLanguage]){
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:PERSON]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:BICYCLE]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:CAR]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:MOTORCYCLE]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:BUS]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:TRUCK]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:CUP]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:CHAIR]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:POTTEDPLANT]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:MOUSE]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:TV]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:KEYBOARD]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:CELLPHONE]];
+            [mStrToUse addObject:[AIDetectModel2 getEnglishName:BOTTLE]];
+        }else{
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:PERSON]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:BICYCLE]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:CAR]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:MOTORCYCLE]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:BUS]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:TRUCK]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:CUP]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:CHAIR]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:POTTEDPLANT]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:MOUSE]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:TV]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:KEYBOARD]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:CELLPHONE]];
+            [mStrToUse addObject:[AIDetectModel2 getChineseName:BOTTLE]];
+        }
+    }else{
+        if(NSNotFound==[[AIDetectModel2 getEnglishArray] indexOfObject:[mStrToUse objectAtIndex:0]]&&[self isEnglishLanguage]){
+            NSMutableArray* tempStrToUse=[[NSMutableArray alloc] init];
+            [tempStrToUse addObjectsFromArray:mStrToUse];
+            [mStrToUse removeAllObjects];
+            for (int i=0; i<tempStrToUse.count; i++) {
+                [mStrToUse addObject:[AIDetectModel2 getEnglishWithName:[tempStrToUse objectAtIndex:i]]];
+            }
+        }else if(NSNotFound==[[AIDetectModel2 getChineseArray] indexOfObject:[mStrToUse objectAtIndex:0]]&&![self isEnglishLanguage]){
+
+            NSMutableArray* tempStrToUse=[[NSMutableArray alloc] init];
+            [tempStrToUse addObjectsFromArray:mStrToUse];
+            [mStrToUse removeAllObjects];
+            for (int i=0; i<tempStrToUse.count; i++) {
+                [mStrToUse addObject:[AIDetectModel2 getChineseWithName:[tempStrToUse objectAtIndex:i]]];
+            }
+        }
+    }
+    [mAIDetectView setDetectArrayToUse:mStrToUse];
+    
     //设置风格
     if(!mAIDetectStyle){
         mAIDetectStyle=[[AIDetectStyle alloc] init];
@@ -80,6 +137,10 @@ RCT_EXPORT_MODULE();
     [mAIDetectView resumeDetect];
     
     [mAIDetectView startCameraPreview];
+}
+
++(BOOL)isEnglishLanguage{
+    return [SLanguage.getLanguage isEqualToString:@"EN"];
 }
 
 #pragma mark 点击识别目标回调
@@ -307,6 +368,48 @@ RCT_REMAP_METHOD(setDetectInfo, setDetectInfo:(NSDictionary*)detectInfo resolve:
         resolve(@"YES");
     } @catch (NSException *exception) {
         reject(@"getDetectInfo", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取当前设置的识别类型
+RCT_REMAP_METHOD(getDetectArrayToUse, getDetectArrayToUse:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSArray* detectArrayToUse = [mAIDetectView getDetectArrayToUse];
+        
+        NSMutableArray* array=[[NSMutableArray alloc] init];
+        for (int i=0;i<[detectArrayToUse count]; i++) {
+            if([SAIDetectView isEnglishLanguage]){
+                [array addObject:[AIDetectModel2 getChineseWithName:[detectArrayToUse objectAtIndex:i]]];
+            }else{
+                [array addObject:[detectArrayToUse objectAtIndex:i]];
+            }
+        }
+        resolve(array);
+    } @catch (NSException *exception) {
+        reject(@"getDetectArrayToUse", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置单个识别类型是否可用
+RCT_REMAP_METHOD(setDetectItemEnable, name:(NSString*)name  value:(BOOL)value setDetectItemEnable:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        NSString* englishName = name;
+        if([SAIDetectView isEnglishLanguage]){
+            englishName=[AIDetectModel2 getEnglishWithName:name];
+        }
+        if(value){
+            if(![mStrToUse containsObject:englishName]){
+                [mStrToUse addObject:englishName];
+            }
+        }else{
+            if([mStrToUse containsObject:englishName]){
+                [mStrToUse removeObject:englishName];
+            }
+        }
+        [mAIDetectView setDetectArrayToUse:mStrToUse];
+        resolve(@"YES");
+    } @catch (NSException *exception) {
+        reject(@"setDetectItemEnable", exception.reason, nil);
     }
 }
 

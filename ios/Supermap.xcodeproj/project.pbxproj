@@ -216,6 +216,7 @@
 		2A5299BE2386A5460071AD06 /* libTensorFlowLiteObjC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299BC2386A5460071AD06 /* libTensorFlowLiteObjC.a */; };
 		2A5299C22386A5560071AD06 /* TensorFlowLiteC in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5299C12386A5560071AD06 /* TensorFlowLiteC */; };
 		2A5299DF2387C6290071AD06 /* SAIClassifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5299DE2387C6290071AD06 /* SAIClassifyView.m */; };
+		2A8141AD23F62F8B00645228 /* AIDetectModel2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A8141AC23F62F8B00645228 /* AIDetectModel2.m */; };
 		2AAEE1D1230E6A6000902D1D /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AAEE196230E68CE00902D1D /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2AB23F432359B2A900884E9B /* KeychainUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AB23F422359B2A900884E9B /* KeychainUtil.m */; };
 		2ABCA9C7238622330052EB6B /* SAIDetectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ABCA9C6238622330052EB6B /* SAIDetectView.m */; };
@@ -684,6 +685,8 @@
 		2A5299C12386A5560071AD06 /* TensorFlowLiteC */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = TensorFlowLiteC; path = AI/TensorFlowLiteC.framework/TensorFlowLiteC; sourceTree = SOURCE_ROOT; };
 		2A5299DD2387C6280071AD06 /* SAIClassifyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAIClassifyView.h; sourceTree = "<group>"; };
 		2A5299DE2387C6290071AD06 /* SAIClassifyView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAIClassifyView.m; sourceTree = "<group>"; };
+		2A8141AB23F62F8A00645228 /* AIDetectModel2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AIDetectModel2.h; sourceTree = "<group>"; };
+		2A8141AC23F62F8B00645228 /* AIDetectModel2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AIDetectModel2.m; sourceTree = "<group>"; };
 		2AAEE195230E68CD00902D1D /* GDataXMLNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
 		2AAEE196230E68CE00902D1D /* GDataXMLNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2AB23F412359B2A900884E9B /* KeychainUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeychainUtil.h; sourceTree = "<group>"; };
@@ -1099,6 +1102,8 @@
 				6163F38323CD912000CC5F21 /* SIllegallyParkView.m */,
 				6163F38523CD922500CC5F21 /* IllegallyParkViewManager.h */,
 				6163F38623CD922500CC5F21 /* IllegallyParkViewManager.m */,
+				2A8141AB23F62F8A00645228 /* AIDetectModel2.h */,
+				2A8141AC23F62F8B00645228 /* AIDetectModel2.m */,
 			);
 			path = ai;
 			sourceTree = "<group>";
@@ -1881,6 +1886,7 @@
 				0A332E6A211D623E00F56F26 /* JSWeightFieldInfos.m in Sources */,
 				0A332E27211D623E00F56F26 /* JSLineChart.m in Sources */,
 				0A332E2D211D623E00F56F26 /* JSMapControl.m in Sources */,
+				2A8141AD23F62F8B00645228 /* AIDetectModel2.m in Sources */,
 				D835E5B0219EC726008910F0 /* SLayerManager.m in Sources */,
 				0A03BDDC2395F4D400A90044 /* AIDetectStyle.m in Sources */,
 				0A334CD222978A1400E4F302 /* SMMediaCollector.m in Sources */,
