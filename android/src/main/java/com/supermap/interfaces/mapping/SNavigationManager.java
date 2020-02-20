@@ -537,7 +537,7 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.resolve(false);
             Log.e("navigation error:",e.toString());
-            promise.reject(e);
+//            promise.reject(e);
         }
     }
 
@@ -1153,8 +1153,8 @@ public class SNavigationManager extends ReactContextBaseJavaModule {
 
                     GeoStyle guideLineStyle = new GeoStyle();
                     guideLineStyle.setLineWidth(2.0);
-                    guideLineStyle.setLineColor(new Color(82,198,233));
-                    guideLineStyle.setLineSymbolID(2);
+                    guideLineStyle.setLineColor(new Color(0,145,239));
+                    guideLineStyle.setLineSymbolID(0);
 
                     GeoLine geoLine = new GeoLine(point2Ds);
                     geoLine.setStyle(guideLineStyle);

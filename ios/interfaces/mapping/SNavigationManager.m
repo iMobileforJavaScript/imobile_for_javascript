@@ -817,8 +817,8 @@ RCT_REMAP_METHOD(addLineOnTrackingLayer, addLineOnTrackingLayerWithStartPoint:(N
             
             GeoStyle *guideStyle = [[GeoStyle alloc] init];
             [guideStyle setLineWidth:2];
-            [guideStyle setLineColor:[[Color alloc]initWithR:82 G:198 B:233]];
-            [guideStyle setLineSymbolID:2];
+            [guideStyle setLineColor:[[Color alloc]initWithR:0 G:145 B:239]];
+            [guideStyle setLineSymbolID:0];
             
             GeoLine *geoLine = [[GeoLine alloc] initWithPoint2Ds:points];
             [geoLine setStyle:guideStyle];
