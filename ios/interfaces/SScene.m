@@ -523,7 +523,7 @@ RCT_REMAP_METHOD(openScence, openScenceByName:(NSString*)name  isPrivate:(BOOL)b
         }
         resolve(@(result));
     }@catch (NSException *exception) {
-        reject(@"SScene", exception.reason, nil);
+        resolve(@(NO));
     }
 }
 

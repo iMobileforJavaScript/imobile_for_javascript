@@ -37,6 +37,7 @@ static AIDetectStyle* mAIDetectStyle=nil;   //识别框类型
 static BOOL mIsDrawTitle=YES;         //是否显示title
 static BOOL mIsDrawConfidence=YES;    //是否显示可信度
 static BOOL mIsDrawCount=YES;    //是否显示跟踪计数
+static BOOL mIsPolymerize = false;  //聚合模式
 
 static ModelType mModelType = ASSETS_FILE;
 
@@ -121,6 +122,8 @@ RCT_EXPORT_MODULE();
         }
     }
     [mAIDetectView setDetectArrayToUse:mStrToUse];
+    
+    [mAIDetectView setIsPolymerize:mIsPolymerize];  //是否是聚合模式
     
     //设置风格
     if(!mAIDetectStyle){
@@ -444,9 +447,9 @@ RCT_REMAP_METHOD(stopCountTrackedObjs, stopCountTrackedObjs:(RCTPromiseResolveBl
 #pragma mark 返回是否聚合模式
 RCT_REMAP_METHOD(isPolymerize, isPolymerize:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        BOOL polymerize = [mAIDetectView isPolymerize];
         
-        
-        resolve(@(NO));
+        resolve(@(polymerize));
     } @catch (NSException *exception) {
         reject(@"setIsPolymerize", exception.reason, nil);
     }
@@ -456,7 +459,18 @@ RCT_REMAP_METHOD(isPolymerize, isPolymerize:(RCTPromiseResolveBlock)resolve reje
 RCT_REMAP_METHOD(setIsPolymerize, setIsPolymerize:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         
+        [mAIDetectView setIsPolymerize:value];
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"setIsPolymerize", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置聚合模式阀值
+RCT_REMAP_METHOD(setPolymerizeThreshold, setPolymerizeThreshold:(int)x with:(int)y resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
         
+        [mAIDetectView setmPolymerizeThreshold:x withy:y];
         resolve(@(YES));
     } @catch (NSException *exception) {
         reject(@"setIsPolymerize", exception.reason, nil);

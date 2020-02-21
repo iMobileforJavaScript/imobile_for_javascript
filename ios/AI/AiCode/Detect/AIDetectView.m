@@ -154,6 +154,19 @@
     return self.mArrayStrToUse;
 }
 
+-(BOOL)isPolymerize{
+    return [_infoView isPolymerize];
+}
+
+-(void)setIsPolymerize:(BOOL)value{
+    [_infoView setIsPolymerize:value];
+}
+
+-(void)setmPolymerizeThreshold:(int)thresholdx withy:(int)thresholdy{
+    [_infoView setmPolymerizeThreshold:thresholdx withy:thresholdy];
+}
+
+
 -(void)didOutput:(CVPixelBufferRef)pixelBuffer{
     if(!_isDetecting){
         return;

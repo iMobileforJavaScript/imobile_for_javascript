@@ -51,4 +51,10 @@ typedef void(^getImageCallBackBlock)(UIImage *image,NSError* error);
 //获取识别类型
 -(NSArray*)getDetectArrayToUse;
 
+//设置是否是聚合模式
+-(void)setIsPolymerize:(BOOL)value;
+//获取是否是聚合模式
+-(BOOL)isPolymerize;
+//设置聚合阀值
+-(void)setmPolymerizeThreshold:(int)thresholdx withy:(int)thresholdy;
 @end
