@@ -46,4 +46,15 @@ typedef void(^getImageCallBackBlock)(UIImage *image,NSError* error);
 -(void)clearClickAIRecognition;
 //截图拍照
 -(void)outputImage:(getImageCallBackBlock)getImageCallback withInfo:(BOOL)bInfo;
+//设置识别类型
+-(void)setDetectArrayToUse:(NSMutableArray*)arrayToUse;
+//获取识别类型
+-(NSArray*)getDetectArrayToUse;
+
+//设置是否是聚合模式
+-(void)setIsPolymerize:(BOOL)value;
+//获取是否是聚合模式
+-(BOOL)isPolymerize;
+//设置聚合阀值
+-(void)setmPolymerizeThreshold:(int)thresholdx withy:(int)thresholdy;
 @end

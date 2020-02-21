@@ -61,8 +61,8 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
     private static boolean mIsPOIMode = false; //AR-POI投射模式
     private static boolean mIsPolymerize = false; //聚合模式
     private static boolean mIsPOIOverlap = false; //POI避让
-    private static boolean mIsDrawTitle = false;
-    private static boolean mIsDrawConfidence = false;
+    private static boolean mIsDrawTitle = true;
+    private static boolean mIsDrawConfidence = true;
 
     private static AIDetectStyle mAiDetectStyle = null;
 

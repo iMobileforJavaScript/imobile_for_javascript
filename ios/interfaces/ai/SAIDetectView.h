@@ -23,4 +23,5 @@
 -(void)initDelegate;
 -(void)onclickAIObject:(AIRecognition*)aIRecognition;
 +(void)saveArPreviewBitmap:(NSString*)folderPath name:(NSString*)name;
++(BOOL)isEnglishLanguage;
 @end
