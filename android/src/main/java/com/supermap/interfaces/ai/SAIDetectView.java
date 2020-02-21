@@ -617,7 +617,7 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             Log.d(REACT_CLASS, "----------------SAIDetectView--isPolynerize--------RN--------");
             boolean polymerize = mAIDetectView.isPolymerize();
 
-            promise.resolve(mIsPolymerize);
+            promise.resolve(polymerize);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -655,6 +655,22 @@ public class SAIDetectView extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    /**
+     * 清除目标检测当前的点击状态，重新开始识别
+     * @param promise
+     */
+    @ReactMethod
+    public void clearClickAIRecognition(Promise promise) {
+        try {
+            Log.d(REACT_CLASS, "----------------SAIDetectView--clearClickAIRecognition--------RN--------");
+            mAIDetectView.resumeDetect();
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 获取当前跟踪计数结果
