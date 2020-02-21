@@ -98,6 +98,9 @@ NSString * const RECOGNIZE_ERROR = @"com.supermap.RN.speech.recognize.error";
 NSString * const RECOGNIZE_RESULT = @"com.supermap.RN.speech.recognize.result";
 NSString * const RECOGNIZE_VOLUME_CHANGED = @"com.supermap.RN.speech.recognize.volume_changed";
 NSString * const RECOGNIZE_EVENT = @"com.supermap.RN.speech.recognize.event";
+
+/** 定位 **/
+NSString * const LOCATION_SEARCH_DEVICE = @"com.supermap.RN.location.device";
 @implementation Constants : NSObject
 
 @end

@@ -75,4 +75,7 @@ export default {
   RECOGNIZE_RESULT: "com.supermap.RN.speech.recognize.result",
   RECOGNIZE_VOLUME_CHANGED: "com.supermap.RN.speech.recognize.volume_changed",
   RECOGNIZE_EVENT: "com.supermap.RN.speech.recognize.event",
+
+  /** 定位 **/
+  LOCATION_SEARCH_DEVICE: "com.supermap.RN.location.device",
 }

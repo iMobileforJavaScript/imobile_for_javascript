@@ -326,7 +326,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public SMap(ReactApplicationContext context) {
         super(context);
         this.context = context;
-        SMCollector.openGPS(context);
     }
 
     @Override
