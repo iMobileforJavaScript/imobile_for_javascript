@@ -30,6 +30,7 @@ import com.supermap.component.SMRLegendView;
 import com.supermap.interfaces.mapping.SMapSuspension;
 import com.supermap.interfaces.mapping.SPlot;
 import com.supermap.interfaces.speech.SSpeechRecognizer;
+import com.supermap.interfaces.utils.SLocation;
 import com.supermap.interfaces.utils.SMFileUtil;
 import com.supermap.rnsupermap.*;
 
@@ -250,6 +251,7 @@ public class SupermapFullPackage implements ReactPackage {
 
         //
         modules.add(new SLanguage(reactContext));
+        modules.add(new SLocation(reactContext));
 
         return modules;
     }

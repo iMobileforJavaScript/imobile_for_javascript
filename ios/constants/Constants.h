@@ -73,6 +73,7 @@ extern NSString * const RECOGNIZE_RESULT;
 extern NSString * const RECOGNIZE_VOLUME_CHANGED;
 extern NSString * const RECOGNIZE_EVENT;
 
+extern NSString * const LOCATION_SEARCH_DEVICE;
 @interface Constants : NSObject
 
 @end

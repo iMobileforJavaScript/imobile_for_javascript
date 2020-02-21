@@ -12,64 +12,8 @@
 #import "SuperMap/Recordset.h"
 #import "SuperMap/FieldInfos.h"
 #import "SuperMap/FieldInfo.h"
+#import "SLocation.h"
 //#import "SuperMap/GPSData.h"
-@interface locationChangedDelegate :NSObject<AMapLocationManagerDelegate>
-{
-//    LocationManagePlugin* LocationPlugin;
-//    GPSData* mGPSData;
-}
-@property(nonatomic,strong)GPSData* gpsData;
-@property(nonatomic,strong)AMapLocationManager* Plugin;
-@end
-@implementation locationChangedDelegate
--(id)init{
-    
-    if(self = [super init]){
-        [AMapServices sharedServices].apiKey = @"cbeda0d0a5c465620be7bd6cccbf39ce";
-        _Plugin = [[AMapLocationManager alloc]init];
-        _Plugin.delegate = self;
-        //设置不允许系统暂停定位
-        [_Plugin setPausesLocationUpdatesAutomatically:NO];
-        //设置允许在后台定位
-        [_Plugin setAllowsBackgroundLocationUpdates:YES];
-        //设置允许连续定位逆地理
-        [_Plugin setLocatingWithReGeocode:YES];
-    }
-    return self;
-}
-#pragma mark GPS
-- (void)amapLocationManager:(AMapLocationManager *)manager doRequireLocationAuth:(CLLocationManager *)locationManager
-{
-    [locationManager requestAlwaysAuthorization];
-}
-
-- (void)amapLocationManager:(AMapLocationManager *)manager didFailWithError:(NSError *)error
-{
-    NSLog(@"%s, amapLocationManager = %@, error = %@", __func__, [manager class], error);
-}
-
-- (void)amapLocationManager:(AMapLocationManager *)manager didUpdateLocation:(CLLocation *)location reGeocode:(AMapLocationReGeocode *)reGeocode
-{
-    NSLog(@"location:{lat:%f; lon:%f; accuracy:%f; reGeocode:%@}", location.coordinate.latitude, location.coordinate.longitude, location.horizontalAccuracy, reGeocode.formattedAddress);
-    _gpsData = [[GPSData alloc]init];
-    _gpsData.dLatitude = location.coordinate.latitude;
-    _gpsData.dLongitude = location.coordinate.longitude;
-    
-    //获取到定位信息，更新annotation
-//    if (self.pointAnnotaiton == nil)
-//    {
-//        self.pointAnnotaiton = [[MAPointAnnotation alloc] init];
-//        [self.pointAnnotaiton setCoordinate:location.coordinate];
-//
-//        [self.mapView addAnnotation:self.pointAnnotaiton];
-//    }
-//
-//    [self.pointAnnotaiton setCoordinate:location.coordinate];
-//
-//    [self.mapView setCenterCoordinate:location.coordinate];
-//    [self.mapView setZoomLevel:15.1 animated:NO];
-}
-@end
 
 @implementation NativeUtil
 
@@ -265,25 +209,14 @@
     return array;
 }
 
-static locationChangedDelegate* LocationPlugin = nil;
-
 +(void)openGPS{
-   dispatch_async(dispatch_get_main_queue(), ^{
-       if(!LocationPlugin){
-           LocationPlugin = [[locationChangedDelegate alloc]init];
-       }
-       
-       [LocationPlugin.Plugin startUpdatingLocation];
-   });
+    [[SLocation sharedInstance] openGPS];
 }
 +(void)closeGPS{
-    @synchronized(LocationPlugin) {
-        [LocationPlugin.Plugin stopUpdatingLocation];
-    }
-    
+    [[SLocation sharedInstance] closeGPS];
 }
 +(GPSData*)getGPSData{
-    return [LocationPlugin.gpsData clone];
+    return [[SLocation sharedInstance] getGPSData];
 }
 
 

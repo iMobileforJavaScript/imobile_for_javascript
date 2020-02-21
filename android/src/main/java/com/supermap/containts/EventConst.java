@@ -92,4 +92,8 @@ public class EventConst {
     public static final String RECOGNIZE_RESULT = "com.supermap.RN.speech.recognize.result";
     public static final String RECOGNIZE_VOLUME_CHANGED = "com.supermap.RN.speech.recognize.volume_changed";
     public static final String RECOGNIZE_EVENT = "com.supermap.RN.speech.recognize.event";
+
+    /** 定位 **/
+    public static final String LOCATION_LISTEN_EXTERNAL = "com.supermap.iTablet.location.listen";
+    public static final String LOCATION_SEARCH_DEVICE = "com.supermap.RN.location.device";
 }

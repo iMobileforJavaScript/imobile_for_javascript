@@ -204,6 +204,7 @@
 		0AEFC1F523168697006FEDD8 /* SMMapRender.mm in Sources */ = {isa = PBXBuildFile; fileRef = 61786D46230A71E300D92877 /* SMMapRender.mm */; };
 		0AF348682270018F004D6D09 /* SAnalyst.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AF348662270018F004D6D09 /* SAnalyst.m */; };
 		182832BB22F98190006586BF /* SIPortalService.m in Sources */ = {isa = PBXBuildFile; fileRef = 182832BA22F98190006586BF /* SIPortalService.m */; };
+		189A837B23FE7662005935C0 /* SLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 189A837A23FE7662005935C0 /* SLocation.m */; };
 		18A3DC6823693DD60013B66D /* SSpeechRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */; };
 		2A15228123965B9900CBC452 /* SMeasureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A15228023965B9900CBC452 /* SMeasureView.m */; };
 		2A15228B2396652700CBC452 /* ARMeasureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1522842396652600CBC452 /* ARMeasureView.m */; };
@@ -664,6 +665,8 @@
 		134814201AA4EA6300B7C361 /* libSupermap.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSupermap.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		182832B922F980AB006586BF /* SIPortalService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SIPortalService.h; sourceTree = "<group>"; };
 		182832BA22F98190006586BF /* SIPortalService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SIPortalService.m; sourceTree = "<group>"; };
+		189A837923FE7628005935C0 /* SLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SLocation.h; sourceTree = "<group>"; };
+		189A837A23FE7662005935C0 /* SLocation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SLocation.m; sourceTree = "<group>"; };
 		18A3DC6623693DA30013B66D /* SSpeechRecognizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSpeechRecognizer.h; sourceTree = "<group>"; };
 		18A3DC6723693DD60013B66D /* SSpeechRecognizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSpeechRecognizer.m; sourceTree = "<group>"; };
 		2A15227F23965B9900CBC452 /* SMeasureView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMeasureView.h; sourceTree = "<group>"; };
@@ -1187,6 +1190,8 @@
 				0015B98022F2C5E70084A880 /* POISearchHelper2D.m */,
 				4EE4616A239A3F5900775A76 /* SLanguage.h */,
 				4EE4616B239A3F5900775A76 /* SLanguage.m */,
+				189A837923FE7628005935C0 /* SLocation.h */,
+				189A837A23FE7662005935C0 /* SLocation.m */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1844,6 +1849,7 @@
 				182832BB22F98190006586BF /* SIPortalService.m in Sources */,
 				614D851E23C7067700BDEC31 /* FineMapping.cpp in Sources */,
 				0A332E39211D623E00F56F26 /* JSPieChartViewManager.m in Sources */,
+				189A837B23FE7662005935C0 /* SLocation.m in Sources */,
 				0A332E2A211D623E00F56F26 /* JSLocationAnalystParameter.m in Sources */,
 				6163F38723CD922500CC5F21 /* IllegallyParkViewManager.m in Sources */,
 				0A332E6F211D623E00F56F26 /* RCTConvert+BufferEndType.m in Sources */,

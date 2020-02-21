@@ -12,6 +12,7 @@ import SCollectSceneFormView from './SCollectSceneFormView'
 import SIllegallyParkView from './SIllegallyParkView'
 import SCastModelOperateView from './SCastModelOperateView'
 import { SSpeechRecognizer } from './speech'
+import SLocation from './SLocation'
 
 export {
   SMap,
@@ -21,7 +22,7 @@ export {
   SAnalyst,
   SFacilityAnalyst,
   STransportationAnalyst,
-
+  SLocation,
   SCollector,
   SMediaCollector,
   SScene,
