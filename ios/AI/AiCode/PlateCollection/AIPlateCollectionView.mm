@@ -234,6 +234,10 @@
     
 }
 
+-(void)setDetectIntervalMillisecond:(long)intervalMilisecond{
+    _detectInterval=intervalMilisecond;
+}
+
 -(void)submit{
     
     if(_submitImage!=nil && self.delegate!=nil){

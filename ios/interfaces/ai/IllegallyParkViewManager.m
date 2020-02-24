@@ -37,6 +37,7 @@ RCT_EXPORT_MODULE(RCTIllegallyParkView)
             }else{
                 [uiView setLanguage:@"CN"];
             }
+            [uiView setDetectIntervalMillisecond:100];
             [SIllegallyParkView setInstance:uiView];
            // [uiView setDelegate:self];
         }
