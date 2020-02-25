@@ -4087,7 +4087,9 @@ RCT_REMAP_METHOD(initSerialNumber, initSerialNumber:(NSString*)serialNumber reso
     @try {
         NSString* serialNumberLocal = [KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
         [Environment setUserLicInfo:serialNumberLocal Modules:nil];
-        
+        if(serialNumberLocal == nil){
+            serialNumberLocal = @"";
+        }
         resolve(serialNumberLocal);
         
     } @catch (NSException *exception) {
