@@ -208,6 +208,28 @@
     _cameraFrame = [[AIPlateCollectionCameraFrame alloc]initWithFrame:self.frame];
     _cameraFrame.backgroundColor = [UIColor clearColor];
     _cameraFrame.submitBnt = submitbnt;
+    {
+        //设置上下扫描横向
+        float edge=0.1;
+        float height=0.75;
+        UIColor *scanLineColor = [[UIColor alloc] initWithRed:0.318 green:0.468 blue:0.999 alpha:1.0];
+        UIColor *fillColor = [[UIColor alloc] initWithRed:0.8 green:0.8 blue:1 alpha:0.5];
+        CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+        gradientLayer.colors = @[(__bridge id)fillColor.CGColor, (__bridge id)scanLineColor.CGColor, (__bridge id)fillColor.CGColor];
+        gradientLayer.locations = @[@0.0, @0.5, @1.0];
+        gradientLayer.startPoint = CGPointMake(0, 0);
+        gradientLayer.endPoint = CGPointMake(1.0, 0);
+        gradientLayer.frame = CGRectMake(self.frame.size.width*edge, self.frame.size.height*edge, self.frame.size.width*(1-edge*2), 5);
+
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.translation.y"];
+        animation.toValue = [NSNumber numberWithFloat:self.frame.size.height*(height-edge)];
+        animation.duration = 5.0f;
+        animation.removedOnCompletion = NO;//yes的话，又返回原位置了。
+        animation.repeatCount = MAXFLOAT;
+        animation.fillMode = kCAFillModeForwards;
+        [gradientLayer addAnimation:animation forKey:nil];
+        [self.layer addSublayer:gradientLayer];
+    }
     [_cameraFrame collectedPlate:nil carType:nil colorDescription:nil];
     [self addSubview:_cameraFrame];
     
@@ -219,13 +241,29 @@
     
 }
 
+-(void)initData{
+    [_cameraFrame collectedPlate:nil carType:nil colorDescription:nil];
+}
+
+-(void)updateViewLanguage:(NSString *)type{
+    if(_cameraFrame){
+        NSString* sureStr=[type isEqualToString:@"CN"]?@"确认":@"Sure";
+        [_cameraFrame.submitBnt setTitle:sureStr forState:UIControlStateNormal];
+        [_cameraFrame setLanguage:type];
+    }
+}
+
 -(void)setLanguage:(NSString *)type{
+    if(!type){
+        return;
+    }
     if ([type isEqualToString:@"CN"]) {
         _languageFlag = 0;
     }
     if ([type isEqualToString:@"EN"]) {
         _languageFlag = 1;
     }
+    [self updateViewLanguage:type];
 }
 
 -(void)dispose{

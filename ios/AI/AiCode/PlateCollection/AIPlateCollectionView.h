@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)dispose;
 
 -(void)setDetectIntervalMillisecond:(long)intervalMilisecond;
+-(void)initData;
 @end
 
 NS_ASSUME_NONNULL_END

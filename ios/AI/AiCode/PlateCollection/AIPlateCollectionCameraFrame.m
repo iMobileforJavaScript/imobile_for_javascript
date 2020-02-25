@@ -13,6 +13,8 @@
     NSString* _carType;
     NSString* _carColor;
     UIButton* _submitBnt;
+    
+    int _languageFlag; //0-CN / 1-EN
 }
 
 @end
@@ -41,6 +43,39 @@
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
         //绘制路径及填充模式
     CGContextDrawPath(context, kCGPathFillStroke);
+    //设置扫描框
+    {
+        int lineLength=30;
+        //指定直线样式
+        CGContextSetLineCap(context,kCGLineCapSquare);
+        //直线宽度
+        CGContextSetLineWidth(context,5.0);
+        //设置颜色
+        CGContextSetRGBStrokeColor(context,0.314, 0.486, 0.999, 1.0);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context,width*CameraFrame_Edge, height*CameraFrame_Edge+lineLength);
+        CGContextAddLineToPoint(context,width*CameraFrame_Edge, height*CameraFrame_Edge);
+        CGContextAddLineToPoint(context,width*CameraFrame_Edge+lineLength, height*CameraFrame_Edge);
+        CGContextStrokePath(context);
+        //开始绘制
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context,width*(1-CameraFrame_Edge), height*CameraFrame_Edge+lineLength);
+        CGContextAddLineToPoint(context,width*(1-CameraFrame_Edge), height*CameraFrame_Edge);
+        CGContextAddLineToPoint(context,width*(1-CameraFrame_Edge)-lineLength, height*CameraFrame_Edge);
+        CGContextStrokePath(context);
+        //开始绘制
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context,width*CameraFrame_Edge, height*CameraFrame_Height-lineLength);
+        CGContextAddLineToPoint(context,width*CameraFrame_Edge, height*CameraFrame_Height);
+        CGContextAddLineToPoint(context,width*CameraFrame_Edge+lineLength, height*CameraFrame_Height);
+        CGContextStrokePath(context);
+        //开始绘制
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context,width*(1-CameraFrame_Edge), height*CameraFrame_Height-lineLength);
+        CGContextAddLineToPoint(context,width*(1-CameraFrame_Edge), height*CameraFrame_Height);
+        CGContextAddLineToPoint(context,width*(1-CameraFrame_Edge)-lineLength, height*CameraFrame_Height);
+        CGContextStrokePath(context);
+    }
     
     double nUnit = height * 1.0 * (1-CameraFrame_Height-CameraFrame_Edge) / 12;
     
@@ -76,27 +111,38 @@
     }
 }
 
-
 -(void)collectedPlate:(NSString*)plate carType:(NSString*)carType colorDescription:(NSString*)strColor{
+    
+    NSString* carNumberStr=@"车辆号码:";
+    NSString* carTypeStr=@"车辆类型:";
+    NSString* carColorStr=@"车辆颜色:";
+    NSString* identifying=@"正在识别...";
+    if([self isEnglishLanguage]){
+        carNumberStr=@"car number: ";
+        carTypeStr = @"car type:   ";
+        carColorStr =@"car color:  ";
+        identifying=@"identirying...";
+    }
+    
     BOOL canSubmit = true;
     if (plate!=nil) {
-        _carPlate = [NSString stringWithFormat:@"车辆号码：%@",plate];
+        _carPlate = [NSString stringWithFormat:@"%@%@",carNumberStr,plate];
     }else{
-        _carPlate = @"车辆号码：正在识别...";
+        _carPlate = [NSString stringWithFormat:@"%@%@",carNumberStr,identifying];
         canSubmit = false;
     }
     
     if (carType!=nil) {
-        _carType = [NSString stringWithFormat:@"车辆类型：%@",carType];
+        _carType = [NSString stringWithFormat:@"%@%@",carTypeStr,carType];
     }else{
-        _carType = @"车辆类型：正在识别...";
+        _carType = [NSString stringWithFormat:@"%@%@",carTypeStr,identifying];
         canSubmit = false;
     }
     
     if(strColor!=nil){
-        _carColor = [NSString stringWithFormat:@"车辆颜色：%@",strColor];
+        _carColor = [NSString stringWithFormat:@"%@%@",carColorStr,strColor];
     }else{
-        _carColor = @"车辆颜色：正在识别...";
+        _carColor = [NSString stringWithFormat:@"%@%@",carColorStr,identifying];
         canSubmit = false;
     }
     
@@ -123,6 +169,19 @@
     _submitBnt=submitBnt;
    
     [self addSubview:_submitBnt];
+}
+
+-(BOOL)isEnglishLanguage{
+    return _languageFlag ==1;
+}
+-(void)setLanguage:(NSString *)type{
+    if ([type isEqualToString:@"CN"]) {
+        _languageFlag = 0;
+    }
+    if ([type isEqualToString:@"EN"]) {
+        _languageFlag = 1;
+    }
+    [self collectedPlate:nil carType:nil colorDescription:nil];
 }
 
 @end
