@@ -42,6 +42,11 @@ typedef enum{
 
 @end
 
+@protocol ARPositionDelegate <NSObject>
+@required
+-(void)currentARPositionX:(float)x y:(float)y z:(float)z;
+
+@end
 
 
 @interface ARMeasureView : ARSCNView
@@ -60,6 +65,7 @@ typedef enum{
 -(void)clearARSession;
 
 @property(nonatomic,assign) id<ARRangingDelegate> arRangingDelegate;
+@property(nonatomic,assign) id<ARPositionDelegate> arPositionDelegate;
 //锚点旗标的类型
 @property(nonatomic,assign) ARFlagType flagType;
 //总长度文字显隐

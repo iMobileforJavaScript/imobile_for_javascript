@@ -47,7 +47,7 @@
 @end
 
 @implementation ARMeasureView
-@synthesize arRangingDelegate;
+@synthesize arRangingDelegate,arPositionDelegate;
 
 -(id)init{
     if (self = [super init]) {
@@ -214,10 +214,20 @@
             case AR_MODE_INDOORPOSITIONING:
             {
                 [confige setPlaneDetection:ARPlaneDetectionNone];
-                m_crossMark.hidden=true;
-                m_SpaceLab.hidden=true;
-                m_TotalLab.hidden=true;
-                m_DistanceLab.hidden=true;
+                if ([NSThread isMainThread]) {
+                    m_crossMark.hidden=true;
+                    m_SpaceLab.hidden=true;
+                    m_TotalLab.hidden=true;
+                    m_DistanceLab.hidden=true;
+                }else{
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        m_crossMark.hidden=true;
+                        m_SpaceLab.hidden=true;
+                        m_TotalLab.hidden=true;
+                        m_DistanceLab.hidden=true;
+                    });
+                }
+                
             }
                 break;
             default:
@@ -469,6 +479,11 @@
                 
                 double distance = [SCNVector3Tool distanceWithVector:worldPostion StartVector:m_VectorCamera];
                 [self setDistance:distance];
+            }
+            else{
+                if (arPositionDelegate!=nil) {
+                    [arPositionDelegate currentARPositionX:m_VectorCamera.x y:m_VectorCamera.z z:m_VectorCamera.y];
+                }
             }
         }
     } @catch (NSException *exception) {
