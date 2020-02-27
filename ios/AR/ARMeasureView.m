@@ -47,7 +47,7 @@
 @end
 
 @implementation ARMeasureView
-@synthesize arRangingDelegate;
+@synthesize arRangingDelegate,arPositionDelegate;
 
 -(id)init{
     if (self = [super init]) {
@@ -198,58 +198,84 @@
     [self startARSessionWithMode:AR_MODE_RANGING];
 }
 
--(void)startARSessionWithMode:(AR_SESSION_MODE)mode{
-    if (!m_bSessionStart) {
-        //阻止自动锁屏
-        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-        
-        ARWorldTrackingConfiguration *confige = [ARWorldTrackingConfiguration new];
-        // 明确表示需要追踪水平面。设置后 scene 被检测到时就会调用 ARSCNViewDelegate 方法
-        switch (mode) {
-            case AR_MODE_RANGING:
-            {
-                [confige setPlaneDetection:ARPlaneDetectionHorizontal];
+-(void)mainThreadRun:(BOOL)bStart mode:(AR_SESSION_MODE)mode{
+    
+    if (bStart) {
+        if (!m_bSessionStart) {
+            //阻止自动锁屏
+            [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+
+            ARWorldTrackingConfiguration *confige = [ARWorldTrackingConfiguration new];
+            // 明确表示需要追踪水平面。设置后 scene 被检测到时就会调用 ARSCNViewDelegate 方法
+            switch (mode) {
+               case AR_MODE_RANGING:
+               {
+                   [confige setPlaneDetection:ARPlaneDetectionHorizontal];
+               }
+                   break;
+               case AR_MODE_INDOORPOSITIONING:
+               {
+                   [confige setPlaneDetection:ARPlaneDetectionNone];
+
+                   m_crossMark.hidden=true;
+                   m_SpaceLab.hidden=true;
+                   m_TotalLab.hidden=true;
+                   m_DistanceLab.hidden=true;
+
+                   
+               }
+                   break;
+               default:
+               {
+                   [confige setPlaneDetection:ARPlaneDetectionHorizontal];
+               }
+                   break;
             }
-                break;
-            case AR_MODE_INDOORPOSITIONING:
-            {
-                [confige setPlaneDetection:ARPlaneDetectionNone];
-                m_crossMark.hidden=true;
-                m_SpaceLab.hidden=true;
-                m_TotalLab.hidden=true;
-                m_DistanceLab.hidden=true;
-            }
-                break;
-            default:
-            {
-                [confige setPlaneDetection:ARPlaneDetectionHorizontal];
-            }
-                break;
+            //[confige setPlaneDetection:ARPlaneDetectionHorizontal | ARPlaneDetectionVertical];
+            [self.session runWithConfiguration:confige];
+            m_SessionMode = mode;
+            m_bSessionStart = true;
         }
-        //[confige setPlaneDetection:ARPlaneDetectionHorizontal | ARPlaneDetectionVertical];
-        [self.session runWithConfiguration:confige];
-        m_SessionMode = mode;
-        m_bSessionStart = true;
+    }else{
+        if(m_bSessionStart){
+            [self clearARSession];
+            
+            m_FocusNode.hidden=true;
+            
+            m_crossMark.hidden=true;
+    //        m_SpaceLab.hidden=true;
+            m_TotalLab.hidden=true;
+            m_DistanceLab.hidden=true;
+            
+            //阻止自动锁屏
+            [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+            [self.session pause];
+            m_SessionMode = AR_MODE_RANGING;
+            m_bSessionStart = false;
+        }
     }
+    
+}
+
+-(void)startARSessionWithMode:(AR_SESSION_MODE)mode{
+    if ([NSThread isMainThread]) {
+        [self mainThreadRun:YES mode:mode];
+    }else{
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self mainThreadRun:YES mode:mode];
+        });
+    }
+    
 }
 
 -(void)stopARSession{
-    if(m_bSessionStart){
-        [self clearARSession];
-        
-        m_FocusNode.hidden=true;
-        
-        m_crossMark.hidden=true;
-//        m_SpaceLab.hidden=true;
-        m_TotalLab.hidden=true;
-        m_DistanceLab.hidden=true;
-        
-        //阻止自动锁屏
-        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-        [self.session pause];
-        m_SessionMode = AR_MODE_RANGING;
-        m_bSessionStart = false;
-    }
+     if ([NSThread isMainThread]) {
+           [self mainThreadRun:NO mode:0];
+       }else{
+           dispatch_sync(dispatch_get_main_queue(), ^{
+               [self mainThreadRun:NO mode:0];
+           });
+       }
 }
 
 -(void)dealloc{
@@ -469,6 +495,11 @@
                 
                 double distance = [SCNVector3Tool distanceWithVector:worldPostion StartVector:m_VectorCamera];
                 [self setDistance:distance];
+            }
+            else{
+                if (arPositionDelegate!=nil) {
+                    [arPositionDelegate currentARPositionX:m_VectorCamera.x y:m_VectorCamera.z z:m_VectorCamera.y];
+                }
             }
         }
     } @catch (NSException *exception) {
