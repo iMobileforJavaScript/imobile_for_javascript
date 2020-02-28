@@ -13,6 +13,10 @@
 
 -(void)collectedPlate:(NSString*)plate carType:(NSString*)carType colorDescription:(NSString*)strColor;
 
+-(void)addAnimationview;
+
+-(void)setLanguage:(NSString *)type;
+
 @property (nonatomic,strong) UIButton *submitBnt;
 
 @end

@@ -153,9 +153,11 @@ RCT_EXPORT_MODULE();
 #pragma mark getEnvironmentStatus 获取许可文件状态
 RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+
         NSString* serialNumberLocal = [KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
         [Environment setUserLicInfo:serialNumberLocal Modules:nil];
+        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+
         ITabletLicenseManager* licenseManager = [ITabletLicenseManager getInstance];
         LicenseInfo* status =  [licenseManager licenseStatus];
         if(licenseManager.isValid){
@@ -166,6 +168,7 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
             [dic setObject:@(status.licenseType) forKey:@"licenseType"];
             [dic setObject:status.startTime forKey:@"startDate"];
             [dic setObject:status.endTime forKey:@"expireDate"];
+            [dic setObject:status.user forKey:@"user"];
             [dic setObject:[NSString stringWithFormat:@"%@", status.version] forKey:@"version"];
         }else{
             LicenseStatus* status = [Environment getLicenseStatus];
@@ -3941,7 +3944,7 @@ RCT_REMAP_METHOD(activateLicense, activateLicense:(NSString*)serialNumber resolv
         //激活
         [licenseManagers activateDevice:serialNumber modules:moudles];
         
-        resolve([NSNumber numberWithBool:YES]);
+//        resolve([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
         reject(@"setLabelColor",exception.reason,nil);
     }
@@ -4011,7 +4014,9 @@ RCT_REMAP_METHOD(licenseContainModule, licenseContainModule:(NSString*)serialNum
         NSMutableArray *moudles = [NSMutableArray array];
         NSArray* features = licenseManagers.licenseStatus.features;
         for(LicenseFeature* feature in features){
-            [moudles addObject:feature.id];
+            if(feature.id.integerValue>=18000&&feature.id.integerValue<19000){
+                [moudles addObject:feature.id];
+            }
         }
 
         resolve(moudles);
@@ -4057,16 +4062,16 @@ RCT_REMAP_METHOD(getLicenseCount, getLicenseCount:(NSString*)serialNumber resolv
         NSString* serialNumberLocal = [KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
         [Environment setUserLicInfo:serialNumberLocal Modules:nil];
         ITabletLicenseManager* licenseManagers = [ITabletLicenseManager getInstance];
-        NSArray *moudles=[licenseManagers queryLicenseCount:serialNumber];
+        NSArray *moudles=[licenseManagers queryLicenseCount:serialNumberLocal];
         int count=[moudles count];
-        int minRemindNum=0;
+        int minRemindNum=-1;
         for(int i=0;i<count;i++){
           
 
             NSDictionary* dic=moudles[i];
             if( ((NSString*)dic[@"Module"]).intValue >=18000 && ((NSString*)dic[@"Module"]).intValue <19000){
                 int remindNum=[[dic objectForKey:@"LicenseRemainedCount"] intValue];
-                if(i==0||minRemindNum>remindNum){
+                if(minRemindNum==-1||minRemindNum>remindNum){
                     minRemindNum=remindNum;
                 }
             }

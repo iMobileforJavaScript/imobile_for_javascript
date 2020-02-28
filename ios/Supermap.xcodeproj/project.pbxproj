@@ -244,6 +244,10 @@
 		614D851F23C7067700BDEC31 /* CNNRecognizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 614D851723C7067700BDEC31 /* CNNRecognizer.cpp */; };
 		6163F38423CD912000CC5F21 /* SIllegallyParkView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6163F38323CD912000CC5F21 /* SIllegallyParkView.m */; };
 		6163F38723CD922500CC5F21 /* IllegallyParkViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6163F38623CD922500CC5F21 /* IllegallyParkViewManager.m */; };
+		619A5923240615C200C1103F /* ARCollectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 619A5921240615C100C1103F /* ARCollectorView.m */; };
+		619A592A240615DF00C1103F /* CollectSceneFormViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 619A5924240615DE00C1103F /* CollectSceneFormViewManager.m */; };
+		619A592B240615DF00C1103F /* SCollectSceneFormView.m in Sources */ = {isa = PBXBuildFile; fileRef = 619A5927240615DE00C1103F /* SCollectSceneFormView.m */; };
+		619A592C240615DF00C1103F /* SceneFormInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 619A5928240615DF00C1103F /* SceneFormInfo.m */; };
 		619B479023D1A07F00C499F3 /* ColorHSB.m in Sources */ = {isa = PBXBuildFile; fileRef = 619B478F23D1A07F00C499F3 /* ColorHSB.m */; };
 		619B47B523D3FAC100C499F3 /* AIPlateCollectionCameraFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 619B47B423D3FAC100C499F3 /* AIPlateCollectionCameraFrame.m */; };
 		B7B85EA223A7193E00D5E7CF /* SNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B85EA123A7193E00D5E7CF /* SNavigationManager.m */; };
@@ -745,6 +749,14 @@
 		617D9BF2230FE37F00ADCCCA /* _imagingmorph.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = _imagingmorph.a; path = "python/Pillow-master/_imagingmorph.a"; sourceTree = "<group>"; };
 		617D9BFA230FE3B500ADCCCA /* libstarpy.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstarpy.a; path = python/starcore_for_ios/libstarpy.a; sourceTree = "<group>"; };
 		617D9BFB230FE3B500ADCCCA /* libstarcore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstarcore.a; path = python/starcore_for_ios/libstarcore.a; sourceTree = "<group>"; };
+		619A5921240615C100C1103F /* ARCollectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARCollectorView.m; sourceTree = "<group>"; };
+		619A5922240615C200C1103F /* ARCollectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARCollectorView.h; sourceTree = "<group>"; };
+		619A5924240615DE00C1103F /* CollectSceneFormViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectSceneFormViewManager.m; sourceTree = "<group>"; };
+		619A5925240615DE00C1103F /* SceneFormInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFormInfo.h; sourceTree = "<group>"; };
+		619A5926240615DE00C1103F /* SCollectSceneFormView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCollectSceneFormView.h; sourceTree = "<group>"; };
+		619A5927240615DE00C1103F /* SCollectSceneFormView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCollectSceneFormView.m; sourceTree = "<group>"; };
+		619A5928240615DF00C1103F /* SceneFormInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SceneFormInfo.m; sourceTree = "<group>"; };
+		619A5929240615DF00C1103F /* CollectSceneFormViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectSceneFormViewManager.h; sourceTree = "<group>"; };
 		619B478E23D1A07F00C499F3 /* ColorHSB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColorHSB.h; sourceTree = "<group>"; };
 		619B478F23D1A07F00C499F3 /* ColorHSB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ColorHSB.m; sourceTree = "<group>"; };
 		619B47B323D3FAC100C499F3 /* AIPlateCollectionCameraFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AIPlateCollectionCameraFrame.h; sourceTree = "<group>"; };
@@ -1039,6 +1051,12 @@
 		2A15227E23965AE600CBC452 /* ar */ = {
 			isa = PBXGroup;
 			children = (
+				619A5929240615DF00C1103F /* CollectSceneFormViewManager.h */,
+				619A5924240615DE00C1103F /* CollectSceneFormViewManager.m */,
+				619A5925240615DE00C1103F /* SceneFormInfo.h */,
+				619A5928240615DF00C1103F /* SceneFormInfo.m */,
+				619A5926240615DE00C1103F /* SCollectSceneFormView.h */,
+				619A5927240615DE00C1103F /* SCollectSceneFormView.m */,
 				2A15227F23965B9900CBC452 /* SMeasureView.h */,
 				2A15228023965B9900CBC452 /* SMeasureView.m */,
 				2A15228F239676FD00CBC452 /* MeasureViewManager.h */,
@@ -1050,6 +1068,8 @@
 		2A1522822396652600CBC452 /* AR */ = {
 			isa = PBXGroup;
 			children = (
+				619A5922240615C200C1103F /* ARCollectorView.h */,
+				619A5921240615C100C1103F /* ARCollectorView.m */,
 				2A1522832396652600CBC452 /* ARMeasureView.h */,
 				2A1522842396652600CBC452 /* ARMeasureView.m */,
 				2A1522852396652600CBC452 /* LineController.h */,
@@ -1700,6 +1720,7 @@
 				0A332DED211D623E00F56F26 /* JSAMQPReceiver.m in Sources */,
 				0A334CA52296478900E4F302 /* SScene.m in Sources */,
 				0A332E4A211D623E00F56F26 /* JSScene.m in Sources */,
+				619A592B240615DF00C1103F /* SCollectSceneFormView.m in Sources */,
 				0A332E25211D623E00F56F26 /* JSLayerSettingVector.m in Sources */,
 				0AF348682270018F004D6D09 /* SAnalyst.m in Sources */,
 				D8DD420F21748894009D80E9 /* JSSymbolGroup.m in Sources */,
@@ -1737,8 +1758,10 @@
 				0A51675021AD42B6003C77BE /* LableHelper3D.m in Sources */,
 				0A332E0D211D623E00F56F26 /* JSDataUploadService.m in Sources */,
 				0A332E24211D623E00F56F26 /* JSLayerSetting.m in Sources */,
+				619A5923240615C200C1103F /* ARCollectorView.m in Sources */,
 				0A332E4D211D623E00F56F26 /* JSSelection.m in Sources */,
 				0A332E37211D623E00F56F26 /* JSPieChart.m in Sources */,
+				619A592A240615DF00C1103F /* CollectSceneFormViewManager.m in Sources */,
 				0A332E69211D623E00F56F26 /* JSWeightFieldInfo.m in Sources */,
 				B7B9A5FB2399F67500718E4F /* SNavigation2.m in Sources */,
 				0A332E4F211D623E00F56F26 /* JSServiceQueryParameter.m in Sources */,
@@ -1879,6 +1902,7 @@
 				0A03BDE42395F4D400A90044 /* ImageClassification.mm in Sources */,
 				0A332DF3211D623E00F56F26 /* JSBufferAnalyst.m in Sources */,
 				0A332E28211D623E00F56F26 /* JSLineChartData.m in Sources */,
+				619A592C240615DF00C1103F /* SceneFormInfo.m in Sources */,
 				0A332E34211D623E00F56F26 /* JsonUtil.m in Sources */,
 				D8DD422421757443009D80E9 /* JSSymbolLibrary.m in Sources */,
 				0A332E1C211D623E00F56F26 /* JSGeoText.m in Sources */,
