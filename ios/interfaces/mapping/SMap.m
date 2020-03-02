@@ -153,11 +153,11 @@ RCT_EXPORT_MODULE();
 #pragma mark getEnvironmentStatus 获取许可文件状态
 RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
-        
+
         NSString* serialNumberLocal = [KeychainUtil readKeychainValue:KEYCHAIN_STORAGE_SERIAL_NUMBER_KEY];
         [Environment setUserLicInfo:serialNumberLocal Modules:nil];
-        
         NSMutableDictionary* dic = [[NSMutableDictionary alloc] init];
+
         ITabletLicenseManager* licenseManager = [ITabletLicenseManager getInstance];
         LicenseInfo* status =  [licenseManager licenseStatus];
         if(licenseManager.isValid){
@@ -191,8 +191,6 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
 +(void)showMarkerHelper:(Point2D*)pt tag:(int)tag{
    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)),dispatch_get_main_queue(), ^{
-        
-
         
         GeoPoint* point = [[GeoPoint alloc] initWithPoint2D:pt];//new GeoPoint(mapPt.getX(),mapPt.getY());
         GeoStyle* style = [[GeoStyle alloc]init];
