@@ -64,6 +64,7 @@
 #import "SMLayer.h"
 #import "SOrientation.h"
 #import "ScaleViewHelper.h"
+#import "STranslate.h"
 #import "InfoCallout.h"
 #import "SMMap.h"
 #import "SMMapRender.h"
