@@ -272,26 +272,26 @@
            
            int count = arrData.count/3;
            float total = 0;
-           float x = [(NSNumber*)[arrData objectAtIndex:0] floatValue];
-           float y = [(NSNumber*)[arrData objectAtIndex:1] floatValue];
-           float z = [(NSNumber*)[arrData objectAtIndex:2] floatValue];
+           double x = [(NSNumber*)[arrData objectAtIndex:0] doubleValue];
+           double y = [(NSNumber*)[arrData objectAtIndex:1] doubleValue];
+           double z = [(NSNumber*)[arrData objectAtIndex:2] doubleValue];
            [loadData addObject: @(x)];
            [loadData addObject: @(y)];
            [loadData addObject: @(z)];
            for (int i=1; i<count; i++) {
-               float cx = [(NSNumber*)[arrData objectAtIndex:i*3] floatValue];
-               float cy = [(NSNumber*)[arrData objectAtIndex:i*3+1] floatValue];
-               float cz = [(NSNumber*)[arrData objectAtIndex:i*3+2] floatValue];
+               double cx = [(NSNumber*)[arrData objectAtIndex:i*3] doubleValue];
+               double cy = [(NSNumber*)[arrData objectAtIndex:i*3+1] doubleValue];
+               double cz = [(NSNumber*)[arrData objectAtIndex:i*3+2] doubleValue];
                [loadData addObject: @(cx)];
                [loadData addObject: @(cy)];
                [loadData addObject: @(cz)];
-               total += (x-cx)*(x-cx) + (y-cy)*(y-cy);
+               total += sqrtf((x-cx)*(x-cx) + (y-cy)*(y-cy));
                x = cx;
                y = cy;
                z = cz;
            }
            
-           total = sqrtf(total);
+         
            mRouteDictionary[strIndex] = loadData;
            [self setTotalLength:total];
     }
@@ -342,6 +342,10 @@
 -(void)dispose{
     [self reset];
     [self removeFromSuperview];
+}
+
+-(void)currentPosX:(float *)x y:(float *)y z:(float*)z angle:(float *)w{
+    [_measurview currentPosX:x y:y z:z angle:w];
 }
 
 @end

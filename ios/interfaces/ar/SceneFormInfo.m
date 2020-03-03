@@ -9,6 +9,6 @@
 #import "SceneFormInfo.h"
 
 @implementation SceneFormInfo
-@synthesize name,geoLine3D,geoPoint3D,person,time,address,notes,ID;
+@synthesize name,/*geoLine3D,geoPoint3D*/arrPointsData,person,time,address,notes,ID;
 
 @end

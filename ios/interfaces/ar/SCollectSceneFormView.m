@@ -9,6 +9,7 @@
 #import "SCollectSceneFormView.h"
 #import "SMap.h"
 #import "SuperMap/Recordset.h"
+#import "SuperMap/CoordSysTranslator.h"
 #import "SMCollector.h"
 #import "SuperMap/GeoLine3D.h"
 #import "SuperMap/Point3Ds.h"
@@ -21,6 +22,14 @@ static ARCollectorView* _arCollection = nil;
 static BOOL _isShowTrace = NO;
 static NSString* mDatasourceAlias = nil;
 
+//校准时，面朝正南方，屏幕垂直面朝自己
+//校准信息先存储 saveDataset时应用
+//校准点（x,y)  校准GPS（Longitude,Latitude）=>Mercator(x,y)
+//static CGPoint mFixedAR;
+static Point2D* mFixedMercator;
+static double mFixedAltitude = 0;
+//校准南向偏移角度a
+static float mFixedAngle = 0;
 
 RCT_EXPORT_MODULE();
 
@@ -61,7 +70,8 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
     return dateStr;
 }
 
--(void)saveLineData:(NSArray*)arrLinePnts toDataset:(NSString*)datasetName{
+
+-(void)saveLineData:(NSArray*)arrPnts toDataset:(NSString*)datasetName{
     [self createLineDataset:datasetName toDatasource:mDatasourceAlias];
     DatasetVector *datasetVector = nil;
     MapControl* mapControl = SMap.singletonInstance.smMapWC.mapControl;
@@ -69,18 +79,38 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
     Datasource* datasource = [workspace.datasources getAlias:mDatasourceAlias];
     datasetVector = (DatasetVector*) [datasource.datasets getWithName:datasetName];
     Recordset *recordset = [datasetVector recordset:true cursorType:DYNAMIC];//动态指针
+    NSArray*arrLinePnts = [self transformARToMercator:arrPnts];
     if (recordset != nil) {
         //移动指针到最后
        // [recordset moveLast];
         [recordset edit];//可编辑
         
+        int count = arrLinePnts.count/3;
+        Point2Ds *pnt2ds = [[Point2Ds alloc]init];
+        for (int i = 0; i < count; i++) {
+            Point2D *pnt2d = [[Point2D alloc] init];
+            pnt2d.x = [[arrLinePnts objectAtIndex:i*3] doubleValue];
+            pnt2d.y = [[arrLinePnts objectAtIndex:i*3+1] doubleValue];
+            [pnt2ds add:pnt2d];
+        }
+        
+        if (![datasetVector.prjCoordSys isSame:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]]) {
+            //mercator -> gps
+            [CoordSysTranslator convert:pnt2ds
+                       PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+                       PrjCoordSys:datasetVector.prjCoordSys
+            CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+               CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        }
+        
         
         Point3Ds *point3DS = [[Point3Ds alloc]init];
-        for (int i = 0; i < arrLinePnts.count; i+=3) {
+        for (int i = 0; i < count;i++) {
             Point3D value;
-            value.x = [[arrLinePnts objectAtIndex:i] floatValue];
-            value.y = [[arrLinePnts objectAtIndex:i+1] floatValue];
-            value.z = [[arrLinePnts objectAtIndex:i+2] floatValue];
+            Point2D *pnt2d = [pnt2ds getItem:i];
+            value.x = pnt2d.x;
+            value.y = pnt2d.y;
+            value.z = [[arrLinePnts objectAtIndex:i*3+2] doubleValue];
             [point3DS addPoint3D:value];
         }
 
@@ -111,9 +141,10 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
         [recordset close];
         [recordset dispose];
     }
+    [datasource saveDatasource];
 }
 
--(void)savePointDataX:(float)x y:(float)y z:(float)z toDataset:(NSString*)datasetName withStr:(NSString*)strValue{
+-(void)savePointDataX:(double)x y:(double)y z:(double)z toDataset:(NSString*)datasetName withStr:(NSString*)strValue{
     [self createPointDataset:datasetName toDatasource:mDatasourceAlias];
     DatasetVector *datasetVector = nil;
     MapControl* mapControl = SMap.singletonInstance.smMapWC.mapControl;
@@ -121,12 +152,35 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
     Datasource* datasource = [workspace.datasources getAlias:mDatasourceAlias];
     datasetVector = (DatasetVector*) [datasource.datasets getWithName:datasetName];
     Recordset *recordset = [datasetVector recordset:true cursorType:DYNAMIC];//动态指针
+    
+    NSArray *arrAR = [NSArray arrayWithObjects:@(x),@(y),@(z), nil];
+    NSArray *arrMercator = [self transformARToMercator:arrAR];
+    Point2Ds *pnt2ds = [[Point2Ds alloc]init];
+    Point2D *pnt2d = [[Point2D alloc] init];
+    pnt2d.x = [[arrMercator objectAtIndex:0] doubleValue];
+    pnt2d.y = [[arrMercator objectAtIndex:1] doubleValue];
+    [pnt2ds add:pnt2d];
+    
+    if (![datasetVector.prjCoordSys isSame:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]]) {
+        //mercator -> gps
+        [CoordSysTranslator convert:pnt2ds
+                   PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+                   PrjCoordSys:datasetVector.prjCoordSys
+        CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+           CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+    }
+    Point2D *pntGPS = [pnt2ds getItem:0];
+    double gpsz = [[arrMercator objectAtIndex:2] doubleValue];
+    
+   GeoPoint3D *geoPoint = [[GeoPoint3D alloc]initWithX:pntGPS.x Y:pntGPS.y Z:gpsz];
+    
+    
     if (recordset != nil) {
         //移动指针到最后
         //[recordset moveLast];
         [recordset edit];//可编辑
         
-        GeoPoint3D *geoPoint = [[GeoPoint3D alloc]initWithX:x Y:y Z:z];
+        
         
         //移动指针到下一位
         //[recordset moveNext];
@@ -161,6 +215,7 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
         [recordset close];
         [recordset dispose];
     }
+    [datasource saveDatasource];
 }
 
 -(void)createDatasource:(NSString*)datasourceAlias path:(NSString*)datasourcePath{
@@ -215,6 +270,7 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
     //      addFieldInfo(datasetVector, "Name", FieldType.TEXT, false, "", 255);
 
     [datasetVector setPrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]];
+   // [datasetVector setPrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]];
     //      datasetVector.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
 
     [datasetVectorInfo dispose];
@@ -248,6 +304,7 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
     //      addFieldInfo(datasetVector, "Name", FieldType.TEXT, false, "", 255);
 
     [datasetVector setPrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]];
+    //[datasetVector setPrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]];
     //      datasetVector.setPrjCoordSys(new PrjCoordSys(PrjCoordSysType.PCS_EARTH_LONGITUDE_LATITUDE));
 
     [datasetVectorInfo dispose];
@@ -328,12 +385,43 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
             Description = (NSString*)[recordset getFieldValueWithString:@"Description"];
         }
         
+        //trans
+        Point3Ds* line3dPnts = [geoLine3D getPart:0];
+        Point2Ds* pnt2ds = [[Point2Ds alloc]init];
+        NSMutableArray*arrMercator = [[NSMutableArray alloc]init];
+        for (int i=0; i<line3dPnts.count;i++) {
+            Point3D value = [line3dPnts itemofIndex:i];
+            [pnt2ds add: [[Point2D alloc] initWithX:value.x Y:value.y]];
+            [arrMercator addObject:@(value.x)];
+            [arrMercator addObject:@(value.y)];
+            [arrMercator addObject:@(value.z)];
+        }
         
+        if (![datasetVector.prjCoordSys isSame:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]]) {
+           //mercator -> gps
+           [CoordSysTranslator convert:pnt2ds
+                      PrjCoordSys:datasetVector.prjCoordSys
+                      PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+           CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+              CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        }
+        
+        
+        for (int i=0; i<pnt2ds.getCount;i++) {
+            Point2D *pnt2d = [pnt2ds getItem:i];
+            [arrMercator replaceObjectAtIndex:i*3 withObject:@(pnt2d.x)];
+            [arrMercator replaceObjectAtIndex:i*3+1 withObject:@(pnt2d.y)];
+        }
+        
+        NSArray *arrARPnts = [self transformMercatorToAR:arrMercator];
+        
+       // GeoLine3D *line3DAR = [[GeoLine3D alloc]initWithPoint3Ds:<#(Point3Ds *)#>];
         
 
         SceneFormInfo*info = [[SceneFormInfo alloc]init];
         [info setID:geometryId];
-        [info setGeoLine3D:geoLine3D];
+        [info setArrPointsData:arrARPnts];
+        //[info setGeoLine3D:geoLine3D];
         [info setName:NAME];
         [info setTime:TIME];
         [info setNotes:Description];
@@ -390,12 +478,31 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
             Description = (NSString*)[recordset getFieldValueWithString:@"Description"];
         }
         
-        
+        //trans
+        Point3D value = [geopoint3D innerPoint3D];
+        Point2Ds* pnt2ds = [[Point2Ds alloc]init];
+        [pnt2ds add: [[Point2D alloc] initWithX:value.x Y:value.y]];
+        if (![datasetVector.prjCoordSys isSame:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]]) {
+            //mercator -> gps
+            [CoordSysTranslator convert:pnt2ds
+                     PrjCoordSys:datasetVector.prjCoordSys
+                     PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+            CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+             CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        }
+        Point2D *pnt2d = [pnt2ds getItem:0];
+        NSMutableArray*arrMercator = [[NSMutableArray alloc]init];
+        [arrMercator addObject:@(pnt2d.x)];
+        [arrMercator addObject:@(pnt2d.y)];
+        [arrMercator addObject:@(value.z)];
+    
+        NSArray *arrARPnts = [self transformMercatorToAR:arrMercator];
         
 
         SceneFormInfo*info = [[SceneFormInfo alloc]init];
         [info setID:geometryId];
-        [info setGeoPoint3D:geopoint3D];
+        //[info setGeoPoint3D:geopoint3D];
+        [info setArrPointsData:arrARPnts];
         [info setName:NAME];
         [info setTime:TIME];
         [info setNotes:Description];
@@ -414,6 +521,51 @@ NSString * const SCOLLECT_TOTALLENGTHCHANGE =  @"onTotalLengthChanged";
 -(void)onLengthChange:(float)length{
     NSString* str = [NSString stringWithFormat:@"%.2f",length];
     [self sendEventWithName:SCOLLECT_TOTALLENGTHCHANGE body:@{ @"totalLength": str }];
+}
+
+-(NSArray*)transformARToMercator:(NSArray*)arrARPos{
+    int nCount = arrARPos.count/3;
+    NSMutableArray *arrMercator = [[NSMutableArray alloc] init];
+    for (int i=0; i<nCount; i++) {
+        double x = [(NSNumber*)arrARPos[i*3] doubleValue] ;
+        double y = [(NSNumber*)arrARPos[i*3+1] doubleValue];
+        double z = [(NSNumber*)arrARPos[i*3+2] doubleValue];
+        
+        double cosa = cosf(mFixedAngle);
+        double sina = sinf(mFixedAngle);
+        
+        double resX = (x*cosa + y*sina) + mFixedMercator.x;
+        double resY = (y*cosa - x*sina) + mFixedMercator.y;
+        double resZ = z + mFixedAltitude;
+        
+        [arrMercator addObject:@(resX)];
+        [arrMercator addObject:@(resY)];
+        [arrMercator addObject:@(resZ)];
+    }
+    return arrMercator;
+}
+
+
+-(NSArray*)transformMercatorToAR:(NSArray*)arrMercator{
+    int nCount = arrMercator.count/3;
+    NSMutableArray *arrAR = [[NSMutableArray alloc] init];
+    for (int i=0; i<nCount; i++) {
+        double x = [(NSNumber*)arrMercator[i*3] doubleValue] - mFixedMercator.x;
+        double y = [(NSNumber*)arrMercator[i*3+1] doubleValue] - mFixedMercator.y;
+        double z = [(NSNumber*)arrMercator[i*3+2] doubleValue] - mFixedAltitude;
+        
+        double cosa = cosf(-mFixedAngle);
+        double sina = sinf(-mFixedAngle);
+        
+        double resX = (x*cosa + y*sina);
+        double resY = (y*cosa - x*sina);
+        double resZ = z;
+        
+        [arrAR addObject:@(resX)];
+        [arrAR addObject:@(resY)];
+        [arrAR addObject:@(resZ)];
+    }
+    return arrAR;
 }
 
 #pragma mark ----------------getSystemTime--------RN--------
@@ -556,6 +708,8 @@ RCT_REMAP_METHOD(saveGPSData, saveGPSData:(NSString*)name resolve:(RCTPromiseRes
         
         NSArray *arr = [_arCollection collectCurrentPoint];
         //[self savePointDataX:gpsData.dLongitude y:gpsData.dLatitude z:gpsData.dAltitude toDataset:strDataset];
+        
+        
         [self savePointDataX:[(NSNumber*)arr[0] floatValue] y:[(NSNumber*)arr[1] floatValue] z:[(NSNumber*)arr[2] floatValue] toDataset:strDataset withStr:strDescrip];
         resolve(@(YES));
     } @catch (NSException *exception) {
@@ -599,21 +753,8 @@ RCT_REMAP_METHOD(loadData, loadData:(int)index isLine:(BOOL)isLine resolve:(RCTP
             NSArray* infoList = [self allGeometryFromDatasource:mDatasourceAlias dataset:index];
             if (infoList!=nil && infoList.count>0) {
                 SceneFormInfo* info = [infoList objectAtIndex:0];
-                GeoLine3D* geoLine3D =[info geoLine3D];
-                NSMutableArray *arrPoints = [[NSMutableArray alloc]init];
-                // 三维接口问题partcount==0
-//                for (int i = 0; i < [geoLine3D partCount]; i++) {
-                    Point3Ds *part = [geoLine3D getPart:0];
-                    for (int j=0; j<part.count; j++) {
-                        Point3D point3d = [part itemofIndex:j];
-                        [arrPoints addObject: @(point3d.x)];
-                        [arrPoints addObject: @(point3d.y)];
-                        [arrPoints addObject: @(point3d.z)];
-                    }
-                
- //               }
-
-                [_arCollection loadPoseData:arrPoints];
+                NSArray* arr = [info arrPointsData];
+                [_arCollection loadPoseData:arr];
                 bResult = true;
             }
 
@@ -621,15 +762,9 @@ RCT_REMAP_METHOD(loadData, loadData:(int)index isLine:(BOOL)isLine resolve:(RCTP
             NSArray* infoList = [self allPointsFromDatasource:mDatasourceAlias dataset:index];
             if (infoList!=nil && infoList.count>0) {
                 SceneFormInfo* info = [infoList objectAtIndex:0];
-                GeoPoint3D* geoPoint3D =[info geoPoint3D];
-                Point3D point3d = [geoPoint3D innerPoint3D];
-                NSMutableArray *arrPoints = [[NSMutableArray alloc]init];
-                [arrPoints addObject: @(point3d.x)];
-                [arrPoints addObject: @(point3d.y)];
-                [arrPoints addObject: @(point3d.z)];
-                [_arCollection loadPoseData:arrPoints];
+                NSArray* arr = [info arrPointsData];
+                [_arCollection loadPoseData:arr];
                 bResult = true;
-                
             }
         }
         
@@ -695,6 +830,19 @@ RCT_REMAP_METHOD(onDestroy, onDestroy:(RCTPromiseResolveBlock)resolve rejecter:(
 RCT_REMAP_METHOD(initSceneFormView, initSceneFormView:(NSString*)datasourceAlias dataset:(NSString*) datasetName datasetPoint:(NSString*)datasetPointName language:(NSString*)language path:(NSString*)UDBpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         mDatasourceAlias = datasourceAlias;
+        GPSData* gpsData = [SMCollector getGPSPoint];
+        Point2D *pnt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+        Point2Ds *pnt2ds = [[Point2Ds alloc] init];
+        [pnt2ds add:pnt];
+        [CoordSysTranslator convert:pnt2ds
+                               PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]
+                               PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+                    CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+                       CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        Point2D* pntMercator = [pnt2ds getItem:0];
+        mFixedMercator = [[Point2D alloc]initWithX:pntMercator.x Y:pntMercator.y];
+        mFixedAngle = 0;
+        
         [self createDatasource:datasourceAlias path:UDBpath];
         [_arCollection setDelegate:self];
         [_arCollection startCollect];
@@ -769,6 +917,9 @@ RCT_REMAP_METHOD(setDataSource, setDataSource:(NSString*)datasourceAlias path:(N
 #pragma mark ----------------switchViewMode--------RN--------
 RCT_REMAP_METHOD(switchViewMode, switchViewMode:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+
+
+
 //       ViewMode viewMode = mRenderer.getViewMode();
 //        if (viewMode == ViewMode.FIRST_PERSON) {
 //            mRenderer.setViewMode(ViewMode.THIRD_PERSON);
@@ -779,6 +930,116 @@ RCT_REMAP_METHOD(switchViewMode, switchViewMode:(RCTPromiseResolveBlock)resolve 
     } @catch (NSException *exception) {
         reject(@"switchViewMode", exception.reason, nil);
     }
+//     @try {
+//
+//            float x = 0;
+//            float y = 0;
+//            float z = 0;
+//            float w = 0;
+//
+//            [_arCollection currentPosX:&x y:&y z:&z angle:&w];
+//            mFixedAngle = -w; // 坐标系偏移w
+//
+//            Point2Ds *pnt2ds = [[Point2Ds alloc]init];
+//
+//            GPSData* gpsData = [SMCollector getGPSPoint];
+//            //Point2D *pnt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+//         Point2D *pnt = [[Point2D alloc] initWithX:0 Y:0];
+//            [pnt2ds add:pnt];
+////            mFixedGPS = CGPointMake(gpsData.dLongitude, gpsData.dLatitude);
+//            mFixedAltitude = gpsData.dAltitude - z;
+//
+//            [CoordSysTranslator convert:pnt2ds
+//                            PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]
+//                            PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+//                 CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+//                    CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+//            //经纬度转墨卡托
+//    //        [CoordSysTranslator convert:pnd2ds
+//    //                        PrjCoordSys: [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]
+//    //                        PrjCoordSys: [[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+//    //                        CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+//    //                        CoordSysTransMethod: MTH_GEOCENTRIC_TRANSLATION];
+//
+//            //[CoordSysTranslator forward:pnt2ds PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]];
+//            Point2D* pntMercator = [pnt2ds getItem:0];
+//
+//
+//            float cosa = cosf(mFixedAngle);
+//            float sina = sinf(mFixedAngle);
+//            //ARtoMercator
+//            float offX = (x*cosa + y*sina) ;
+//            float offY = (y*cosa - x*sina) ;
+//            mFixedMercator.x = pntMercator.x-offX;
+//            mFixedMercator.y = pntMercator.y-offY;
+//
+//
+//            resolve(@(YES));
+//        } @catch (NSException *exception) {
+//            reject(@"fixedPosition", exception.reason, nil);
+//        }
 }
+
+/**
+    * 高清采集位置校准
+    *
+    * @param promise
+*/
+#pragma mark ----------------fixedPosition--------RN--------
+RCT_REMAP_METHOD(fixedPosition, fixedPosition:(BOOL)bGPSAuto longitude:(float)dLongitude latitude:(float)dLatitude   altitude:(float)dAltitude resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        float x = 0;
+        float y = 0;
+        float z = 0;
+        float w = 0;
+        
+        [_arCollection currentPosX:&x y:&y z:&z angle:&w];
+        mFixedAngle = -w; // 坐标系偏移w
+        
+        Point2Ds *pnt2ds = [[Point2Ds alloc]init];
+        if (bGPSAuto) {
+            GPSData* gpsData = [SMCollector getGPSPoint];
+            Point2D *pnt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+            [pnt2ds add:pnt];
+//            mFixedGPS = CGPointMake(gpsData.dLongitude, gpsData.dLatitude);
+            mFixedAltitude = gpsData.dAltitude - z;
+        }else{
+            Point2D *pnt = [[Point2D alloc] initWithX:dLongitude Y:dLatitude];
+            [pnt2ds add:pnt];
+//            mFixedGPS = CGPointMake(dLongitude, dLatitude);
+            mFixedAltitude = dAltitude - z;
+        }
+
+        [CoordSysTranslator convert:pnt2ds
+                        PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]
+                        PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+             CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+                CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
+        //经纬度转墨卡托
+//        [CoordSysTranslator convert:pnd2ds
+//                        PrjCoordSys: [[PrjCoordSys alloc] initWithType:PCST_EARTH_LONGITUDE_LATITUDE]
+//                        PrjCoordSys: [[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]
+//                        CoordSysTransParameter:[[CoordSysTransParameter alloc]init]
+//                        CoordSysTransMethod: MTH_GEOCENTRIC_TRANSLATION];
+        
+        //[CoordSysTranslator forward:pnt2ds PrjCoordSys:[[PrjCoordSys alloc] initWithType:PCST_WORLD_MERCATOR]];
+        Point2D* pntMercator = [pnt2ds getItem:0];
+    
+    
+        float cosa = cosf(mFixedAngle);
+        float sina = sinf(mFixedAngle);
+        //ARtoMercator
+        float offX = (x*cosa + y*sina) ;
+        float offY = (y*cosa - x*sina) ;
+        mFixedMercator.x = pntMercator.x-offX;
+        mFixedMercator.y = pntMercator.y-offY;
+
+        resolve(@(YES));
+    } @catch (NSException *exception) {
+        reject(@"fixedPosition", exception.reason, nil);
+    }
+}
+
 
 @end
