@@ -209,7 +209,7 @@ RCT_REMAP_METHOD(saveDataset, saveDataset:(RCTPromiseResolveBlock)resolve reject
             
             NSArray* arrPoint=[arr objectAtIndex:i];
             double x=[arrPoint[0] doubleValue]+fixedPt.x;
-            double y=[arrPoint[1] doubleValue]+fixedPt.y;
+            double y=[arrPoint[2] doubleValue]+fixedPt.y;
             [fixedTotalPoints add:[[Point2D alloc] initWithX:x Y:y]];
         }
         

@@ -32,14 +32,17 @@ RCT_EXPORT_MODULE(RCTIllegallyParkView)
         if ([SIllegallyParkView shareInstance]==nil) {
             CGRect rt = [ UIScreen mainScreen ].bounds;
             AIPlateCollectionView *uiView = [[AIPlateCollectionView alloc]initWithFrame:rt];
-            if([[SLanguage getLanguage] isEqualToString:@"EN"]){
-                [uiView setLanguage:@"EN"];
-            }else{
-                [uiView setLanguage:@"CN"];
-            }
+            
             [uiView setDetectIntervalMillisecond:100];
             [SIllegallyParkView setInstance:uiView];
            // [uiView setDelegate:self];
+        }else{
+            [[SIllegallyParkView shareInstance] initData];
+        }
+        if([[SLanguage getLanguage] isEqualToString:@"EN"]){
+            [[SIllegallyParkView shareInstance] setLanguage:@"EN"];
+        }else{
+            [[SIllegallyParkView shareInstance] setLanguage:@"CN"];
         }
 
         return [SIllegallyParkView shareInstance];
