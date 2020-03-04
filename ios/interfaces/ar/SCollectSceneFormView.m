@@ -830,8 +830,9 @@ RCT_REMAP_METHOD(onDestroy, onDestroy:(RCTPromiseResolveBlock)resolve rejecter:(
 RCT_REMAP_METHOD(initSceneFormView, initSceneFormView:(NSString*)datasourceAlias dataset:(NSString*) datasetName datasetPoint:(NSString*)datasetPointName language:(NSString*)language path:(NSString*)UDBpath resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
         mDatasourceAlias = datasourceAlias;
-        GPSData* gpsData = [SMCollector getGPSPoint];
-        Point2D *pnt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+        //GPSData* gpsData = [SMCollector getGPSPoint];
+        //Point2D *pnt = [[Point2D alloc] initWithX:gpsData.dLongitude Y:gpsData.dLatitude];
+         Point2D *pnt = [[Point2D alloc] initWithX:104.356 Y:30.3222];
         Point2Ds *pnt2ds = [[Point2Ds alloc] init];
         [pnt2ds add:pnt];
         [CoordSysTranslator convert:pnt2ds
@@ -841,6 +842,7 @@ RCT_REMAP_METHOD(initSceneFormView, initSceneFormView:(NSString*)datasourceAlias
                        CoordSysTransMethod:MTH_GEOCENTRIC_TRANSLATION];
         Point2D* pntMercator = [pnt2ds getItem:0];
         mFixedMercator = [[Point2D alloc]initWithX:pntMercator.x Y:pntMercator.y];
+        mFixedAltitude = 0;
         mFixedAngle = 0;
         
         [self createDatasource:datasourceAlias path:UDBpath];
