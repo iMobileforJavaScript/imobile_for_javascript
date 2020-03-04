@@ -160,9 +160,10 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
 
         ITabletLicenseManager* licenseManager = [ITabletLicenseManager getInstance];
         LicenseInfo* status =  [licenseManager licenseStatus];
-        if(licenseManager.isValid){
-            [dic setObject:[NSNumber numberWithBool:licenseManager.isValid] forKey:@"isActivated"];
-            [dic setObject:[NSNumber numberWithBool:licenseManager.isValid] forKey:@"isLicenseValid"];
+        if(status ! = nil){
+            
+            [dic setObject:[NSNumber numberWithBool:YES] forKey:@"isActivated"];
+            [dic setObject:[NSNumber numberWithBool:YES] forKey:@"isLicenseValid"];
             [dic setObject:[NSNumber numberWithBool:false] forKey:@"isLicenseExist"];
             [dic setObject:[NSNumber numberWithBool:false] forKey:@"isTrailLicense"];
             [dic setObject:@(status.licenseType) forKey:@"licenseType"];
