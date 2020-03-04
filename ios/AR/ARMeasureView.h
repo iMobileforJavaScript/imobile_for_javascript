@@ -84,6 +84,9 @@ typedef enum{
 -(void)undo;
 
 -(id)initWithFrame:(CGRect)frame withLanguage:(NSString*)language;
+
+-(void)currentPosX:(float *)x y:(float *)y z:(float *)z angle:(float *)w;
+
 @end
 
 

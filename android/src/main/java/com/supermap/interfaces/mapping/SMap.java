@@ -37,6 +37,8 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.RNUtils.DataUtil;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.RNUtils.JsonUtil;
@@ -4121,6 +4123,369 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             promise.reject(e);
         }
     }
+
+    /**
+     * 设置标注集合对象symbolID
+     */
+    @ReactMethod
+    public void setTaggingSymbolID(int symbolID, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+            GeometryType geometryType = geometry.getType();
+
+            if(geometryType == GeometryType.GEOPOINT) {
+                geoStyle.setMarkerSymbolID(symbolID);
+            } else if(geometryType == GeometryType.GEOLINE) {
+                geoStyle.setLineSymbolID(symbolID);
+            } else if(geometryType == GeometryType.GEOREGION){
+                geoStyle.setFillSymbolID(symbolID);
+            }
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注线，标注面边框颜色
+     */
+    @ReactMethod
+    public void setTaggingMarkerColor(String colorString, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            com.supermap.data.Color makerColor = ColorParseUtil.getColor(colorString);
+            geoStyle.setMarkerSymbolID(0);
+            geoStyle.setLineColor(makerColor);
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注线，标注面边框颜色
+     */
+    @ReactMethod
+    public void setTaggingLineColor(String colorString, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            if(colorString.equals("NULL")){
+                geoStyle.setLineSymbolID(5);
+            }else{
+                com.supermap.data.Color color = ColorParseUtil.getColor(colorString);
+                geoStyle.setLineSymbolID(0);
+                geoStyle.setLineColor(color);
+            }
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注面前景色
+     */
+    @ReactMethod
+    public void setTaggingFillForeColor(String colorString, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            if(colorString.equals("NULL")){
+                geoStyle.setFillSymbolID(1);
+            }else{
+                com.supermap.data.Color color = ColorParseUtil.getColor(colorString);
+                geoStyle.setFillSymbolID(0);
+                geoStyle.setFillForeColor(color);
+            }
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注线宽
+     */
+    @ReactMethod
+    public void getTaggingLineWidth(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            double width = geoStyle.getLineWidth()*10;
+
+            geometry.dispose();
+            recordset.dispose();
+
+            promise.resolve(width);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注符号大小
+     */
+    @ReactMethod
+    public void getTaggingMarkerSize(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            Size2D size2d = geoStyle.getMarkerSize();
+            double size =  size2d.getWidth();
+
+            geometry.dispose();
+            recordset.dispose();
+
+            promise.resolve(size);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注符号角度
+     */
+    @ReactMethod
+    public void getTaggingAngle(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            double angle = geoStyle.getMarkerAngle();
+
+            geometry.dispose();
+            recordset.dispose();
+
+            promise.resolve(angle);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注面透明度
+     */
+    @ReactMethod
+    public void getTaggingAlpha(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            int opaque = 100 - geoStyle.getFillOpaqueRate();
+
+            geometry.dispose();
+            recordset.dispose();
+
+            promise.resolve(opaque);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注线宽
+     */
+    @ReactMethod
+    public void setTaggingLineWidth(int mm, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            double width = (double) mm / 10;
+            geoStyle.setLineWidth(width);
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注符号大小
+     */
+    @ReactMethod
+    public void setTaggingMarkerSize(int mm, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            geoStyle.setMarkerSize(new Size2D(mm, mm));
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注符号角度
+     */
+    @ReactMethod
+    public void setTaggingAngle(int angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            geoStyle.setMarkerAngle(angle);
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注面透明度
+     */
+    @ReactMethod
+    public void setTaggingAlpha(int fillOpaqueRate, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            Geometry geometry = recordset.getGeometry();
+            GeoStyle geoStyle = geometry.getStyle();
+
+            geoStyle.setFillOpaqueRate(100 - fillOpaqueRate);
+
+            recordset.edit();
+            geometry.setStyle(geoStyle);
+            recordset.setGeometry(geometry);
+            recordset.update();
+
+            geometry.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
 
     /**
      * 设置MapControl 画笔样式

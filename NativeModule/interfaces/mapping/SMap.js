@@ -1417,6 +1417,102 @@ export default (function () {
   }
 
 
+  function setTaggingSymbolID(symbolId) {
+    try {
+      return SMap.setTaggingSymbolID(symbolId)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingMarkerColor(color) {
+    try {
+      return SMap.setTaggingMarkerColor(color)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingLineColor(color) {
+    try {
+      return SMap.setTaggingLineColor(color)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingFillForeColor(color) {
+    try {
+      return SMap.setTaggingFillForeColor(color)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function getTaggingLineWidth() {
+    try {
+      return SMap.getTaggingLineWidth()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function getTaggingMarkerSize() {
+    try {
+      return SMap.getTaggingMarkerSize()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function getTaggingAngle() {
+    try {
+      return SMap.getTaggingAngle()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function getTaggingAlpha() {
+    try {
+      return SMap.getTaggingAlpha()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingLineWidth(width) {
+    try {
+      return SMap.setTaggingLineWidth(width)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingMarkerSize(size) {
+    try {
+      return SMap.setTaggingMarkerSize(size)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingAngle(angle) {
+    try {
+      return SMap.setTaggingAngle(angle)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingAlpha(alpha) {
+    try {
+      return SMap.setTaggingAlpha(alpha)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   /**
    * 设置MapControl 画笔样式
    */
@@ -2460,6 +2556,20 @@ export default (function () {
     getTaggingLayers,
     getTaggingLayerCount,
     setTaggingGrid,
+
+    setTaggingSymbolID,
+    setTaggingMarkerColor,
+    setTaggingLineColor,
+    setTaggingFillForeColor,
+    getTaggingMarkerSize,
+    getTaggingLineWidth,
+    getTaggingAngle,
+    getTaggingAlpha,
+    setTaggingMarkerSize,
+    setTaggingLineWidth,
+    setTaggingAngle,
+    setTaggingAlpha,
+    
     setMapControlStyle,
     setLabelColor,
     setPOIOptimized,

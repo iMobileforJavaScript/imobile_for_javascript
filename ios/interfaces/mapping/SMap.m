@@ -3766,6 +3766,325 @@ RCT_REMAP_METHOD(setTaggingGrid, setTaggingGridWithName:(NSString *)name UserPat
     }
 }
 
+#pragma mark ******************************** 标注风格 *********************************************************
+
+RCT_REMAP_METHOD(setTaggingSymbolID, setTaggingSymbolID:(int) symbolID Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        GeometryType geometryType = [geometry getType];
+        
+        if(geometryType == GT_GEOPOINT) {
+            [geoStyle setMarkerSymbolID:symbolID];
+        } else if(geometryType == GT_GEOLINE) {
+            [geoStyle setLineSymbolID:symbolID];
+        } else if(geometryType == GT_GEOREGION) {
+            [geoStyle setFillSymbolID:symbolID];
+        }
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingSymbolID",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingMarkerColor, setTaggingMarkerColor:(NSString*) colorString Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        
+        Color *color = [STranslate colorFromHexString:colorString];
+        [geoStyle setMarkerSymbolID:0];
+        [geoStyle setLineColor:color];
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingMarkerColor",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingLineColor, setTaggingLineColor:(NSString*) colorString Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        
+        if([colorString isEqualToString:@"NULL"]) {
+            [geoStyle setLineSymbolID:5];
+        } else {
+            Color *color = [STranslate colorFromHexString:colorString];
+            [geoStyle setLineSymbolID:0];
+            [geoStyle setLineColor:color];
+        }
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingLineColor",exception.reason,nil);
+    }
+}
+ 
+RCT_REMAP_METHOD(setTaggingFillForeColor, setTaggingFillForeColor:(NSString*) colorString Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        
+        if([colorString isEqualToString:@"NULL"]) {
+            [geoStyle setFillSymbolID:1];
+        } else {
+            Color *color = [STranslate colorFromHexString:colorString];
+            [geoStyle setFillSymbolID:0];
+            [geoStyle setFillForeColor:color];
+        }
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingFillForeColor",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getTaggingLineWidth, getTaggingLineWidthResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+ 
+        double width = [geoStyle getLineWidth]*10;
+        
+        [geometry dispose];
+        [recordset dispose];
+        
+        resolve([NSNumber numberWithDouble:width]);
+    } @catch (NSException *exception) {
+         reject(@"getTaggingLineWidth",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getTaggingMarkerSize, getTaggingMarkerSizeResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+ 
+        Size2D  *size2d = [[Size2D alloc] init];
+        size2d = [geoStyle getMarkerSize];
+        double size = size2d.width;
+        
+        [geometry dispose];
+        [recordset dispose];
+        
+        resolve([NSNumber numberWithDouble:size]);
+    } @catch (NSException *exception) {
+         reject(@"getTaggingMarkerSize",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getTaggingAngle, getTaggingAngleResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+ 
+        double angle = [geoStyle getMarkerAngle];
+        
+        [geometry dispose];
+        [recordset dispose];
+        
+        resolve([NSNumber numberWithDouble:angle]);
+    } @catch (NSException *exception) {
+         reject(@"getTaggingAngle",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getTaggingAlpha, getTaggingAlphaResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+ 
+        int opaque = 100 - [geoStyle getFillOpaqueRate];
+        
+        [geometry dispose];
+        [recordset dispose];
+        
+        resolve([NSNumber numberWithInt:opaque]);
+    } @catch (NSException *exception) {
+         reject(@"getTaggingAlpha",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingLineWidth, setTaggingLineWidth:(int) mm Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        
+        double width = (double) mm / 10;
+        [geoStyle setLineWidth:width];
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingLineWidth",exception.reason,nil);
+    }
+}
+
+ RCT_REMAP_METHOD(setTaggingMarkerSize, setTaggingMarkerSize:(int) mm Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+     @try {
+         sMap = [SMap singletonInstance];
+         MapControl* mapControl = sMap.smMapWC.mapControl;
+         [[mapControl getEditHistory] addMapHistory];
+         
+         Recordset* recordset = [sMap.selection toRecordset];
+         Geometry* geometry = recordset.geometry;
+         GeoStyle* geoStyle = [geometry getStyle];
+         
+         Size2D  *size = [[Size2D alloc] initWithWidth:mm Height:mm];
+         [geoStyle setMarkerSize:size];
+         
+         [recordset edit];
+         [geometry setStyle:geoStyle];
+         [recordset setGeometry:geometry];
+         [recordset update];
+         
+         [geometry dispose];
+         [recordset dispose];
+         [mapControl.map refresh];
+         
+         resolve([NSNumber numberWithBool:YES]);
+     } @catch (NSException *exception) {
+          reject(@"setTaggingMarkerSize",exception.reason,nil);
+     }
+ }
+
+RCT_REMAP_METHOD(setTaggingAngle, setTaggingAngle:(int) angle Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        
+        [geoStyle setMarkerAngle:angle];
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingAngle",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingAlpha, setTaggingAlpha:(int) fillOpaqueRate Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        Geometry* geometry = recordset.geometry;
+        GeoStyle* geoStyle = [geometry getStyle];
+        
+        [geoStyle setFillOpaqueRate:100-fillOpaqueRate];
+        
+        [recordset edit];
+        [geometry setStyle:geoStyle];
+        [recordset setGeometry:geometry];
+        [recordset update];
+        
+        [geometry dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingAlpha",exception.reason,nil);
+    }
+}
+
 #pragma mark 设置MapControl 画笔样式
 RCT_REMAP_METHOD(setMapControlStyle, setMapControlStyle:(NSDictionary *)style setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
@@ -4444,7 +4763,7 @@ static BOOL bDouble = false;
     
     //    Recordset* r = [layer.getSelection.getDataset recordset:NO cursorType:STATIC];
     //    NSMutableDictionary* dic = [NativeUtil recordsetToDictionary:r count:0 size:1];
-    //    [SMap singletonInstance].selection = [layer getSelection];
+    [SMap singletonInstance].selection = [layer getSelection];
     
     Selection* selection = layer.getSelection;
     Recordset* recordset = selection.toRecordset;

@@ -40,6 +40,8 @@
 
 @property(nonatomic,assign) id<arLengthChangeDelegate> delegate;
 
+-(void)currentPosX:(float *)x y:(float *)y z:(float *)z angle:(float *)w;
+
 @end
 
 

@@ -4,7 +4,7 @@
 //
 //  版权所有 （c）2013 北京超图软件股份有限公司。保留所有权利。
 //
-#import <Foundation/Foundation.h>
+#import "SuperMapDefines.h"
 #import "TextAlignment.h"
 @class Color;
 /**
@@ -13,6 +13,7 @@
  * 用于设置 <GeoText>  类对象的风格。当文本风格对象实例使用dispose()
  * @exception 方法释放后再调用该对象成员，将抛出 ObjectDisposedException 异常。
  */
+SUPERMAP_INTERFACE
 @interface TextStyle : NSObject{
     
 }
@@ -242,6 +243,10 @@
 	 * @return 表示此文本风格类对象的字符串。
 	 */
 -(NSString*)toString;
+
+-(void)fromXML:(NSString*)strXML;
+
+-(NSString*)toXML;
 
 /** 返回文本字体的比例。  默认值为 1。
  *
