@@ -439,6 +439,110 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
     }
 
 
+    /**
+     * 获取单值专题图列表项
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void getUniqueList(ReadableMap params, Promise promise){
+        try{
+            String layerName = params.getString("LayerName");
+            WritableArray array = Arguments.createArray();
+            if(layerName != null){
+                Layer layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.UNIQUE){
+                    ThemeUnique themeUnique = (ThemeUnique)layer.getTheme();
+                    int count = themeUnique.getCount();
+                    for(int i = 0; i < count; i++){
+                        ThemeUniqueItem item = themeUnique.getItem(i);
+
+                        String unique = item.getUnique();
+                        boolean visible = item.isVisible();
+                        GeoStyle style = item.getStyle();
+                        String styleXML = style.toXML();
+
+                        Color color = style.getFillForeColor();
+                        int r = color.getR();
+                        int g = color.getG();
+                        int b = color.getB();
+
+                        WritableMap returnColor = Arguments.createMap();
+                        returnColor.putInt("r",r);
+                        returnColor.putInt("g",g);
+                        returnColor.putInt("b",b);
+
+                        WritableMap dic = Arguments.createMap();
+                        dic.putString("title",unique);
+                        dic.putMap("color",returnColor);
+                        dic.putBoolean("visible",visible);
+                        dic.putString("style",styleXML);
+
+                        array.pushMap(dic);
+                    }
+                }
+            }
+            promise.resolve(array);
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置用户自定义单值专题图
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void setCustomThemeUnique(ReadableMap params, Promise promise){
+        try{
+            String layerName = params.getString("LayerName");
+            ReadableArray rangeList = params.getArray("RangeList");
+            if(layerName != null){
+                Layer layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.UNIQUE){
+                    ThemeUnique themeUnique = (ThemeUnique)layer.getTheme();
+                    themeUnique.clear();
+
+                    for(int i = 0; i < rangeList.size(); i++){
+                        ReadableMap curItem = rangeList.getMap(i);
+
+                        String unique = curItem.getString("title");
+                        boolean visible = curItem.getBoolean("visible");
+
+                        String styleXML = curItem.getString("style");
+                        ReadableMap color = curItem.getMap("color");
+
+                        int r = color.getInt("r");
+                        int g = color.getInt("g");
+                        int b = color.getInt("b");
+
+                        GeoStyle style = new GeoStyle();
+                        style.fromXML(styleXML);
+                        style.setFillForeColor(new Color(r,g,b));
+
+                        ThemeUniqueItem item = new ThemeUniqueItem();
+                        item.setUnique(unique);
+                        item.setStyle(style);
+                        item.setVisible(visible);
+
+                        themeUnique.add(item);
+                    }
+                    SMap.getInstance().smMapWC.getMapControl().getMap().refresh();
+                    promise.resolve(true);
+                }
+            }else{
+                promise.resolve(false);
+            }
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
      /*标签专题图
     * ********************************************************************************************/
     /**
@@ -727,7 +831,110 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 获取单值标签专题图的子项列表
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void getUniqueLabelList(ReadableMap params, Promise promise){
+        try{
+            String layerName = params.getString("LayerName");
+            WritableArray array = Arguments.createArray();
+            if(layerName != null){
+                Layer layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.LABEL){
+                    ThemeLabel themeLabel = (ThemeLabel)layer.getTheme();
+                    ThemeLabelUniqueItems items = themeLabel.getUniqueItems();
+                    int count = items.getCount();
 
+                    for(int i = 0; i < count; i++){
+                        ThemeLabelUniqueItem item = items.getItem(i);
+
+                        String unique = item.getUnique();
+                        boolean visible = item.isVisible();
+
+                        TextStyle style = item.getStyle();
+                        String styleXML = style.toXML();
+
+                        Color color = style.getForeColor();
+                        int r = color.getR();
+                        int g = color.getG();
+                        int b = color.getB();
+
+                        WritableMap returnColor = Arguments.createMap();
+                        returnColor.putInt("r",r);
+                        returnColor.putInt("g",g);
+                        returnColor.putInt("b",b);
+
+                        WritableMap dic = Arguments.createMap();
+                        dic.putString("style",styleXML);
+                        dic.putString("title",unique);
+                        dic.putMap("color",returnColor);
+                        dic.putBoolean("visible",visible);
+
+                        array.pushMap(dic);
+                    }
+                }
+            }
+            promise.resolve(array);
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 用户自定义单值标签专题图
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void setCustomUniqueLabel(ReadableMap params, Promise promise){
+        try{
+            String layerName = params.getString("LayerName");
+            ReadableArray rangeList = params.getArray("RangeList");
+            if(layerName != null){
+                Layer layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.LABEL){
+                    ThemeLabel themeLabel = (ThemeLabel)layer.getTheme();
+                    ThemeLabelUniqueItems items = themeLabel.getUniqueItems();
+                    items.clear();
+
+                    TextStyle style = new TextStyle();
+
+                    for(int i = 0; i < rangeList.size(); i++){
+                        ReadableMap curItem = rangeList.getMap(i);
+                        String unique = curItem.getString("title");
+                        boolean visible = curItem.getBoolean("visible");
+                        String styleXML = curItem.getString("style");
+                        ReadableMap color = curItem.getMap("color");
+
+                        int r = color.getInt("r");
+                        int g = color.getInt("g");
+                        int b = color.getInt("b");
+
+                        style.fromXML(styleXML);
+                        style.setForeColor(new Color(r,g,b));
+
+                        ThemeLabelUniqueItem item = new ThemeLabelUniqueItem();
+                        item.setUnique(unique);
+                        item.setStyle(style);
+                        item.setVisible(visible);
+
+                        items.add(item);
+                    }
+                    SMap.getInstance().smMapWC.getMapControl().getMap().refresh();
+                    promise.resolve(true);
+                }
+            }
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
     /**
      * 新建分段标签图层
      *
@@ -995,6 +1202,130 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 获取分段标签专题图的子项列表
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void getRangeLabelList(ReadableMap params, Promise promise){
+        try {
+            String layerName = params.getString("LayerName");
+            WritableArray array = Arguments.createArray();
+            if(layerName != null){
+                Layer layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.LABEL){
+                    ThemeLabel themeLabel = (ThemeLabel)layer.getTheme();
+
+                    ThemeLabelRangeItems items = themeLabel.getRangeItems();
+                    String startStr;
+                    String endStr;
+                    int count = items.getCount();
+                    for(int i = 0; i < count; i++){
+                        ThemeLabelRangeItem item = items.getItem(i);
+
+                        boolean visible = item.isVisible();
+                        double start = item.getStart();
+                        double end = item.getEnd();
+
+                        startStr = start  < -3.4e+038 ? "min" : start + "";
+                        endStr = end  > 3.4e+038 ? "max" : end + "";
+
+                        TextStyle style = item.getStyle();
+                        String styleXML = style.toXML();
+
+                        Color color = style.getForeColor();
+                        int r = color.getR();
+                        int g = color.getG();
+                        int b = color.getB();
+
+                        WritableMap returnColor = Arguments.createMap();
+                        returnColor.putInt("r",r);
+                        returnColor.putInt("g",g);
+                        returnColor.putInt("b",b);
+
+                        WritableMap map = Arguments.createMap();
+                        map.putString("start",startStr);
+                        map.putString("end",endStr);
+                        map.putString("style",styleXML);
+                        map.putBoolean("visible",visible);
+                        map.putMap("color",returnColor);
+
+                        array.pushMap(map);
+                    }
+                }
+            }
+            promise.resolve(array);
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 用户自定义分段标签专题图
+     * @param params
+     * @param promise
+     */
+    @ReactMethod
+    public void setCustomRangeLabel(ReadableMap params, Promise promise){
+        try{
+            boolean result = false;
+            String layerName = params.getString("LayerName");
+            ReadableArray rangeList = params.getArray("RangeList");
+            if(layerName != null){
+                Layer layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.LABEL){
+                    ThemeLabel themeLabel = (ThemeLabel)layer.getTheme();
+                    ThemeLabelRangeItems items = themeLabel.getRangeItems();
+                    int count = items.getCount();
+
+                    items.clear();
+
+                    TextStyle style = new TextStyle();
+                    for(int i = 0; i < count; i++){
+                        ReadableMap curItem = rangeList.getMap(i);
+
+                        String startStr = curItem.getString("start");
+                        String endStr = curItem.getString("end");
+                        boolean visible = curItem.getBoolean("visible");
+                        String styleXML = curItem.getString("style");
+
+                        ReadableMap color = curItem.getMap("color");
+                        int r = color.getInt("r");
+                        int g = color.getInt("g");
+                        int b = color.getInt("b");
+
+                        style.fromXML(styleXML);
+                        style.setForeColor(new Color(r,g,b));
+
+                        ThemeLabelRangeItem item = new ThemeLabelRangeItem();
+
+                        if(i != 0){
+                            double start = Double.parseDouble(startStr);
+                            item.setStart(start);
+                        }
+                        if(i != rangeList.size() - 1){
+                            double end = Double.parseDouble(endStr);
+                            item.setEnd(end);
+                        }
+                        item.setVisible(visible);
+                        item.setStyle(style);
+
+                        items.addToTail(item,true);
+                    }
+                    SMap.getInstance().smMapWC.getMapControl().getMap().refresh();
+                    result = true;
+                }
+            }
+            promise.resolve(result);
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
 
     /**
      * 新建统一标签专题图
@@ -2646,6 +2977,156 @@ public class SThemeCartography extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 获取分段专题图分段信息
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void getRangeList(ReadableMap readableMap, Promise promise){
+        try{
+            String layerName = null;
+            int layerIndex = -1;
+
+            if (readableMap.hasKey("LayerName")){
+                layerName = readableMap.getString("LayerName");
+            }
+            if (readableMap.hasKey("LayerIndex")){
+                layerIndex = readableMap.getInt("LayerIndex");
+            }
+
+            Layer layer;
+            if (layerName != null) {
+                layer = SMThemeCartography.getLayerByName(layerName);
+            } else {
+                layer = SMThemeCartography.getLayerByIndex(layerIndex);
+            }
+
+            if (layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.RANGE) {
+                WritableArray array = Arguments.createArray();
+                    ThemeRange themeRange = (ThemeRange) layer.getTheme();
+                    int count = themeRange.getCount();
+                    String startStr;
+                    String endStr;
+                    for(int i = 0; i < count; i++){
+                        ThemeRangeItem item = themeRange.getItem(i);
+
+                        double start = item.getStart();
+                        double end = item.getEnd();
+
+                        startStr = start  < -3.4e+038 ? "min" : start + "";
+                        endStr = end  > 3.4e+038 ? "max" : end + "";
+
+                        GeoStyle style = item.getStyle();
+
+                        Color color = style.getFillForeColor();
+
+                        int r = color.getR();
+                        int g = color.getG();
+                        int b = color.getB();
+
+                        WritableMap colors = Arguments.createMap();
+                        colors.putInt("r",r);
+                        colors.putInt("g",g);
+                        colors.putInt("b",b);
+
+                        Boolean isVisible = item.isVisible();
+
+                        WritableMap map = Arguments.createMap();
+                        map.putString("start",startStr);
+                        map.putString("end",endStr);
+                        map.putMap("color",colors);
+                        map.putBoolean("visible",isVisible);
+
+                        array.pushMap(map);
+                    }
+                promise.resolve(array);
+            } else {
+                promise.resolve(false);
+            }
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 设置用户自定义分段信息
+     * @param readableMap
+     * @param promise
+     */
+    @ReactMethod
+    public void setCustomThemeRange(ReadableMap readableMap, Promise promise){
+        try{
+            String layerName = readableMap.getString("LayerName");
+            ReadableArray rangeList = readableMap.getArray("RangeList");
+
+            Layer layer;
+            if(layerName != null){
+                layer = SMThemeCartography.getLayerByName(layerName);
+                if(layer != null && layer.getTheme() != null && layer.getTheme().getType() == ThemeType.RANGE){
+                    ThemeRange themeRange = (ThemeRange)layer.getTheme();
+                    themeRange.clear();
+
+                    GeoStyle style = new GeoStyle();
+                    style.setFillGradientAngle(0);
+                    style.setFillGradientMode(FillGradientMode.NONE);
+                    style.setFillGradientOffsetRatioX(0);
+                    style.setFillGradientOffsetRatioY(0);
+                    style.setFillOpaqueRate(100);
+                    style.setFillSymbolID(0);
+                    style.setLineSymbolID(0);
+                    style.setLineWidth(0.1);
+                    style.setMarkerAngle(0);
+                    style.setMarkerSymbolID(0);
+                    style.setMarkerSize(new Size2D(28,28));
+
+                    for(int i = 0; i < rangeList.size(); i++){
+                        ReadableMap curItem = rangeList.getMap(i);
+
+                        String startStr = curItem.getString("start");
+                        String endStr = curItem.getString("end");
+                        Boolean visible = curItem.getBoolean("visible");
+
+                        ReadableMap color = curItem.getMap("color");
+
+                        int r = color.getInt("r");
+                        int g = color.getInt("g");
+                        int b = color.getInt("b");
+
+                        style.setFillForeColor(new Color(r,g,b));
+                        style. setLineColor(new Color(r,g,b));
+
+                        ThemeRangeItem item = new ThemeRangeItem();
+
+                        if(i != 0){
+                            double start = Double.parseDouble(startStr);
+                            item.setStart(start);
+                        }
+                        if(i != rangeList.size() - 1){
+                            double end = Double.parseDouble(endStr);
+                            item.setEnd(end);
+                        }
+
+                        item.setVisible(visible);
+                        item.setStyle(style);
+
+                        themeRange.addToTail(item);
+                    }
+                    SMap.getInstance().smMapWC.getMapControl().getMap().refresh();
+                    promise.resolve(true);
+                }
+            }else{
+                promise.resolve(false);
+            }
+        }catch (Exception e){
+            Log.e(REACT_CLASS, e.getMessage());
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
      /*栅格分段专题图
     * ********************************************************************************************/
     /**

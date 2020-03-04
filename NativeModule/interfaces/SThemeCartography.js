@@ -168,6 +168,31 @@ modifyThemeLabelRangeMap = (params) => {
 }
 
 /**
+ * 获取分段标签专题图的子项列表
+ * @param params
+ * @returns {*}
+ */
+getRangeLabelList = params => {
+  try{
+    return SThemeCartography.getRangeLabelList(params)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置用户自定义分段标签专题图
+ * @param params
+ * @returns {*}
+ */
+setCustomRangeLabel = params => {
+  try{
+    return SThemeCartography.setCustomRangeLabel(params)
+  }catch (e) {
+    console.error(e)
+  }
+}
+/**
  * 新建统一标签专题图
  *
  * @param params
@@ -371,6 +396,32 @@ setUniqueLabelColorScheme = (params) => {
 }
  
 /**
+ * 获取单值标签专题图的子项列表
+ * @param params
+ * @returns {*}
+ */
+getUniqueLabelList = params => {
+  try {
+    return SThemeCartography.getUniqueLabelList(params)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 用户自定义单值标签专题图
+ * @param params
+ * @returns {*}
+ */
+setCustomUniqueLabel = params => {
+  try{
+    return SThemeCartography.setCustomUniqueLabel(params)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
  * 新建分段标签图层
  *
  * @param params(数据源的索引 / 数据源的别名 / 打开本地数据源、 数据集名称、 分段字段表达式、 分段模式、 分段参数、 颜色渐变模式)
@@ -440,6 +491,31 @@ setUniqueColorScheme = (params) => {
     return SThemeCartography.setUniqueColorScheme(params)
   } catch (error) {
     console.error(error)
+  }
+}
+/**
+ * 获取单值专题图的单值信息
+ * @param params
+ * @returns {*}
+ */
+getUniqueList = params => {
+  try{
+    return SThemeCartography.getUniqueList(params)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置用户自定义单值专题图
+ * @param params
+ * @returns {*}
+ */
+setCustomThemeUnique = params => {
+  try{
+    return SThemeCartography.setCustomThemeUnique(params)
+  }catch (e) {
+    console.error(e)
   }
 }
 
@@ -982,6 +1058,31 @@ getHeatMapFuzzyDegree = (params) => {
   }
 }
 
+/**
+ * 获取分段专题图分段信息
+ * @param params
+ * @returns {*}
+ */
+getRangeList = params => {
+  try{
+    return SThemeCartography.getRangeList(params)
+  }catch (e) {
+    console.error(e)
+  }
+}
+
+/**
+ * 设置分段专题图信息（用户自定义）
+ * @param params
+ * @returns {*}
+ */
+setCustomThemeRange = params => {
+  try{
+    return SThemeCartography.setCustomThemeRange(params)
+  }catch(e) {
+    console.error(e)
+  }
+}
 
 export default {
   //单值
@@ -993,6 +1094,8 @@ export default {
   getThemeUniqueDefaultStyle,
   getUniqueExpression,
   setUniqueColorScheme,
+  getUniqueList,
+  setCustomThemeUnique,
   //分段
   createThemeRangeMap,
   setRangeExpression,
@@ -1001,6 +1104,8 @@ export default {
   getRangeExpression,
   getRangeMode,
   getRangeCount,
+  getRangeList,
+  setCustomThemeRange,
   //统一标签
   createUniformThemeLabelMap,
   setUniformLabelExpression,
@@ -1020,12 +1125,16 @@ export default {
   getUniqueLabelExpression,
   setUniqueLabelExpression,
   setUniqueLabelColorScheme,
+  getUniqueLabelList,
+  setCustomUniqueLabel,
   //分段标签
   createRangeThemeLabelMap,
   getRangeLabelExpression,
   setRangeLabelExpression,
   setRangeLabelColorScheme,
   modifyThemeLabelRangeMap,
+  getRangeLabelList,
+  setCustomRangeLabel,
   //统计专题图
   createThemeGraphMap,
   createThemeGraphMapByLayer,
