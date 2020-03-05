@@ -2312,8 +2312,8 @@ public class SScene extends ReactContextBaseJavaModule {
                     Layer3D layer3D = layer3Ds.get(i);
                     layer3D.clearCustomClipPlane();
                     for (int j = 0; j < layers.size(); j++){
-                        map= layers.getMap(j);
-                        if(map.getString("name").equals(layer3D.getName())){
+                        map = layers.getMap(j);
+                        if(map.getBoolean("selected") && map.getString("name").equals(layer3D.getName())){
                             layer3D.clipByBox(box,part);
                         }
                     }
