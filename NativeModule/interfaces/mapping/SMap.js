@@ -2427,6 +2427,18 @@ export default (function () {
       console.error(error);
     }
   }
+
+  /**
+   * 意见反馈
+   * @param suggest  意见反馈信息
+   */
+  function suggestionFeedback(suggest){
+    try {
+      return SMap.suggestionFeedback(suggest)
+    } catch (error) {
+      console.error(error);
+    }
+  }
   
   /**
    * 地图转XML
@@ -2642,6 +2654,7 @@ export default (function () {
     getSerialNumberAndModules,
     initTrailLicensePath,
     licenseBuyRegister,
+    suggestionFeedback,
   }
   Object.assign(SMapExp, MapTool, LayerManager, NavigationManager, Datasource, MapSettings, Plot)
 

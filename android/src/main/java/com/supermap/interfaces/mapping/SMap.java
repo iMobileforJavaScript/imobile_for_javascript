@@ -6460,6 +6460,45 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     }
 
     /**
+     * 意见反馈
+     * @param promise
+     */
+    @ReactMethod
+    public void suggestionFeedback(ReadableMap suggest, final Promise promise) {
+        try {
+            Map<String, String> map = new HashMap<>();
+            map.put("FUNCTION_CODE_ANDROID", "SUGGESTION_FEEDBACK_ITABLET_ANDROID");
+
+
+            if (suggest.hasKey("problemItems")) {
+                ReadableArray problemItems=suggest.getArray("problemItems");
+                for (int i=0;i<problemItems.size();i++){
+                    String problemStr=problemItems.getString(i);
+                    map.put("SUGGESTION_FEEDBACK_PROBLEM_"+i,problemStr);
+                }
+            }
+            if (suggest.hasKey("problemsDetail")) {
+                String problemsDetail=suggest.getString("problemsDetail");
+                map.put("SUGGESTION_FEEDBACK_PROBLEMS_DETAIL",problemsDetail);
+            }
+            if (suggest.hasKey("contactWay")) {
+                String contactWay=suggest.getString("contactWay");
+                map.put("SUGGESTION_FEEDBACK_CONTACT_WAY",contactWay);
+            }
+
+            //上传数据
+            LogInfoService.sendAPPLogInfo(map, context, new LogInfoService.SendAppInfoListener() {
+                @Override
+                public void result(boolean result) {
+                    promise.resolve(result);
+                }
+            });
+        } catch (Exception e) {
+            promise.resolve(false);
+        }
+    }
+
+    /**
      * 地图转XML
      * @param promise
      */

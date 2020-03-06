@@ -4467,6 +4467,37 @@ RCT_REMAP_METHOD(licenseBuyRegister, licenseBuyRegister:(int)moduleCode userName
     }
 }
 
+#pragma mark 意见反馈
+RCT_REMAP_METHOD(suggestionFeedback, suggestionFeedback:(NSDictionary *)suggest resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
+    @try {
+        
+        NSMutableDictionary* dic=[[NSMutableDictionary alloc] init];
+        [dic setValue:@"SUGGESTION_FEEDBACK_ITABLET_IOS" forKey:@"FUNCTION_CODE_IOS"];
+        
+        if ([suggest objectForKey:@"problemItems"]) {
+            NSArray* problemItems = [suggest objectForKey:@"problemItems"];
+            for(int i=0;i<problemItems.count;i++){
+                NSString* problemStr=[problemItems objectAtIndex:i];
+                [dic setValue:problemStr forKey:[NSString stringWithFormat:@"SUGGESTION_FEEDBACK_PROBLEM_%d",i]];
+            }
+        }
+        if ([suggest objectForKey:@"problemsDetail"]) {
+            NSString* problemsDetail = [suggest objectForKey:@"problemsDetail"];
+            [dic setValue:problemsDetail forKey:@"SUGGESTION_FEEDBACK_PROBLEMS_DETAIL"];
+        }
+        if ([suggest objectForKey:@"contactWay"]) {
+            NSString* contactWay = [suggest objectForKey:@"contactWay"];
+            [dic setValue:contactWay forKey:@"SUGGESTION_FEEDBACK_CONTACT_WAY"];
+        }
+        //上传数据
+        [LogInfoService sendAPPLogInfo:dic completionHandler:^(BOOL result) {
+            resolve([NSNumber numberWithBool:result]);
+        }];
+    } @catch (NSException *exception) {
+        reject(@"suggestionFeedback",exception.reason,nil);
+    }
+}
+
 #pragma mark 地图转XML
 RCT_REMAP_METHOD(mapToXml, mapToXmlWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){
     @try {
