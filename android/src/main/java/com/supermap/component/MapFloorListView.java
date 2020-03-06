@@ -3,6 +3,8 @@ package com.supermap.component;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.supermap.indoor.FloorListView;
+
 public class MapFloorListView extends FloorListView {
     public MapFloorListView(Context context) {
         super(context);

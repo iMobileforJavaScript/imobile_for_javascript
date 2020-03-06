@@ -45,6 +45,7 @@ import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
+import com.supermap.indoor.FloorListView;
 import com.supermap.interfaces.utils.ScaleViewHelper;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.CalloutAlignment;

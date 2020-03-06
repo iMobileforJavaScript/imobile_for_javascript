@@ -44,6 +44,7 @@ import com.supermap.data.Workspace;
 import com.supermap.data.WorkspaceConnectionInfo;
 import com.supermap.data.WorkspaceType;
 import com.supermap.data.WorkspaceVersion;
+import com.supermap.indoor.FloorListView;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
