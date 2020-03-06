@@ -91,6 +91,8 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
     NSString* error =  [SMITabletUtils checkLicValid];
     if(error != nil){
         [SMITabletUtils addLicView:mapControl text:error];
+    }else{
+        [SMITabletUtils addLicView:mapControl text:nil];
     }
     
     return mapControl;

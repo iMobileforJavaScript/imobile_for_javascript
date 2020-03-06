@@ -35,6 +35,12 @@ static SMObj* handle = nil;
 
 +(void)addLicView:(UIView*)hostView text:(NSString*)error{
     
+    if(error == nil){
+        [licView removeFromSuperview];
+        [[NSNotificationCenter defaultCenter] removeObserver:handle];
+        bAddL = NO;
+        return;
+    }
     if(!bAddL){
         handle = [[SMObj alloc]init];
         [[NSNotificationCenter defaultCenter] addObserver:handle  selector:@selector(orientChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -88,7 +94,7 @@ static SMObj* handle = nil;
            BOOL bADVANCEDValied = false;
        
            for(LicenseFeature* fe in info.features){
-               if([fe.id isEqualToString:ITABLET_ADVANCED]){
+               if([fe.id isEqualToString:/*ITABLET_ADVANCED*/@"18003"]){
                    bADVANCEDValied = YES;
                    break;
                }
