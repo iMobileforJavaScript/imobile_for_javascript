@@ -17,6 +17,7 @@
 #import "SuperMap/Datasource.h"
 #import "SMap.h"
 #import "SLanguage.h"
+#import "SMITabletUtils.h"
 
 typedef enum {
     ASSETS_FILE,
@@ -74,6 +75,12 @@ RCT_REMAP_METHOD(initAIClassify, initAIClassify:(NSString*)datasourceAlias datas
 #pragma mark 加载react-native-camera拍的照片（应用私有存储）
 RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     @try {
+        
+        NSString* error =  [SMITabletUtils checkLicValid];
+        if(error != nil){
+             resolve(@"License Invalid");
+            return;
+        }
         NSData *data = [NSData dataWithContentsOfFile:imgUri];
         classifyImg = [UIImage imageWithData:data];
         
@@ -126,7 +133,7 @@ RCT_REMAP_METHOD(loadImageUri, loadImageUri:(NSString*)imgUri resolve:(RCTPromis
         dispatch_source_cancel(self.timer);
         self.timer=nil;
 
-//        resolve(@(YES));
+        resolve(@(YES));
         resolve(allResults);
     } @catch (NSException *exception) {
         reject(@"loadImageUri", exception.reason, nil);

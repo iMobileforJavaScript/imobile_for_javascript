@@ -42,7 +42,6 @@ import com.supermap.data.Point2Ds;
 import com.supermap.data.PrjCoordSys;
 import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Recordset;
-import com.supermap.data.Rectangle2D;
 import com.supermap.indoor.FloorListView;
 import com.supermap.mapping.CalloutAlignment;
 import com.supermap.mapping.EditHistoryType;

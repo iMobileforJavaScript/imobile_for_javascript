@@ -4,15 +4,10 @@
 package com.supermap.interfaces.mapping;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -20,14 +15,9 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.facebook.datasource.DataSources;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -35,19 +25,13 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.supermap.RNUtils.ColorParseUtil;
 import com.supermap.RNUtils.DataUtil;
 import com.supermap.RNUtils.FileUtil;
 import com.supermap.RNUtils.JsonUtil;
-import com.supermap.analyst.TopologyProcessing;
-import com.supermap.analyst.TopologyProcessingOptions;
-import com.supermap.analyst.networkanalyst.NetworkBuilder;
-import com.supermap.analyst.networkanalyst.NetworkSplitMode;
 import com.supermap.component.MapWrapView;
 import com.supermap.containts.EventConst;
 import com.supermap.data.*;
@@ -62,13 +46,9 @@ import com.supermap.data.PrjCoordSysType;
 import com.supermap.data.Resources;
 import com.supermap.data.Workspace;
 import com.supermap.indoor.FloorListView;
-import com.supermap.interfaces.utils.SMFileUtil;
-import com.supermap.interfaces.utils.POISearchHelper2D;
 import com.supermap.interfaces.utils.ScaleViewHelper;
-import com.supermap.map3D.toolKit.PoiGsonBean;
 import com.supermap.mapping.Action;
 import com.supermap.mapping.CalloutAlignment;
-import com.supermap.mapping.ColorLegendItem;
 import com.supermap.mapping.EditHistoryType;
 import com.supermap.mapping.GeometryAddedListener;
 import com.supermap.mapping.GeometryEvent;
@@ -78,53 +58,17 @@ import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerSettingVector;
 import com.supermap.mapping.Layers;
 import com.supermap.mapping.LayerGroup;
-import com.supermap.mapping.Legend;
 import com.supermap.mapping.LegendContentChangeListener;
 import com.supermap.mapping.LegendItem;
-import com.supermap.mapping.LegendView;
 import com.supermap.mapping.MapColorMode;
 import com.supermap.mapping.MapControl;
 import com.supermap.mapping.MapParameterChangedListener;
-import com.supermap.mapping.MapView;
 import com.supermap.mapping.MeasureListener;
-import com.supermap.mapping.ScaleView;
 import com.supermap.mapping.Selection;
-import com.supermap.mapping.ThemeGridRange;
 import com.supermap.mapping.ThemeRange;
 import com.supermap.mapping.ThemeType;
-import com.supermap.mapping.ThemeUnique;
-import com.supermap.mapping.TrackingLayer;
 import com.supermap.mapping.collector.Collector;
-import com.supermap.navi.NaviInfo;
-import com.supermap.navi.NaviListener;
-import com.supermap.navi.NaviPath;
-import com.supermap.navi.NaviStep;
-import com.supermap.navi.Navigation2;
-import com.supermap.navi.Navigation3;
-import com.supermap.onlineservices.CoordinateType;
-import com.supermap.onlineservices.Geocoding;
-import com.supermap.onlineservices.GeocodingData;
-import com.supermap.onlineservices.NavigationOnline;
-import com.supermap.onlineservices.NavigationOnlineData;
-import com.supermap.onlineservices.NavigationOnlineParameter;
-import com.supermap.onlineservices.PathInfo;
-import com.supermap.onlineservices.RouteType;
-import com.supermap.plot.AnimationAttribute;
-import com.supermap.plot.AnimationBlink;
-import com.supermap.plot.AnimationDefine;
-import com.supermap.plot.AnimationGO;
-import com.supermap.plot.AnimationGroup;
-import com.supermap.plot.AnimationGrow;
-import com.supermap.plot.AnimationManager;
-import com.supermap.plot.AnimationRotate;
-import com.supermap.plot.AnimationScale;
-import com.supermap.plot.AnimationShow;
-import com.supermap.plot.AnimationWay;
-import com.supermap.plot.GeoGraphicObject;
-import com.supermap.plot.GraphicObjectType;
 import com.supermap.plugin.LocationManagePlugin;
-import com.supermap.plugin.SpeakPlugin;
-import com.supermap.plugin.Speaker;
 import com.supermap.rnsupermap.R;
 import com.supermap.smNative.SMMapFixColors;
 import com.supermap.smNative.SMMapRender;
@@ -136,15 +80,11 @@ import com.supermap.data.Color;
 import com.supermap.smNative.components.InfoCallout;
 import com.supermap.interfaces.utils.StrokeTextView;
 import com.supermap.services.LogInfoService;
-import com.supermap.smNative.components.SNavigation2;
-
-import org.apache.http.cookie.SM;
+import com.supermap.data.ITabletLicenseManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -152,13 +92,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -171,15 +109,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import static com.supermap.interfaces.utils.SMFileUtil.copyFiles;
 import static com.supermap.RNUtils.FileUtil.homeDirectory;
 import static java.lang.Double.isNaN;
 
 public class SMap extends ReactContextBaseJavaModule implements LegendContentChangeListener {
+    public static String key =  "";
+    public static String appId =  "";
     public static final String REACT_CLASS = "SMap";
     private static SMap sMap;
     private static ReactApplicationContext context;
@@ -327,6 +262,8 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public SMap(ReactApplicationContext context) {
         super(context);
         this.context = context;
+        appId =  this.context.getPackageName();
+        this.key =  appId + Environment.getLocalMacAddress();
     }
 
     @Override
@@ -429,16 +366,36 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getEnvironmentStatus(Promise promise) {
         try {
-            LicenseStatus status = Environment.getLicenseStatus();
+
+            String serialNumberLocal = getSerialNumber();
+            ITabletLicenseManager.setLicInfo(serialNumberLocal);
+            final ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
+
+            LicenseInfo statusInfo = licenseManagers.getLicenseStatus();
             WritableMap statusMap = Arguments.createMap();
-            statusMap.putBoolean("isActivated", status.isActivated());
-            statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
-            statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
-            statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-            statusMap.putString("startDate", format.format(status.getStartDate()));
-            statusMap.putString("expireDate", format.format(status.getExpireDate()));
-            statusMap.putString("version", status.getVersion() + "");
+            if(statusInfo != null){
+                statusMap.putBoolean("isActivated", true);
+                statusMap.putBoolean("isLicenseValid", true);
+                statusMap.putBoolean("isLicenseExist", false);
+                statusMap.putBoolean("isTrailLicense", false);
+                statusMap.putString("startDate", statusInfo.startTime);
+                statusMap.putString("expireDate", statusInfo.endTime);
+                statusMap.putString("version", statusInfo.version);
+                statusMap.putInt("licenseType", statusInfo.licenseType);
+                statusMap.putString("user", statusInfo.user);
+            }else{
+                LicenseStatus status = Environment.getLicenseStatus();
+                statusMap.putBoolean("isActivated", status.isActivated());
+                statusMap.putBoolean("isLicenseValid", status.isLicenseValid());
+                statusMap.putBoolean("isLicenseExist", status.isLicenseExsit());
+                statusMap.putBoolean("isTrailLicense", status.isTrailLicense());
+                SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+                statusMap.putString("startDate", format.format(status.getStartDate()));
+                statusMap.putString("expireDate", format.format(status.getExpireDate()));
+                statusMap.putString("version", status.getVersion() + "");
+            }
+
+
             promise.resolve(statusMap);
         } catch (Exception e) {
             promise.reject(e);
@@ -4508,6 +4465,189 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 设置标注文字字体
+     */
+    @ReactMethod
+    public void setTaggingTextFont(String font, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            if(font.equals("BOLD")) {
+                textStyle.setBold(!textStyle.isBold());
+            } else if(font.equals("ITALIC")) {
+                textStyle.setItalic(!textStyle.getItalic());
+            } else if(font.equals("UNDERLINE")) {
+                textStyle.setUnderline(!textStyle.getUnderline());
+            } else if(font.equals("STRIKEOUT")) {
+                textStyle.setStrikeout(!textStyle.getStrikeout());
+            } else if(font.equals("SHADOW")) {
+                textStyle.setShadow(!textStyle.getShadow());
+            } else if(font.equals("OUTLINE")) {
+                textStyle.setOutline(!textStyle.getOutline());
+            }
+
+            recordset.edit();
+            geoText.setTextStyle(textStyle);
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 设置标注文字颜色
+     */
+    @ReactMethod
+    public void setTaggingTextColor(String colorString, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            com.supermap.data.Color color = ColorParseUtil.getColor(colorString);
+            textStyle.setForeColor(color);
+
+            recordset.edit();
+            geoText.setTextStyle(textStyle);
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注文字旋转角度
+     */
+    @ReactMethod
+    public void getTaggingTextSize(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            double size = textStyle.getFontHeight();
+
+            geoText.dispose();
+            recordset.dispose();
+
+            promise.resolve(size);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注文字旋转角度
+     */
+    @ReactMethod
+    public void getTaggingTextAngle(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+
+            TextPart textPart = geoText.getPart(0);
+            double angle = textPart.getRotation();
+
+            geoText.dispose();
+            recordset.dispose();
+
+            promise.resolve(angle);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注文字大小
+     */
+    @ReactMethod
+    public void setTaggingTextSize(int size, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            textStyle.setFontHeight(size);
+
+            recordset.edit();
+            geoText.setTextStyle(textStyle);
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注文字旋转角度
+     */
+    @ReactMethod
+    public void setTaggingTextAngle(int angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+
+            TextPart textPart = geoText.getPart(0);
+            textPart.setRotation(angle);
+            geoText.setPart(0,textPart);
+
+            recordset.edit();
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 设置MapControl 画笔样式
@@ -6192,8 +6332,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void activateLicense(final String serialNumber, final Promise promise) {
         try {
-            final RecycleLicenseManager licenseManagers = RecycleLicenseManager.getInstance(context);
-            Environment.setLicenseType(LicenseType.UUID);
+            final ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
             licenseManagers.setActivateCallback(licenseCallback);
             queryHandler = new OneArg<ArrayList<Module>>() {
                 @Override
@@ -6219,13 +6358,22 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             if (result) {
                                 try {
                                     File serialNumberFile = new File(lcenseSerialNumberFilePath);
+
+                                    String pathDir = serialNumberFile.getParent();
+                                    File fileDir = new File(pathDir);
+                                    if(!fileDir.exists()){
+
+                                        fileDir.mkdirs();
+                                    }
+
                                     if (serialNumberFile.exists()) {
                                         serialNumberFile.delete();
                                     }
                                     serialNumberFile.createNewFile();
+
                                     OutputStream outputStream = new FileOutputStream(serialNumberFile);
                                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-                                    String writeContent = serialNumber + "&&" + finalModulesStr;
+                                    String writeContent = iTabletDES.getDES(serialNumber,key);//serialNumber + "&&" + finalModulesStr;
                                     outputStreamWriter.write(writeContent);
                                     outputStreamWriter.close();
                                 } catch (Exception e) {
@@ -6235,6 +6383,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                             promise.resolve(result);
                         }
                     };
+                    ITabletLicenseManager.setLicInfo(serialNumber);
                     licenseManagers.activateDevice(serialNumber, modules);
                 }
             };
@@ -6254,7 +6403,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void licenseContainModule(final String serialNumber, final Promise promise) {
         try {
-            final RecycleLicenseManager licenseManagers = RecycleLicenseManager.getInstance(context);
+            String serialNumberLocal = getSerialNumber();
+            ITabletLicenseManager.setLicInfo(serialNumberLocal);
+            final ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
             licenseManagers.setActivateCallback(licenseCallback);
             queryHandler = new OneArg<ArrayList<Module>>() {
                 @Override
@@ -6266,7 +6417,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     promise.resolve(array);
                 }
             };
-            licenseManagers.query(serialNumber);
+            licenseManagers.query(serialNumberLocal);
 
         } catch (Exception e) {
             promise.reject(e);
@@ -6282,7 +6433,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void recycleLicense(String serialNumber, final Promise promise) {
         try {
-            RecycleLicenseManager licenseManagers = RecycleLicenseManager.getInstance(context);
+            String serialNumberLocal = getSerialNumber();
+            ITabletLicenseManager.setLicInfo(serialNumberLocal);
+
+            ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
             licenseManagers.setActivateCallback(licenseCallback);
             recycleHandler = new OneArg<Boolean>() {
                 @Override
@@ -6305,7 +6459,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void clearLocalLicense(String serialNumber, Promise promise) {
         try {
-            RecycleLicenseManager licenseManagers = RecycleLicenseManager.getInstance(context);
+            ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
+            String serialNumberLocal = getSerialNumber();
+            ITabletLicenseManager.setLicInfo(serialNumberLocal);
             licenseManagers.clearLocalLicense();
             File serialNumberFile = new File(lcenseSerialNumberFilePath);
             if (serialNumberFile.exists()) {
@@ -6326,7 +6482,7 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getLicenseCount(String serialNumber, final Promise promise) {
         try {
-            RecycleLicenseManager licenseManagers = RecycleLicenseManager.getInstance(context);
+            ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
             licenseManagers.setActivateCallback(licenseCallback);
             queryCountHandler = new OneArg<JSONArray>() {
                 @Override
@@ -6350,7 +6506,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                     promise.resolve(minCount);
                 }
             };
-            licenseManagers.queryLicenseCount(serialNumber);
+            String serialNumberLocal = getSerialNumber();
+            ITabletLicenseManager.setLicInfo(serialNumberLocal);
+            licenseManagers.queryLicenseCount(serialNumberLocal);
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -6365,27 +6523,33 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void initSerialNumber(String serialNumber, final Promise promise) {
         try {
-            RecycleLicenseManager licenseManagers = RecycleLicenseManager.getInstance(context);
-            lcenseSerialNumberFilePath = context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/" + "/serialNumber.txt";
-            File serialNumberFile = new File(lcenseSerialNumberFilePath);
-            if (!serialNumberFile.exists()) {
-//                serialNumberFile.mkdirs();
-//                serialNumberFile.createNewFile();
-                promise.resolve("");
-            } else {
-                InputStream inputStream = new FileInputStream(serialNumberFile);
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                serialNumber = bufferedReader.readLine().split("&&")[0];
-                inputStream.close();
-                promise.resolve(serialNumber);
-            }
-            // context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/"
+            ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
+            lcenseSerialNumberFilePath = rootPath+"/.config/"+  iTabletDES.getDES(appId,key) + "/" + "SN.core";
+            serialNumber = getSerialNumber();
+            promise.resolve(serialNumber);
         } catch (Exception e) {
             promise.reject(e);
         }
     }
 
+    private String getSerialNumber(){
+        try {
+            File serialNumberFile = new File(lcenseSerialNumberFilePath);
+            if (!serialNumberFile.exists()) {
+                return "";
+            }
+            InputStream inputStream = new FileInputStream(serialNumberFile);
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String serialNumber = bufferedReader.readLine();
+            inputStream.close();
+            serialNumber = iTabletDES.getDESOri(serialNumber,key);
+
+            return serialNumber;
+        } catch (Exception e) {
+           return "";
+        }
+    }
     /**
      * 离线获取序列号和模块编号数组
      *
@@ -6394,25 +6558,24 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     @ReactMethod
     public void getSerialNumberAndModules(Promise promise) {
         try {
-            lcenseSerialNumberFilePath = context.getExternalCacheDir().getParentFile().getParent() + "/com.config.supermap.runtime/config/recycleLicense/" + "/serialNumber.txt";
-            File serialNumberFile = new File(lcenseSerialNumberFilePath);
-            if (!serialNumberFile.exists()) {
-                promise.resolve(null);
-            } else {
-                InputStream inputStream = new FileInputStream(serialNumberFile);
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                String[] serialNumberAndModules = bufferedReader.readLine().split("&&");
-                WritableMap writableMap = Arguments.createMap();
-                if (serialNumberAndModules.length == 2) {
-                    writableMap.putString("serialNumber", serialNumberAndModules[0]);
-                    String[] modules = serialNumberAndModules[1].split(",");
-                    WritableArray array = Arguments.fromArray(modules);
-                    writableMap.putArray("modulesArray", array);
-                }
-                inputStream.close();
-                promise.resolve(writableMap);
+            ITabletLicenseManager licenseManagers = ITabletLicenseManager.getInstance(context);
+            String serialNumberLocal = getSerialNumber();
+            ITabletLicenseManager.setLicInfo(serialNumberLocal);
+            LicenseInfo info = licenseManagers.getLicenseStatus();
+
+            WritableMap writableMap = Arguments.createMap();
+
+            writableMap.putString("serialNumber", serialNumberLocal);
+            String[] modules = new String[info.features.size()];
+
+            for(int i=0;i<info.features.size();i++) {
+                modules[i] = info.features.get(i).id;
             }
+            WritableArray array = Arguments.fromArray(modules);
+            writableMap.putArray("modulesArray", array);
+
+            promise.resolve(writableMap);
+
         } catch (Exception e) {
             promise.reject(e);
         }
@@ -6540,9 +6703,9 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
     public OneArg<JSONArray> queryCountHandler;
     public OneArg<Boolean> recycleHandler;
     public OneArg<Boolean> activateHandler;
-    RecycleLicenseManager.RecycleLicenseCallback licenseCallback = new RecycleLicenseManager.RecycleLicenseCallback() {
+    ITabletLicenseManager.ITabletLicenseCallback licenseCallback = new ITabletLicenseManager.ITabletLicenseCallback() {
         @Override
-        public void success(LicenseStatus licenseStatus) {
+        public void success() {
             Log.i("LicenseStatus", "LicenseStatus");
             if (recycleHandler != null) {
                 recycleHandler.handle(true);
@@ -6554,6 +6717,10 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
             }
         }
 
+        @Override
+        public void bindPhoneNumberFailed(String errorInfo){
+
+        }
         @Override
         public void activateFailed(String s) {
             Log.i("activateFailed", "activateFailed");
@@ -6569,16 +6736,6 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
                 recycleHandler.handle(false);
                 recycleHandler = null;
             }
-        }
-
-        @Override
-        public void bindPhoneNumberFailed(String s) {
-
-        }
-
-        @Override
-        public void upgradeFailed(String s) {
-
         }
 
         @Override

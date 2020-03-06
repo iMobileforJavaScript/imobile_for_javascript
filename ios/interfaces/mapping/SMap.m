@@ -160,9 +160,10 @@ RCT_REMAP_METHOD(getEnvironmentStatus, getEnvironmentStatusWithResolver:(RCTProm
 
         ITabletLicenseManager* licenseManager = [ITabletLicenseManager getInstance];
         LicenseInfo* status =  [licenseManager licenseStatus];
-        if(licenseManager.isValid){
-            [dic setObject:[NSNumber numberWithBool:licenseManager.isValid] forKey:@"isActivated"];
-            [dic setObject:[NSNumber numberWithBool:licenseManager.isValid] forKey:@"isLicenseValid"];
+        if(status != nil){
+            
+            [dic setObject:[NSNumber numberWithBool:YES] forKey:@"isActivated"];
+            [dic setObject:[NSNumber numberWithBool:YES] forKey:@"isLicenseValid"];
             [dic setObject:[NSNumber numberWithBool:false] forKey:@"isLicenseExist"];
             [dic setObject:[NSNumber numberWithBool:false] forKey:@"isTrailLicense"];
             [dic setObject:@(status.licenseType) forKey:@"licenseType"];
@@ -4083,6 +4084,166 @@ RCT_REMAP_METHOD(setTaggingAlpha, setTaggingAlpha:(int) fillOpaqueRate Resolver:
          reject(@"setTaggingAlpha",exception.reason,nil);
     }
 }
+
+RCT_REMAP_METHOD(setTaggingTextFont, setTaggingTextFont:(NSString*) font Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        GeoText* geoText = (GeoText*) recordset.geometry;
+        TextStyle* textStyle = [geoText getTextStyle];
+        
+        if([font isEqualToString:@"BOLD"]) {
+            [textStyle setBold:![textStyle isBold]];
+        } else if([font isEqualToString:@"ITALIC"]) {
+            [textStyle setItalic:![textStyle getItalic]];
+        } else if([font isEqualToString:@"UNDERLINE"]) {
+            [textStyle setUnderline:![textStyle getUnderline]];
+        } else if([font isEqualToString:@"STRIKEOUT"]) {
+           [textStyle setStrikeout:![textStyle getStrikeout]];
+        } else if([font isEqualToString:@"SHADOW"]) {
+           [textStyle setShadow:![textStyle getShadow]];
+        } else if([font isEqualToString:@"OUTLINE"]) {
+           [textStyle setOutline:![textStyle getOutline]];
+        }
+        
+        [recordset edit];
+        [geoText setTextStyle:textStyle];
+        [recordset setGeometry:(Geometry*)geoText];
+        [recordset update];
+
+        [geoText dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingTextFont",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingTextColor, setTaggingTextColor:(NSString*) colorString Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        GeoText* geoText = (GeoText*) recordset.geometry;
+        TextStyle* textStyle = [geoText getTextStyle];
+        
+        Color *color = [STranslate colorFromHexString:colorString];
+        [textStyle setForeColor:color];
+        
+        [recordset edit];
+        [geoText setTextStyle:textStyle];
+        [recordset setGeometry:geoText];
+        [recordset update];
+        
+        [geoText dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingTextColor",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getTaggingTextSize, getTaggingTextSizeResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        GeoText* geoText = (GeoText*) recordset.geometry;
+        TextStyle* textStyle = [geoText getTextStyle];
+ 
+        double size = [textStyle getFontHeight];
+        
+        [geoText dispose];
+        [recordset dispose];
+        
+        resolve([NSNumber numberWithDouble:size]);
+    } @catch (NSException *exception) {
+         reject(@"getTaggingTextSize",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(getTaggingTextAngle, getTaggingTextAngleResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        GeoText* geoText = (GeoText*) recordset.geometry;
+
+        TextPart* textPart = [geoText getPart:0];
+        double angle = [textPart getRotation];
+
+        [geoText dispose];
+        [recordset dispose];
+        
+        resolve([NSNumber numberWithDouble:angle]);
+    } @catch (NSException *exception) {
+         reject(@"getTaggingTextAngle",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingTextSize, setTaggingTextSize:(int) size Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        GeoText* geoText = (GeoText*) recordset.geometry;
+        TextStyle* textStyle = [geoText getTextStyle];
+        
+        [textStyle setFontHeight:size];
+
+        [recordset edit];
+        [geoText setTextStyle:textStyle];
+        [recordset setGeometry:geoText];
+        [recordset update];
+        
+        [geoText dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingTextSize",exception.reason,nil);
+    }
+}
+
+RCT_REMAP_METHOD(setTaggingTextAngle, setTaggingTextAngle:(int) angle Resolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject) {
+    @try {
+        sMap = [SMap singletonInstance];
+        MapControl* mapControl = sMap.smMapWC.mapControl;
+        [[mapControl getEditHistory] addMapHistory];
+        
+        Recordset* recordset = [sMap.selection toRecordset];
+        GeoText* geoText = (GeoText*) recordset.geometry;
+        
+        TextPart* textPart = [geoText getPart:0];
+        [textPart setRotation:angle];
+        [geoText setPart:0 TextPart:textPart];
+        
+        [recordset edit];
+        [recordset setGeometry:geoText];
+        [recordset update];
+        
+        [geoText dispose];
+        [recordset dispose];
+        [mapControl.map refresh];
+        
+        resolve([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+         reject(@"setTaggingTextAngle",exception.reason,nil);
+    }
+}
+
 
 #pragma mark 设置MapControl 画笔样式
 RCT_REMAP_METHOD(setMapControlStyle, setMapControlStyle:(NSDictionary *)style setLabelColorWithResolver:(RCTPromiseResolveBlock)resolve Rejector:(RCTPromiseRejectBlock)reject){

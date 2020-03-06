@@ -12,6 +12,8 @@
 #import "AIDetectView.h"
 #import "AIRecognition.h"
 #import <React/RCTConvert.h>
+#import "SMITabletUtils.h"
+
 
 
 @interface AIView:UIView //(ReactCategory)
@@ -73,6 +75,11 @@ RCT_EXPORT_VIEW_PROPERTY(onArObjectClick, RCTBubblingEventBlock)
 //        [sAIDetectView initDelegate];
         
         [uiView addSubview:aIDetectView];
+        
+        NSString* error =  [SMITabletUtils checkLicValid];
+           if(error != nil){
+               [SMITabletUtils addLicView:uiView text:error];
+           }
         
         return uiView;
     } @catch (NSException *exception) {
