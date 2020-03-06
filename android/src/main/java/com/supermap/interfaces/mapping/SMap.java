@@ -4508,6 +4508,189 @@ public class SMap extends ReactContextBaseJavaModule implements LegendContentCha
         }
     }
 
+    /**
+     * 设置标注文字字体
+     */
+    @ReactMethod
+    public void setTaggingTextFont(String font, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            if(font.equals("BOLD")) {
+                textStyle.setBold(!textStyle.isBold());
+            } else if(font.equals("ITALIC")) {
+                textStyle.setItalic(!textStyle.getItalic());
+            } else if(font.equals("UNDERLINE")) {
+                textStyle.setUnderline(!textStyle.getUnderline());
+            } else if(font.equals("STRIKEOUT")) {
+                textStyle.setStrikeout(!textStyle.getStrikeout());
+            } else if(font.equals("SHADOW")) {
+                textStyle.setShadow(!textStyle.getShadow());
+            } else if(font.equals("OUTLINE")) {
+                textStyle.setOutline(!textStyle.getOutline());
+            }
+
+            recordset.edit();
+            geoText.setTextStyle(textStyle);
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+
+    /**
+     * 设置标注文字颜色
+     */
+    @ReactMethod
+    public void setTaggingTextColor(String colorString, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            com.supermap.data.Color color = ColorParseUtil.getColor(colorString);
+            textStyle.setForeColor(color);
+
+            recordset.edit();
+            geoText.setTextStyle(textStyle);
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注文字旋转角度
+     */
+    @ReactMethod
+    public void getTaggingTextSize(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            double size = textStyle.getFontHeight();
+
+            geoText.dispose();
+            recordset.dispose();
+
+            promise.resolve(size);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 获取标注文字旋转角度
+     */
+    @ReactMethod
+    public void getTaggingTextAngle(Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+
+            TextPart textPart = geoText.getPart(0);
+            double angle = textPart.getRotation();
+
+            geoText.dispose();
+            recordset.dispose();
+
+            promise.resolve(angle);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注文字大小
+     */
+    @ReactMethod
+    public void setTaggingTextSize(int size, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+            TextStyle textStyle = geoText.getTextStyle();
+
+            textStyle.setFontHeight(size);
+
+            recordset.edit();
+            geoText.setTextStyle(textStyle);
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
+
+    /**
+     * 设置标注文字旋转角度
+     */
+    @ReactMethod
+    public void setTaggingTextAngle(int angle, Promise promise) {
+        try {
+            sMap = SMap.getInstance();
+            MapControl mapControl = sMap.smMapWC.getMapControl();
+            mapControl.getEditHistory().addMapHistory();
+
+            Recordset recordset = sMap.getSelection().toRecordset();
+            GeoText geoText = (GeoText) recordset.getGeometry();
+
+            TextPart textPart = geoText.getPart(0);
+            textPart.setRotation(angle);
+            geoText.setPart(0,textPart);
+
+            recordset.edit();
+            recordset.setGeometry(geoText);
+            recordset.update();
+
+            geoText.dispose();
+            recordset.dispose();
+            sMap.smMapWC.getMapControl().getMap().refresh();
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject(e);
+        }
+    }
 
     /**
      * 设置MapControl 画笔样式

@@ -1514,6 +1514,58 @@ export default (function () {
   }
 
   /**
+   * 
+   * @param {*} font 'BOLD' || 'ITALIC' || 'UNDERLINE' || 'STRIKEOUT' || 'SHADOW || 'OUTLINE'
+   */
+  function setTaggingTextFont(font) {
+    try {
+      return SMap.setTaggingTextFont(font)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingTextColor(color) {
+    try {
+      return SMap.setTaggingTextColor(color)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function getTaggingTextSize() {
+    try {
+      return SMap.getTaggingTextSize()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function getTaggingTextAngle() {
+    try {
+      return SMap.getTaggingTextAngle()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingTextSize(size) {
+    try {
+      return SMap.setTaggingTextSize(size)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  function setTaggingTextAngle(angle) {
+    try {
+      return SMap.setTaggingTextAngle(angle)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  /**
    * 设置MapControl 画笔样式
    */
   function setMapControlStyle(style) {
@@ -2569,6 +2621,12 @@ export default (function () {
     setTaggingLineWidth,
     setTaggingAngle,
     setTaggingAlpha,
+    setTaggingTextFont,
+    setTaggingTextColor,
+    getTaggingTextSize,
+    getTaggingTextAngle,
+    setTaggingTextSize,
+    setTaggingTextAngle,
     
     setMapControlStyle,
     setLabelColor,
