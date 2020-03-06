@@ -2262,7 +2262,17 @@ public class SScene extends ReactContextBaseJavaModule {
                 double R = 6371393;
                 width = Math.abs((endPoint.getX() - startPoint.getX()) * Math.PI * R * Math.cos((endPoint.getY() + startPoint.getY()) / 2 *Math.PI / 180) /180);
                 length = Math.abs((endPoint.getY() - startPoint.getY()) * Math.PI *R / 180);
-                height = Math.abs(point.y - point1.y)/ density;
+                height = Math.abs(startPoint.getZ() - endPoint.getZ());
+                //确保最小裁剪宽度为1
+                if(width < 1.0){
+                    width = 1.0;
+                }
+                if(length <= 1.0){
+                    length = 1.0;
+                }
+                if(height <= 1.0){
+                    height = 1.0;
+                }
             }else{
                 x = posMap.getDouble("X");
                 y = posMap.getDouble("Y");
@@ -2302,8 +2312,8 @@ public class SScene extends ReactContextBaseJavaModule {
                     Layer3D layer3D = layer3Ds.get(i);
                     layer3D.clearCustomClipPlane();
                     for (int j = 0; j < layers.size(); j++){
-                        map= layers.getMap(j);
-                        if(map.getString("name").equals(layer3D.getName())){
+                        map = layers.getMap(j);
+                        if(map.getBoolean("selected") && map.getString("name").equals(layer3D.getName())){
                             layer3D.clipByBox(box,part);
                         }
                     }

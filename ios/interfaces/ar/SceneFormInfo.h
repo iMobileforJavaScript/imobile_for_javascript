@@ -13,8 +13,9 @@
 @interface SceneFormInfo : NSObject
 
 @property(nonatomic,strong) NSString*name;
-@property(nonatomic,strong) GeoLine3D * geoLine3D;
-@property(nonatomic,strong) GeoPoint3D * geoPoint3D;
+//@property(nonatomic,strong) GeoLine3D * geoLine3D;
+//@property(nonatomic,strong) GeoPoint3D * geoPoint3D;
+@property(nonatomic,strong) NSArray* arrPointsData;
 @property(nonatomic,strong) NSString*person;
 @property(nonatomic,strong) NSString*time;
 @property(nonatomic,strong) NSString*address;

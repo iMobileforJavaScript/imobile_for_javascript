@@ -449,6 +449,97 @@ RCT_REMAP_METHOD(getUniqueExpression, getUniqueExpressionWithResolver:(NSDiction
     }
 }
 
+#pragma mark 获取单值专题图列表项
+RCT_REMAP_METHOD(getUniqueList, getUniqueListWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = [params valueForKey:@"LayerName"];
+        if(layerName != nil){
+            Layer *layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_Unique){
+                ThemeUnique *themeUnique = (ThemeUnique *)layer.theme;
+                NSArray *list = [themeUnique getUniqueItemsList];
+                
+                NSMutableArray *arr = [[NSMutableArray alloc] init];
+                for(int i = 0; i < list.count; i++){
+                    ThemeUniqueItem *curItem = [themeUnique getItem:i];
+                    NSString *unique = curItem.mUnique;
+                    BOOL visible = curItem.mIsVisible;
+                    GeoStyle *style = curItem.mStyle;
+                    NSString *str = [style toXML];
+                    
+                    Color *color = [style getFillForeColor];
+                    int R = color.red;
+                    int G = color.green;
+                    int B = color.blue;
+                    NSDictionary *returnColor = @{
+                        @"r":[NSNumber numberWithInt:R],
+                        @"g":[NSNumber numberWithInt:G],
+                        @"b":[NSNumber numberWithInt:B],
+                    };
+                                   
+                    NSDictionary *dic = @{
+                        @"title": unique,
+                        @"color": returnColor,
+                        @"visible": @(visible),
+                        @"style":str,
+                    };
+                    [arr addObject:dic];
+                }
+                resolve(arr);
+            }else{
+                resolve(@[]);
+            }
+        }else{
+            resolve(@[]);
+        }
+    }@catch(NSException *exception){
+        reject(@"getUniqueDataList", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置用户自定义单值专题图
+RCT_REMAP_METHOD(setCustomThemeUnique, setCustomThemeUniqueWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString *layerName = [params valueForKey:@"LayerName"];
+        NSArray *rangeList = [params valueForKey:@"RangeList"];
+        if(layerName != nil){
+            Layer *layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_Unique){
+                      ThemeUnique *themeUnique = (ThemeUnique *)layer.theme;
+                      [themeUnique clear];
+                      
+                      for(int i = 0; i < rangeList.count; i++){
+                          NSDictionary *curItem = rangeList[i];
+                          NSString *unique = [curItem valueForKey:@"title"];
+                          BOOL visible = [[curItem valueForKey:@"visible"] boolValue];
+                          
+                          NSString *styleXML = [curItem valueForKey:@"style"];
+                          NSDictionary *color = [curItem valueForKey:@"color"];
+                          
+                          int r = [[color valueForKey:@"r"] intValue];
+                          int g = [[color valueForKey:@"g"] intValue];
+                          int b = [[color valueForKey:@"b"] intValue];
+                          
+                          GeoStyle *style = [[GeoStyle alloc] init];
+                          [style fromXML:styleXML];
+                          [style setFillForeColor:[[Color alloc]initWithR:r G:g B:b]];
+                          ThemeUniqueItem *item = [[ThemeUniqueItem alloc] init];
+                          item.mUnique = unique;
+                          item.mIsVisible = visible;
+                          item.mStyle = style;
+                          
+                          [themeUnique addItem:item];
+                      }
+                      [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                      resolve(@(YES));
+                  }
+              }else{
+                  resolve(@(NO));
+              }
+    }@catch(NSException *exception){
+        reject(@"getUniqueDataList", exception.reason, nil);
+    }
+}
 /*标签专题图
  * ********************************************************************************************/
 
@@ -741,6 +832,99 @@ RCT_REMAP_METHOD(setUniqueLabelColorScheme, setUniqueLabelColorSchemeWithResolve
     }
 }
 
+#pragma mark 获取单值标签专题图的子项列表
+RCT_REMAP_METHOD(getUniqueLabelList, methodgetUniqueLabelListWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = [params valueForKey:@"LayerName"];
+        if(layerName != nil){
+            Layer* layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_label){
+                NSMutableArray *arr = [[NSMutableArray alloc] init];
+                ThemeLabel *themeLabel = (ThemeLabel *)layer.theme;
+                               
+                NSArray *list = [themeLabel getLableUniqueItemList];
+                
+                for(int i = 0; i < list.count; i++){
+                    ThemeLabelUniqueItem *item = list[i];
+                    NSString *title = item.unique;
+                    TextStyle *style=item.textStyle;
+                    Color *color = [style getForeColor];
+                    NSString *str = [style toXML];
+                    int R = color.red;
+                    int G = color.green;
+                    int B = color.blue;
+                    NSDictionary *returnColor = @{
+                        @"r":[NSNumber numberWithInt:R],
+                        @"g":[NSNumber numberWithInt:G],
+                        @"b":[NSNumber numberWithInt:B],
+                    };
+                                              
+                    BOOL isVisible = item.isVisable;
+                    NSDictionary *dic = @{
+                        @"title":title,
+                        @"color": returnColor,
+                        @"visible": @(isVisible),
+                        @"style":str,
+                    };
+                    [arr addObject:dic];
+                }
+                resolve(arr);
+            }else{
+                resolve(@[]);
+            }
+        }else{
+            resolve(@[]);
+        }
+    } @catch (NSException *exception) {
+        reject(@"",exception.reason, nil);
+    }
+}
+
+#pragma mark 用户自定义单值标签专题图
+RCT_REMAP_METHOD(setCustomUniqueLabel, setCustomUniqueLabelWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString *layerName = [params valueForKey:@"LayerName"];
+        NSArray *rangeList = [params valueForKey:@"RangeList"];
+        if(layerName != nil){
+            Layer *layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_label){
+                ThemeLabel *themeLabel = (ThemeLabel *)layer.theme;
+                [themeLabel clear];
+                
+                TextStyle *style = [[TextStyle alloc] init];
+                
+                for(int i = 0; i < rangeList.count; i++){
+                    NSDictionary *curItem = rangeList[i];
+                    NSString *title = [curItem valueForKey:@"title"];
+                    BOOL visible = [[curItem valueForKey:@"visible"] boolValue];
+                    NSDictionary *color = [curItem valueForKey:@"color"];
+                    NSString *styleXML = [curItem valueForKey:@"style"];
+                    
+                    int r = [[color valueForKey:@"r"] intValue];
+                    int g = [[color valueForKey:@"g"] intValue];
+                    int b = [[color valueForKey:@"b"] intValue];
+                    
+                    [style fromXML:styleXML];
+                    [style setForeColor:[[Color alloc]initWithR:r G:g B:b]];
+                    ThemeLabelUniqueItem *item = [[ThemeLabelUniqueItem alloc] init];
+                    item.unique = title;
+                    item.textStyle = style;
+                    item.isVisable = visible;
+                    
+                    [themeLabel addUniqueItem:item];
+                    
+                }
+                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                resolve(@(YES));
+            }
+        }else{
+            resolve(@(NO));
+        }
+    } @catch (NSException *exception) {
+        reject(@"setCustomUniqueLabel",exception.reason, nil);
+    }
+}
+
 /**
  * 新建分段标签图层
  *
@@ -952,6 +1136,123 @@ RCT_REMAP_METHOD(setRangeLabelColorScheme, setRangeLabelColorSchemeWithResolver:
 }
 
 
+#pragma mark 获取分段标签专题图的子项列表
+RCT_REMAP_METHOD(getRangeLabelList,getRangeLabelListWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString* layerName = [params valueForKey:@"LayerName"];
+        if(layerName != nil){
+            Layer* layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_label){
+                NSMutableArray *arr = [[NSMutableArray alloc] init];
+                ThemeLabel *themeLabel = (ThemeLabel *)layer.theme;
+                
+                NSArray *list = [themeLabel getLableRangeItemList];
+                NSString *startStr;
+                NSString *endStr;
+                for(int i = 0; i < list.count; i++){
+                    ThemeLabelItem *item = list[i];
+                               
+                    double start = item.mStart;
+                    double end = item.mEnd;
+                               
+                    if(start < -3.4E38){
+                        startStr = @"min";
+                    }else{
+                        startStr = [NSString stringWithFormat:@"%f",start];
+                    }
+                               
+                    if(end > 3.4E38){
+                        endStr = @"max";
+                    }else{
+                        endStr = [NSString stringWithFormat:@"%f",end];
+                    }
+                               
+                    TextStyle *style=item.mTextStyle;
+                    Color *color = [style getForeColor];
+                    NSString *str = [style toXML];
+                    int R = color.red;
+                    int G = color.green;
+                    int B = color.blue;
+                    NSDictionary *returnColor = @{
+                        @"r":[NSNumber numberWithInt:R],
+                        @"g":[NSNumber numberWithInt:G],
+                        @"b":[NSNumber numberWithInt:B],
+                    };
+                               
+                    BOOL isVisible = item.mVisible;
+                    NSDictionary *dic = @{
+                        @"start": startStr,
+                        @"end": endStr,
+                        @"color": returnColor,
+                        @"visible": @(isVisible),
+                        @"style":str,
+                    };
+                    [arr addObject:dic];
+                }
+                resolve(arr);
+            }else{
+                resolve(@[]);
+            }
+        }else{
+             resolve(@[]);
+        }
+    } @catch (NSException *exception) {
+        reject(@"getRangeLabelList",exception.reason, nil);
+    }
+}
+#pragma mark 用户自定义分段标签专题图
+RCT_REMAP_METHOD(setCustomRangeLabel, setCustomRangeLabelWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try {
+        NSString *layerName = [params valueForKey:@"LayerName"];
+        NSArray *rangeList = [params valueForKey:@"RangeList"];
+        if(layerName != nil){
+            Layer *layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_label){
+                ThemeLabel *themeLabel = (ThemeLabel *)layer.theme;
+                [themeLabel clear];
+                
+                TextStyle *style = [[TextStyle alloc] init];
+                
+                for(int i = 0; i < rangeList.count; i++){
+                    NSDictionary *curItem = rangeList[i];
+                    double start = [[curItem valueForKey:@"start"] doubleValue];
+                    double end = [[curItem valueForKey:@"end"] doubleValue];
+                    BOOL visible = [[curItem valueForKey:@"visible"] boolValue];
+                    NSString *styleXML = [curItem valueForKey:@"style"];
+                    
+                    NSDictionary *color = [curItem valueForKey:@"color"];
+                    
+                    int r = [[color valueForKey:@"r"] intValue];
+                    int g = [[color valueForKey:@"g"] intValue];
+                    int b = [[color valueForKey:@"b"] intValue];
+                    
+                    [style fromXML:styleXML];
+                    [style setForeColor:[[Color alloc]initWithR:r G:g B:b]];
+                    ThemeLabelItem *item = [[ThemeLabelItem alloc] init];
+                    if(i != 0){
+                        item.mStart = start;
+                    }
+                    if(i != rangeList.count -1){
+                        item.mEnd = end;
+                    }
+                    item.mVisible = visible;
+                    item.mTextStyle = style;
+                    
+                    [themeLabel addToTail:item];
+                    
+                }
+                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                resolve(@(YES));
+            }else{
+                resolve(@(NO));
+            }
+        }else{
+            resolve(@(NO));
+        }
+    } @catch (NSException *exception) {
+        reject(@"setCustomRangeLabel",exception.reason, nil);
+    }
+}
 /**
  * 设置分段标签专题图字段分段表达式
  *
@@ -2600,6 +2901,137 @@ RCT_REMAP_METHOD(getRangeExpression, getRangeExpressionWithResolver:(NSDictionar
     }
     @catch(NSException *exception){
         reject(@"workspace", exception.reason, nil);
+    }
+}
+
+#pragma mark 获取分段专题图分段信息
+RCT_REMAP_METHOD(getRangeList, methodgetRangeListWithParams:(NSDictionary*)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString* layerName = @"";
+        int layerIndex = -1;
+        
+        NSArray* array = [params allKeys];
+        if ([array containsObject:@"LayerName"]) {
+            layerName = [params objectForKey:@"LayerName"];
+        }
+        if ([array containsObject:@"LayerIndex"]) {
+            layerIndex = [[params objectForKey:@"LayerIndex"] intValue];
+        }
+        
+        Layer* layer = nil;
+        
+        if ([layerName isEqualToString:@""]) {
+            layer = [SMThemeCartography getLayerByIndex:layerIndex];
+        } else {
+            layer = [SMThemeCartography getLayerByName:layerName];
+        }
+        if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_Range){
+            NSMutableArray *arr = [[NSMutableArray alloc] init];
+            ThemeRange *themeRange = (ThemeRange*)layer.theme;
+            NSArray *list = [themeRange getRangeItemList];
+            NSString *startStr;
+            NSString *endStr;
+            for(int i = 0; i < list.count; i++){
+                ThemeRangeItem *item = list[i];
+                
+                double start = item.mStart;
+                double end = item.mEnd;
+                
+                if(start < -3.4E38){
+                    startStr = @"min";
+                }else{
+                    startStr = [NSString stringWithFormat:@"%f",start];
+                }
+                
+                if(end > 3.4E38){
+                    endStr = @"max";
+                }else{
+                    endStr = [NSString stringWithFormat:@"%f",end];
+                }
+                
+                GeoStyle *style=item.mStyle;
+                Color *color = [style getFillForeColor];
+                NSString *str = [style toXML];
+                int R = color.red;
+                int G = color.green;
+                int B = color.blue;
+                NSDictionary *returnColor = @{
+                    @"r":[NSNumber numberWithInt:R],
+                    @"g":[NSNumber numberWithInt:G],
+                    @"b":[NSNumber numberWithInt:B],
+                };
+                
+                BOOL isVisible = item.mIsVisible;
+                NSDictionary *dic = @{
+                    @"start": startStr,
+                    @"end": endStr,
+                    @"color": returnColor,
+                    @"visible": @(isVisible),
+                    @"style":str,
+                };
+                [arr addObject:dic];
+            }
+            resolve(arr);
+        }else{
+            resolve(@[]);
+        }
+    }@catch(NSException *exception){
+        reject(@"SThemeCartography->getRangeList:", exception.reason, nil);
+    }
+}
+
+#pragma mark 设置用户自定义分段信息
+RCT_REMAP_METHOD(setCustomThemeRange, setCustomUThemeRangeWithParams:(NSDictionary *)params resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject){
+    @try{
+        NSString *layerName = [params valueForKey:@"LayerName"];
+        NSArray *rangeList = [params valueForKey:@"RangeList"];
+        Layer *layer;
+        if(layerName != nil){
+            layer = [SMThemeCartography getLayerByName:layerName];
+            if(layer != nil && layer.theme != nil && layer.theme.themeType == TT_Range){
+                ThemeRange *themeRange = (ThemeRange*)layer.theme;
+                [themeRange clear];
+
+                GeoStyle *style = [[GeoStyle alloc] init];
+            
+                for(int i = 0; i < rangeList.count; i++){
+                    NSDictionary *curItem = rangeList[i];
+                    double start = [[curItem valueForKey:@"start"] doubleValue];
+                    double end = [[curItem valueForKey:@"end"] doubleValue];
+                    BOOL visible = [[curItem valueForKey:@"visible"] boolValue];
+                    
+                    NSString *styleXML = [curItem valueForKey:@"style"];
+                    NSDictionary *color = [curItem valueForKey:@"color"];
+                    
+                    int r = [[color valueForKey:@"r"] intValue];
+                    int g = [[color valueForKey:@"g"] intValue];
+                    int b = [[color valueForKey:@"b"] intValue];
+                    [style fromXML:styleXML];
+                    [style setFillForeColor:[[Color alloc]initWithR:r G:g B:b]];
+                    [style setLineColor:[[Color alloc] initWithR:r G:g B:b]];
+                    ThemeRangeItem *item = [[ThemeRangeItem alloc] init];
+                    if(i != 0){
+                        item.mStart = start;
+                    }
+                    if(i != rangeList.count -1){
+                        item.mEnd = end;
+                    }
+                    item.mIsVisible = visible;
+                    item.mStyle = style;
+                    
+                    [themeRange addToTail:item];
+                    
+                }
+                [[SMap singletonInstance].smMapWC.mapControl.map refresh];
+                resolve(@(YES));
+            }else{
+                resolve(@(NO));
+            }
+        }else{
+            resolve(@(NO));
+        }
+    }@catch(NSException *exception){
+        reject(@"SThemeCartography->setCustomThemeRange:", exception.reason, nil);
     }
 }
 /*栅格分段专题图

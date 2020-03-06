@@ -10,8 +10,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.supermap.ai.classifier.Classifier2;
-import com.supermap.ai.classifier.TensorFlowImageClassifier;
+import com.supermap.ai.classifier.ClassifierTFlite;
+import com.supermap.ai.classifier.AIClassifierTFlite;
 import com.supermap.data.*;
 import com.supermap.interfaces.mapping.SMap;
 import com.supermap.mapping.MapControl;
@@ -36,7 +36,7 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     private static int INPUT_SIZE = 224;
     private static boolean QUANT = true;//量化模型
 
-    private static Classifier2 mClassifier = null;
+    private static ClassifierTFlite mClassifier = null;
 
     private static Context mContext = null;
     private static ReactApplicationContext mReactContext = null;
@@ -71,13 +71,13 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
     private static void initTensorFlowAndLoadModel() {
         try {
             if (mModelType == ModelType.ASSETS_FILE) {
-                mClassifier = TensorFlowImageClassifier.create(
+                mClassifier = AIClassifierTFlite.create(
                         DEFAULT_MODEL_NAME,
                         DEFAULT_LABEL_NAME,
                         INPUT_SIZE,
                         QUANT);
             } else if (mModelType == ModelType.ABSOLUTE_FILE_PATH) {
-                mClassifier = TensorFlowImageClassifier.create(
+                mClassifier = AIClassifierTFlite.create(
                         MODEL_PATH,
                         LABEL_PATH,
                         INPUT_SIZE,
@@ -333,12 +333,12 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                         }
                         Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
 
-                        final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
+                        final List<ClassifierTFlite.Recognition> results = mClassifier.recognizeImage(bitmap);
                         WritableArray arr = Arguments.createArray();
 
                         if (results != null && results.size() > 0) {
                             for (int  i= 0; i < results.size(); i++){
-                                Classifier2.Recognition recognition = results.get(i);
+                                ClassifierTFlite.Recognition recognition = results.get(i);
                                 WritableMap writeMap = Arguments.createMap();
                                 writeMap.putString("ID", recognition.getId());
                                 String title = recognition.getTitle();
@@ -430,13 +430,13 @@ public class SAIClassifyView extends ReactContextBaseJavaModule {
                         mBitmap = BitmapFactory.decodeFile(finalMediaPath);
                         Bitmap bitmap = Bitmap.createScaledBitmap(mBitmap, INPUT_SIZE, INPUT_SIZE, false);
 
-                        final List<Classifier2.Recognition> results = mClassifier.recognizeImage(bitmap);
+                        final List<ClassifierTFlite.Recognition> results = mClassifier.recognizeImage(bitmap);
                         WritableMap allResults = Arguments.createMap();
                         WritableArray arr = Arguments.createArray();
 
                         if (results != null && results.size() > 0) {
                             for (int  i= 0; i < results.size(); i++){
-                                Classifier2.Recognition recognition = results.get(i);
+                                ClassifierTFlite.Recognition recognition = results.get(i);
                                 WritableMap writeMap = Arguments.createMap();
                                 writeMap.putString("ID", recognition.getId());
                                 String title = recognition.getTitle();

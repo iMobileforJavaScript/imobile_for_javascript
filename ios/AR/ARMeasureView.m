@@ -712,5 +712,14 @@
     }
 }
 
+-(void)currentPosX:(float *)x y:(float *)y z:(float *)z angle:(float *)w{
+    vector_float3 eulerAngles =   self.session.currentFrame.camera.eulerAngles;
+    *w = eulerAngles.y;
+    *x = m_VectorCamera.x;
+    *y = m_VectorCamera.z;
+    *z = m_VectorCamera.y;
+}
+
+
 
 @end

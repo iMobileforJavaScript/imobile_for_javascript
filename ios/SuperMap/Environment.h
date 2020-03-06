@@ -1,4 +1,4 @@
-﻿//
+//
 //  Environment.h
 //  Visualization
 //
@@ -10,7 +10,7 @@
 #ifndef SM_iMobile_Environment_h
 #define SM_iMobile_Environment_h
 
-#import <Foundation/Foundation.h>
+#import "SuperMapDefines.h"
 #import "EngineType.h"
 	///该类定义了SuperMap iMobile 7C for iOS支持的模块类型常量。
 
@@ -80,6 +80,15 @@ extern const NSString* REALPLACE_ANALYST_RUNTIME ;
 extern const NSString* REALPLACE_EFFECT_DEV ;
 extern const NSString* REALPLACE_EFFECT_RUNTIME ;
 
+//iTablet
+extern const NSString* ITABLET_STANDARD;//标准版
+extern const NSString* ITABLET_PROFESSIONAL; //专业版
+extern const NSString* ITABLET_ADVANCED; //高级版
+  //扩展模块
+extern const NSString* ITABLET_ARMAP;//AR地图
+extern const NSString* ITABLET_NAVIGATIONMAP;//导航地图
+extern const NSString* ITABLET_DATAANALYSIS ;//数据分析
+extern const NSString* ITABLET_PLOTTING ;//应急标绘
 
  /**
      * @brief 默认零值判断最大精度。系统给定的精度范围的上界，为公有静态只读字段，用户不能修改。
@@ -115,6 +124,7 @@ extern const double minEqualZeroPrecision ;
  * @brief  关于开发环境的一些配置信息管理类，比如设置缓存目录、设置零值判断精度等功能，通过此类还可以设置像素与逻辑坐标的比例。 </p>
  *
  */
+SUPERMAP_INTERFACE
 @interface Environment : NSObject
 
 /**
@@ -177,6 +187,7 @@ extern const double minEqualZeroPrecision ;
 +(BOOL)isOpenGLMode;
 +(void)setOpenGLMode:(BOOL)bOpenGLMode;
 +(double)mainScreenScale;
++(void)setReadLicense:(BOOL)b;
 
 +(void)setPrintWMSLog:(BOOL)bPrintWMSLog;
 @end

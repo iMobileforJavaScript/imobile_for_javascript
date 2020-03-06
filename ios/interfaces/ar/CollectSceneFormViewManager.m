@@ -9,6 +9,8 @@
 #import "CollectSceneFormViewManager.h"
 #import "ARCollectorView.h"
 #import "SCollectSceneFormView.h"
+#import "SMITabletUtils.h"
+
 
 @implementation CollectSceneFormViewManager
 
@@ -29,8 +31,14 @@ RCT_EXPORT_MODULE(RCTCollectSceneFormView)
         CGRect rt = [ UIScreen mainScreen ].bounds;
         ARCollectorView *uiView = [[ARCollectorView alloc]initWithFrame:rt];
         [SCollectSceneFormView setInstance:uiView];
-
-        return [SCollectSceneFormView shareInstance];
+        
+        UIView* hostView = [SCollectSceneFormView shareInstance];
+        NSString* error =  [SMITabletUtils checkLicValid];
+        if(error != nil){
+            [SMITabletUtils addLicView:hostView text:error];
+        }
+        
+        return hostView;
     } @catch (NSException *exception) {
         NSLog(exception.reason.description);
     }

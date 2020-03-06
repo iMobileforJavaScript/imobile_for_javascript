@@ -18,6 +18,7 @@
 #import <objc/runtime.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTWebView.h>
+#import "SMITabletUtils.h"
 
 static MapControl* mapControl = nil;
 
@@ -49,6 +50,23 @@ static MapControl* mapControl = nil;
 }
 @end
 
+
+//@implementation UILabel (ReactCategory)
+//
+//
+//
+//-(void)setOnChange:(RCTBubblingEventBlock)onChange{
+//  objc_setAssociatedObject(self, @selector(onChange), onChange, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+//    if(self.onChange)
+//     {
+//       self.onChange(@{@"mapViewId":@((NSUInteger)self).stringValue});
+//     }
+//}
+//-(RCTBubblingEventBlock)onChange{
+//  return (RCTBubblingEventBlock)objc_getAssociatedObject(self, @selector(onChange));
+//}
+//@end
+
 @implementation JSMapControl
 //注册为Native模块
 RCT_EXPORT_MODULE(RCTMapView)
@@ -65,13 +83,18 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 - (UIView *)view
 {
     if (mapControl == nil) {
-        mapControl = [[MapControl alloc]init];;
-        mapControl.jsMapControl = self;
+           mapControl = [[MapControl alloc]init];;
+           mapControl.jsMapControl = self;
     }
-  
     [SMap setInstance:mapControl];
-//  [JSObjManager addObj:mapControl];
-
+    
+    NSString* error =  [SMITabletUtils checkLicValid];
+    if(error != nil){
+        [SMITabletUtils addLicView:mapControl text:error];
+    }else{
+        [SMITabletUtils addLicView:mapControl text:nil];
+    }
+    
     return mapControl;
 }
 
