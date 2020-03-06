@@ -8,6 +8,8 @@
 
 #import "JSSceneView.h"
 #import "SScene.h"
+#import "SMITabletUtils.h"
+
 
 @interface JSSceneView()
 {
@@ -29,6 +31,10 @@
 //            [_sceneCtrl setFrame:self.bounds];
             [_sceneCtrl initSceneControl:nil windows:nil];
             [SScene setInstance:_sceneCtrl];
+            NSString* error =  [SMITabletUtils checkLicValid];
+               if(error != nil){
+                   [SMITabletUtils addLicView:_sceneCtrl text:error];
+               }
         }
     }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

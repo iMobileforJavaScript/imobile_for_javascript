@@ -15,6 +15,9 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 #import "SLanguage.h"
+#import "SMITabletUtils.h"
+
+
 
 static ARMeasureView* mARMeasureView = nil;
 
@@ -34,6 +37,10 @@ RCT_EXPORT_MODULE(RCTMeasureView)
         [SMeasureView setInstance:mARMeasureView];
         [mARMeasureView startARSessionWithMode:AR_MODE_RANGING];
         
+        NSString* error =  [SMITabletUtils checkLicValid];
+        if(error != nil){
+            [SMITabletUtils addLicView:mARMeasureView text:error];
+        }
         return mARMeasureView;
     } @catch (NSException *exception) {
         NSLog(exception.reason.description);

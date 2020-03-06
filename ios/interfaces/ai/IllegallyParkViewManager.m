@@ -16,6 +16,8 @@
 
 #import "SLanguage.h"
 #import "Constants.h"
+#import "SMITabletUtils.h"
+
 
 
 
@@ -45,7 +47,13 @@ RCT_EXPORT_MODULE(RCTIllegallyParkView)
             [[SIllegallyParkView shareInstance] setLanguage:@"CN"];
         }
 
-        return [SIllegallyParkView shareInstance];
+        UIView* hostView = [SIllegallyParkView shareInstance];
+        NSString* error =  [SMITabletUtils checkLicValid];
+                  if(error != nil){
+                     [SMITabletUtils addLicView:hostView text:error];
+                  }
+        
+        return hostView;
     } @catch (NSException *exception) {
         NSLog(exception.reason.description);
     }
